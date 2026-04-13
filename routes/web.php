@@ -1,0 +1,117 @@
+<?php
+
+use App\Http\Controllers\Auth\Login;
+use App\Http\Controllers\Auth\Logout;
+use App\Http\Controllers\BatchesController;
+use App\Http\Controllers\ContextController;
+use App\Http\Controllers\CoverPageController;
+use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\ParticipantsController;
+use App\Http\Controllers\ProgramsController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\RequirementsController;
+use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\TESDAOrderController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
+
+
+
+
+
+Route::middleware('auth')->group(function () {
+//LOGOUT
+Route::post('/logout', Logout::class);
+    
+Route::get('/gmanning', [EmployeesController::class, 'index'])->name('register');
+Route::get('/', function () { return view('enrolled.programs');});
+Route::get('/profile', [UserController::class,'index'])->name('profile');
+
+// MONITORING
+Route::get('/dashboard', fn () => view('monitoring.dashboard'));
+Route::get('/programs', fn () => view('monitoring.programs'));
+Route::get('/calendar', fn () => view('monitoring.calendar'));
+Route::get('/employees', fn () => view('monitoring.employees'));
+
+// Enrolled Programs
+Route::get('/enrolled', fn () => view('enrolled.programs'));
+
+// PROGRAMS 
+Route::post('/create-program', [ProgramsController::class,'store'])->name('create.program');
+Route::get('/programs/{id}', [ProgramsController::class,'showDetails'])->name('view.programs');
+Route::get('/programs/{id}/participants', [ProgramsController::class,'show'])->name('view.programs');
+Route::get('/get-programs', [ProgramsController::class, 'getAll']);
+Route::get('/programs-count', [ProgramsController::class, 'getProgramsCount']);
+Route::get('/programs/{id}/tesda-order', [ProgramsController::class, 'getTesdaOrders']);
+
+
+Route::get('/editor', function () { return view('editor');});
+
+
+//BATCHES
+Route::post('/create-batches', [BatchesController::class,'store'])->name('create.batch');
+Route::get('/batches', [BatchesController::class, 'index'])->name('batches.index');
+Route::get('/batches/{code}/participants', [BatchesController::class,'getBatches']);
+Route::get('/batch/{id}/edit', [BatchesController::class,'edit']);
+Route::post('/batch/{id}', [BatchesController::class,'update']);
+Route::get('/batch/{id}/delete', [BatchesController::class,'destroy']);
+
+// PARTICIPANTS
+Route::get('/participants/bulk-add/{batch}', [ParticipantsController::class, 'showBulkAdd'])->name('participants.bulk-add');
+Route::post('/participants/bulk-add', [ParticipantsController::class, 'bulkAdd'])->name('api.participants.bulk-add');
+Route::get('/participants/{id}/delete', [ParticipantsController::class,'destroy']);
+Route::get('/participants/{id}/clear', [ParticipantsController::class,'clearByBatch']);
+Route::post('/participant/save-attendance', [ParticipantsController::class, 'saveAttendance']);
+Route::post('/participant/set-all-hours', [ParticipantsController::class, 'setAllHours']);
+Route::post('/participants/{id}/move-order', [ParticipantsController::class, 'moveOrder']);
+
+// REQUIREMENTS 
+Route::get('/programs/{id}/requirements', [ProgramsController::class,'showRequirement'])->name('view.requriement');
+Route::post('/create-requirement', [RequirementsController::class,'create']);
+Route::get('/get-requirements/{program}', [RequirementsController::class,'getRequirements']);
+Route::delete('/requirements/{id}/delete', [RequirementsController::class, 'destroy']);
+
+// COVERPAGE 
+Route::post('/upload-cover', [CoverPageController::class, 'upload']);
+Route::delete('/cover/{id}', [CoverPageController::class, 'destroy']);
+
+
+//EMPLOYEES
+Route::get('/employees-data', [EmployeesController::class, 'employees']);
+Route::get('/employees', [EmployeesController::class, 'employeesList']);
+Route::get('/employee-trainings', [EmployeesController::class, 'getEmployeeTrainings']);
+Route::get('/employees-progress', fn () => view('monitoring.employees'));
+
+// TESDA ORDER
+Route::post('/TESDAOrder/store', [TESDAOrderController::class, 'store']);
+Route::get('/tesda-order/{id}', [TESDAOrderController::class, 'TESDAOrder']);
+Route::get('/tesda-orders/{program_code}', [TESDAOrderController::class, 'show']);
+Route::get('/tesda-orders/delete/{id}', [TESDAOrderController::class, 'destroy']);
+
+});
+
+
+
+
+
+// REGISTRATION SECTION 
+Route::get('/register', fn() => view('Auth.register'))->name('register');
+Route::post('/register/send-otp', [RegisterController::class, 'sendOtp'])->name('register.sendOtp');
+Route::get('/register/verify-otp', [RegisterController::class, 'showOtpForm'])->name('otp.verify.form');
+Route::post('/register/verify-otp', [RegisterController::class, 'verifyOtp'])->name('otp.verify');
+
+//USER CHECK EMPCODE
+Route::post('/register/check-empcode', [RegisterController::class,'checkEmpcode'])->name('register.checkEmpcode');
+
+
+//LOGIN SECTION
+Route::view('/login','Auth.login')->middleware('guest')->name('login');
+Route::post('/login', Login::class)->middleware('guest');
+
+
+// FORGOT PASSWORD 
+Route::get('forgot-password', [ForgotPasswordController::class,'index'])->name('password.request');
+Route::post('forgot-password', [ForgotPasswordController::class,'sendLink'])->name('password.email');
+Route::get('/reset-password/{token}',[ResetPasswordController::class,'index'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class,'reset'])->name('password.update');
