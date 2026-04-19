@@ -44,7 +44,7 @@
                     <div class="slide-up overflow-hidden border border-slate-300 dark:border-slate-600 dark:bg-slate-800 bg-white rounded-2xl mb-2">
                         <div class="p-4  flex justify-between">
                             <div>
-                            <p class="poppins-bold">${req.title}</p>
+                            <p class="poppins-bold">${formatRequirementTitle(req.title)}</p>
                             <p class="text-xs poppins-regular text-slate-600 dark:text-slate-300">${req.description ?? ''}</p>
                             </div>
                             <button onclick="deleteRequirement(${req.id})" class="btn btn-circle btn-xs btn-error btn-soft"><i class="fa-regular fa-trash-can"></i></button>
@@ -66,6 +66,26 @@
 
             }
         });
+    }
+
+    function formatRequirementTitle(title) {
+        if (!title) return '';
+
+        const t = title.toUpperCase();
+
+        if (t === 'TREAP') {
+            return `Terminal Report`;
+        }
+
+        if (t === 'REAP') {
+            return `Terminal and Re-entry Action Plan (T${title})`;
+        }
+
+        if (t === 'TDOR') {
+            return `Training Development Outcome Report (${title})`
+        }
+
+        return title; // default (no change)
     }
 
 

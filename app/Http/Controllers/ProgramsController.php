@@ -82,6 +82,12 @@ class ProgramsController extends Controller
         return view('monitoring.requirements', compact('myprogram','cover'));
     }
 
+    public function showSubmissions($id){
+        $myprogram = Program::find($id);
+        $cover = CoverPage::where('program_id', $id)->first();
+        return view('monitoring.submissions', compact('myprogram','cover'));
+    }
+
     public function showDetails($id){
         $myprogram = Program::find($id);
         $cover = CoverPage::where('program_id', $id)->first();
@@ -99,6 +105,43 @@ class ProgramsController extends Controller
     public function getTesdaOrders($id){
         $myprogram = Program::find($id);
         return view('monitoring.tesda-orders', compact('myprogram'));
+    }
+
+
+    public function myPrograms(Request $request)
+    {
+        $empcode = auth()->user()->empcode;
+
+        $query = $request->get('q');
+        $perPage = $request->get('per_page', 10);
+
+        $programs = Program::with([
+            'coverPages',
+            'batches' => function ($batchQuery) use ($empcode) {
+                $batchQuery->with([
+                    'participants' => function ($participantQuery) use ($empcode) {
+                        $participantQuery->where('empcode', $empcode);
+                    }
+                ]);
+            }
+        ])
+        ->whereHas('batches.participants', function ($q) use ($empcode) {
+            $q->where('empcode', $empcode);
+        });
+
+        // ✅ APPLY SEARCH HERE (Query Builder, not Collection)
+        if ($query) {
+            $programs->where(function ($q) use ($query) {
+                $q->where('title', 'LIKE', "%{$query}%")
+                ->orWhere('program_code', 'LIKE', "%{$query}%");
+            });
+        }
+
+        // ✅ paginate BEFORE get()
+        return response()->json(
+            $programs->orderBy('sort_order', 'asc')
+                    ->paginate($perPage)
+        );
     }
   
 

@@ -12,6 +12,8 @@
         </div>
 
         <div class="flex gap-2 ">
+            <button class="btn btn-default shadow-xl rounded-box"><i class="fa-solid fa-pen"></i>Edit</button>
+
             <div class="dropdown dropdown-end poppins-regular">
             <div tabindex="0" role="button" class="btn btn-default shadow-xl rounded-box">Generate <i class="fa-solid fa-angle-down"></i></div>
             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
@@ -27,12 +29,12 @@
 
     </div>
 
-    <div class=" flex px-5 py-2 border-b border-slate-300 bg-slate-200 dark:bg-slate-800 dark:border-slate-600 gap-2">
-        <a href="/programs/{{ $myprogram->id }}" class="btn-ghost bg-white dark:bg-slate-600 hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-circle-info"></i> Details</a>
+    <div class="TABS flex px-5 py-2 border-b border-slate-300 bg-slate-200 dark:bg-slate-800 dark:border-slate-600 gap-2">
+        <a href="/programs/{{ $myprogram->id }}" class="btn-default bg-white dark:bg-slate-600 hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-circle-info"></i> Details</a>
 
-        <a href="/programs/{{ $myprogram->id }}/participants" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-user-group"></i> Participants</a>
+        <a href="/programs/{{ $myprogram->id }}/participants" class="btn-ghost  hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-user-group"></i> Participants</a>
 
-        <a href="" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-regular fa-file"></i> Submissions</a>      
+        <a href="/programs/{{ $myprogram->id }}/submissions" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-regular fa-file"></i> Submissions</a>      
 
         <a href="/programs/{{ $myprogram->id }}/requirements" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-regular fa-file"></i> Requirements</a>  
 

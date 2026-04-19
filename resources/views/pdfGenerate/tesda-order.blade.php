@@ -200,14 +200,14 @@
 
         {{-- SIGNATORY --}}
         <div>
-        <div style="height: 40px;"></div>
+        <div style="height: 50px;"></div>
 
         <div style="width: 100%; text-align: right;">
             <div style="
                 display: inline-block;
                 white-space: nowrap;
                 text-align: center;
-                padding: 5px 50px;
+                padding: 5px 10px;
             ">
                 <div><b>{!! $program->signatory_name !!}</b></div>
                 <div>{!! $program->signatory_position !!}</div>

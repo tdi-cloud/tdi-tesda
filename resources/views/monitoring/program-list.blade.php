@@ -1,6 +1,7 @@
 <div class=" w-full p-5 overflow-auto">
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start" id="program_grid">
+        <span class="loading loading-dots loading-sm"></span>
 
         {{-- SINGLE PROGRAM --}}
 
@@ -12,7 +13,7 @@
 <script>
     function renderPrograms(programs) {
         const container = document.getElementById('program_grid');
-
+        
         if (programs.length === 0) {
             container.innerHTML = '<p>No programs found.</p>';
             return;
@@ -23,11 +24,11 @@
             onclick="window.location.href='/programs/${program.id}' "
             class="w-full hover:scale-[1.03] shadow-lg relative duration-500 rounded-2xl border border-slate-300 bg-white dark:bg-slate-800 dark:border-slate-600 overflow-hidden">
 
-            ${program.cover_pages.length > 0 ? `
-   
-                        <img class="max-h-40 object-cover w-full h-full" src="/storage/${program.cover_pages[0].image}" alt="">
-                        
-            ` : ''}
+            <img class="max-h-40 object-cover w-full h-full" 
+            src="/storage/${program.cover_pages.length > 0 
+                ? program.cover_pages[0].image 
+                : 'default.png'}" 
+            alt="">
 
             <div class="p-4">
                 <h1 class="leading-5 poppins-semibold dark:text-yellow-500">${program.title}</h1>

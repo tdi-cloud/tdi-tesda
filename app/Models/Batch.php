@@ -27,4 +27,11 @@ class Batch extends Model
         return $this->hasMany(Requirement::class,'program_code','program_code');
     }
 
+    public function speakers()
+    {
+        return $this->belongsToMany(Speaker::class, 'batch_speakers')
+            ->withPivot('role', 'topic')
+            ->withTimestamps();
+    }
+
 }

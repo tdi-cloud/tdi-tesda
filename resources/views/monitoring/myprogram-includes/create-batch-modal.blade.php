@@ -200,11 +200,14 @@ async function submitBatchForm() {
         document.getElementById('batch_submit_btn').disabled = false;
         document.getElementById('batch_load').classList.add('hidden');
         loading_modal.close();
+        fetchBatches();
         if(result.status === 'success'){
             create_batch_modal.close();
             document.getElementById('batchForm').reset();
-            fetchBatches();
             showToast('Batch added successfully', type = 'success')
+            setInterval(() => {
+                location.reload();
+            }, 300000);
         }else console.log(result);
 
 

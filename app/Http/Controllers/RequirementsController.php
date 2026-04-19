@@ -38,8 +38,8 @@ class RequirementsController extends Controller
             "program_code" => $request->program_code,
             "description" => $request->description,
             "required" => $request->required,
-            "day_due" => $rules[$title]['day'] ?? 5,
-            "month_due" => $rules[$title]['month'] ?? 0,
+            "day_due" => $rules[$title]['day'] + 0 ?? 5,
+            "month_due" => $rules[$title]['month'] + 0 ?? 0,
         ]);
 
         return response()->json([
@@ -72,5 +72,16 @@ class RequirementsController extends Controller
             'status' => true,
             'message' => 'Deleted'
             ]);
+    }
+
+    public function getRequirementsView($program_code, $participant_id)
+    {
+        $requirements = Requirement::with(['batches', 'submissions' => function ($q) use ($participant_id) {
+            $q->where('participant_id', $participant_id);
+        }])
+        ->where('program_code', $program_code)
+        ->get();
+
+        return response()->json($requirements);
     }
 }

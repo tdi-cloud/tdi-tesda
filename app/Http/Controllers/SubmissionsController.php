@@ -1,0 +1,154 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Submission;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
+class SubmissionsController extends Controller
+{
+    public function store(Request $request)
+    {
+        $request->validate([
+            'participant_id' => 'required|exists:participants,id',
+            'program_code' => 'required',
+            'batch_id' => 'required|exists:batches,id',
+            'requirement_id' => 'required|exists:requirements,id',
+            'notes' => 'nullable|string',
+            'file' => 'required|mimes:pdf|max:20480',
+        ]);
+
+        // store file
+        $path = $request->file('file')->store('submissions', 'public');
+
+        $submission = Submission::create([
+            'participant_id' => $request->participant_id,
+            'program_code' => $request->program_code,
+            'batch_id' => $request->batch_id,
+            'requirement_id' => $request->requirement_id,
+            'status' => 'Pending', // 👈 default from DB but explicit is better
+            'file_path' => $path,
+            'notes' => $request->notes ?? '',
+            'submitted_at' => Carbon::now(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Submitted successfully!',
+            'data' => $submission
+        ]);
+    }
+
+    public function destroy(Submission $submission)
+    {
+        try {
+            if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+                Storage::disk('public')->delete($submission->file_path);
+            }
+
+            $submission->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Submission deleted successfully.',
+                // 'message' => Storage::exists($submission->file_path),
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete submission: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+   public function index(Request $request)
+    {
+        $query = Submission::with([
+            'participant.employee',
+            'participant.batch',
+            'requirement'
+        ]);
+
+        // 🔎 SEARCH (employee-aware)
+        if ($request->search) {
+            $search = $request->search;
+
+            $query->whereHas('participant.employee', function ($q) use ($search) {
+                $q->where('EMPCODE', 'like', "%$search%")
+                ->orWhere('LASTNAME', 'like', "%$search%")
+                ->orWhere('FIRSTNAME', 'like', "%$search%")
+                ->orWhere('OFFICE/DIVISION', 'like', "%$search%")
+                ->orWhere('POSITION', 'like', "%$search%");
+            });
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->program_code) {
+            $query->where('program_code', $request->program_code);
+        }
+
+
+        $data = $query->latest()->paginate(5);
+
+        $year = now()->year;
+
+        $data->getCollection()->transform(function ($sub) use ($year) {
+
+            $req = $sub->requirement;
+
+            if ($req) {
+                $dueDate = \Carbon\Carbon::create(
+                    $year,
+                    $req->month_due,
+                    $req->day_due
+                );
+
+                $sub->is_overdue = $sub->submitted_at
+                    ? \Carbon\Carbon::parse($sub->submitted_at)->gt($dueDate) === false && now()->gt($dueDate)
+                    : now()->gt($dueDate);
+            } else {
+                $sub->is_overdue = false;
+            }
+
+            return $sub;
+        });
+
+        return response()->json($data);
+    }
+
+public function show($id)
+{
+    return Submission::with([
+        'participant.employee',
+        'participant.batch',
+        'requirement'
+    ])->findOrFail($id);
+}
+
+
+public function update(Request $request, $id)
+{
+    $submission = Submission::findOrFail($id);
+
+    $submission->status = $request->status;
+    $submission->remarks = $request->remarks;
+    $submission->reviewed_at = now();
+    $submission->reviewed_by = Auth::user()?->empcode ?? 'admin';
+
+    $submission->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Updated successfully'
+    ]);
+}
+
+
+}

@@ -49,7 +49,7 @@
             </li>
 
             <li class="w-full">
-                <a href="/employees" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
+                <a href="/employees-progress" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
                 {{ request()->is('employees-progress') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
                 ">
                     <i class="fa-solid fa-users text-md text-blue-600"></i>
@@ -57,7 +57,7 @@
                     
                 </a>
             </li>
-            
+
         </ul>
 
 

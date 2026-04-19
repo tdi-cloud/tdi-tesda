@@ -6,6 +6,7 @@ use App\Models\AbsentJustification;
 use App\Models\employees;
 use App\Models\Participant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ParticipantsController extends Controller
@@ -195,6 +196,60 @@ class ParticipantsController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'empcodes' => 'required|array',
+            'batch_id' => 'required|exists:batches,id',
+        ]);
+
+        $batchId = $request->batch_id;
+
+        // Get existing empcodes for this batch
+        $existing = Participant::where('batch_id', $batchId)
+            ->whereIn('empcode', $request->empcodes)
+            ->pluck('empcode')
+            ->toArray();
+
+        // Filter out duplicates
+        $newCodes = array_diff($request->empcodes, $existing);
+
+        if (empty($newCodes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'All selected employees already exist in this batch'
+            ]);
+        }
+
+        // Get last sort order
+        $lastOrder = Participant::where('batch_id', $batchId)->max('sort_order') ?? 0;
+
+        $data = [];
+
+        foreach (array_values($newCodes) as $index => $code) {
+            $data[] = [
+                'batch_id' => $batchId,
+                'empcode' => $code,
+                'attendance' => 'Pending',
+                'hours' => 0,
+                'requirements' => 'required',
+                'added_by' => Auth::user()?->empcode ?? 'unknown',
+                'sort_order' => $lastOrder + $index + 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        Participant::insert($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => count($data) . ' participant(s) added successfully'
+        ]);
+    }
+
+    
 
     
 }

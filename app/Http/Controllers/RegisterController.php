@@ -115,7 +115,7 @@ class RegisterController extends Controller
         if(!$employee){
             return response()->json([
                 'found' => false,
-                'message' => 'Employee coude not found',
+                'message' => 'Employee code not found',
             ]);
         }
          

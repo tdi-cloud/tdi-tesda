@@ -22,14 +22,14 @@
 
                     <div>
                         
-                        <h1 class="text-rose-300 poppins-bold text-2xl" id="no_training" >
+                        <h1 class="text-rose-300 mono text-3xl" id="no_training" >
                             <span class="trainings_loading loading loading-ring loading-md"></span>
                         </h1>
                         <h1 class="text-rose-300 poppins-bold text-sm flex gap-1 items-center" ><i data-lucide="alert-circle" style="width:16px;height:16px;color:#f47187;"></i> No Training</h1>
                     </div>
 
                     <div class="mt-8">
-                        <h1 class="text-slate-100 poppins-bold text-2xl" id="total_employees">
+                        <h1 class="text-slate-100  text-3xl mono" id="total_employees">
                             <span class="trainings_loading loading loading-ring loading-md"></span>
                         </h1>
                         <h1 class="text-slate-100 poppins-bold text-sm flex gap-1 items-center" ><i data-lucide="users" style="width:16px;height:16px;color:#e1e1e1;"></i> Employees</h1>

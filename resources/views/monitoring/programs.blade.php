@@ -51,7 +51,7 @@
         {{-- FILTERS --}}
         <div class="px-5">
 
-            <label class="input w-full rounded-2xl outline-none bg-slate-200 dark:bg-slate-600 poppins-regular text-sm" >
+            <label class="input w-full rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm" >
                 <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
                         stroke="currentColor">

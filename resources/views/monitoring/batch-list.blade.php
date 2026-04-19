@@ -617,7 +617,7 @@ function deleteParticipant() {
               
               <button onclick="editBatchModal(${batch.id})" class="btn  btn-sm poppins-semibold  rounded-2xl btn-default"><i class="fa-solid fa-pen"></i> Edit Batch</button>
 
-              <button onclick="addParticipant(${batch.id})" class="btn btn-ghost btn-sm poppins-semibold bg-blue-600 rounded-2xl text-white"><i class="fa-regular fa-plus"></i> Add Participants</button>
+              <button onclick="addParticipantsSelect(${batch.id})" class="btn btn-ghost btn-sm poppins-semibold bg-blue-600 rounded-2xl text-white"><i class="fa-regular fa-plus"></i> Add Participants</button>
 
               <button onclick="deleteBatchModal(${batch.id})" class="btn btn-xs btn-circle btn-error btn-soft rounded-full"><i class="fa-regular fa-trash-can"></i></button>
  
@@ -849,6 +849,12 @@ function deleteParticipant() {
   function addParticipant(batchId){
     $('#batchIdBulkInput').val(batchId);
     bulk_modal.showModal();
+  }
+
+  function addParticipantsSelect(batchId){
+    $('#batchIdBulkInput').val(batchId);
+    $('#batchId').val(batchId);
+    openEmployeeModal();
   }
  
   // Change page for a specific batch

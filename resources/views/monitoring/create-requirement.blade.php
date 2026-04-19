@@ -27,10 +27,10 @@
         <select name="title" id="reqTitle" class="select select-bordered select-sm w-full bg-slate-200 dark:bg-slate-600 border-gray-300  text-sm" required> 
             <option selected value="TREAP">Terminal Report (TREAP)</option> 
             <option value="REAP">Terminal and Re-entry Action Plan Report (REAP)</option> 
+            <option value="TDOR">Training Development Outcome Report (TDOR)</option> 
             <option value="AAR">After Activity Report</option> 
             <option value="Feedback Report">Feedback Report</option> 
             <option value="Benchmarking Report">Benchmarking Report</option> 
-            <option value="Other Report">Other Report</option> 
         
         </select>
        </div>

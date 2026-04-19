@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class BatchesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
        
@@ -18,9 +16,6 @@ class BatchesController extends Controller
     }
 
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -65,25 +60,6 @@ class BatchesController extends Controller
         ]);
     }
 
-     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Batch $batch)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($id)
     {
         $batch = Batch::findOrFail($id);
@@ -93,9 +69,7 @@ class BatchesController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+   
     public function update(Request $request, $id)
 
     {
@@ -107,9 +81,6 @@ class BatchesController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         $batch = Batch::findOrFail($id);
@@ -120,4 +91,56 @@ class BatchesController extends Controller
             'message' => 'Deleted successfully'
         ]);
     }
+
+    public function events()
+    {
+        $batches = Batch::with(['program.coverPages'])->get();
+
+        $events = $batches->map(function ($batch) {
+            return [
+                'title' => $batch->program->title,
+                'start' => $batch->date_start,
+                'end' => $batch->date_end,
+                
+                'extendedProps' => [
+                    'batch' => $batch->batch,
+                    'status' => $batch->status,
+                    'program_code' => $batch->program_code,
+                    'program_title' => $batch->program->title ?? 'N/A',
+                    'cover_image' => optional($batch->program->coverPages->first())->image
+                    ? asset('/storage/'.$batch->program->coverPages->first()->image)
+                    : null,
+                    'venue' => $batch->venue,
+                    'status' => $batch->status,
+                    'modality' => $batch->modality,
+                    'hours' => $batch->hours,
+                    'days' => $batch->days,
+                    'id' => $batch->program->id,
+                ]
+            ];
+        });
+
+        return response()->json($events);
+    }
+
+    public function trendData()
+    {
+        $batches = Batch::withCount('participants') // 👈 important
+            ->orderBy('date_start')
+            ->get();
+
+        $data = $batches->map(function ($batch) {
+            return [
+                'x' => $batch->date_start,
+                'y' => (int) $batch->participants_count, // 👈 participant count
+                'batch' => $batch->batch,
+                'program_title' => $batch->program->title ?? 'No Program',
+                'date_end' => $batch->date_end,
+            ];
+        });
+
+        return response()->json($data);
+    }
+
+    
 }

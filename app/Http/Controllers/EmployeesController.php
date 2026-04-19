@@ -83,4 +83,16 @@ class EmployeesController extends Controller
         $employees = \App\Models\employees::limit(500)->get();
         return response()->json($employees);
     }
+
+    public function searchSelect(Request $request)
+    {
+        $q = $request->q;
+
+        $employees = employees::where('EMPCODE', 'like', "%{$q}%")
+            ->orWhere('FIRSTNAME', 'like', "%{$q}%")
+            ->limit(20)
+            ->get();
+
+        return response()->json($employees);
+    }
 }

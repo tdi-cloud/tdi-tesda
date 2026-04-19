@@ -53,9 +53,12 @@
     {{-- APEX CHARTS --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+    {{-- SELECT2 --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
 
-    
     
 
 </head>
@@ -78,9 +81,14 @@
 
                 <a href="/enrolled" class="text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default"><i
                         class="fa-solid fa-book-open"></i> Enrolled</a>
-
-                <a href="/dashboard" class="text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default"><i class="fa-solid fa-chart-column"></i> Monitoring</a>
-
+                
+                @auth
+                    @if(auth()->user()->access === 'admin') 
+                        <a href="/dashboard" class="text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default">
+                            <i class="fa-solid fa-chart-column"></i> Monitoring
+                        </a>
+                    @endif
+                @endauth
                 
             </div>
 

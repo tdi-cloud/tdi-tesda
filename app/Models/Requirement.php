@@ -10,6 +10,7 @@ class Requirement extends Model
 {
     protected $appends = ['due_date'];
 
+    
     protected $fillable = [
         'program_code', 'title', 'description', 'required', 'day_due', 'month_due',
     ];
@@ -56,5 +57,10 @@ class Requirement extends Model
 
             return null;
         })->values(); // 👈 important
+    }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class, 'requirement_id', 'id');
     }
 }

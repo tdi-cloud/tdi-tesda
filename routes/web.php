@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\BatchesController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ContextController;
 use App\Http\Controllers\CoverPageController;
 use App\Http\Controllers\EmployeesController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\RequirementsController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\SubmissionsController;
 use App\Http\Controllers\TESDAOrderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -44,8 +46,7 @@ Route::get('/programs/{id}/participants', [ProgramsController::class,'show'])->n
 Route::get('/get-programs', [ProgramsController::class, 'getAll']);
 Route::get('/programs-count', [ProgramsController::class, 'getProgramsCount']);
 Route::get('/programs/{id}/tesda-order', [ProgramsController::class, 'getTesdaOrders']);
-
-
+Route::get('/my-programs', [ProgramsController::class, 'myPrograms']);
 Route::get('/editor', function () { return view('editor');});
 
 
@@ -56,6 +57,7 @@ Route::get('/batches/{code}/participants', [BatchesController::class,'getBatches
 Route::get('/batch/{id}/edit', [BatchesController::class,'edit']);
 Route::post('/batch/{id}', [BatchesController::class,'update']);
 Route::get('/batch/{id}/delete', [BatchesController::class,'destroy']);
+Route::get('/batches/events', [BatchesController::class, 'events']);
 
 // PARTICIPANTS
 Route::get('/participants/bulk-add/{batch}', [ParticipantsController::class, 'showBulkAdd'])->name('participants.bulk-add');
@@ -65,12 +67,14 @@ Route::get('/participants/{id}/clear', [ParticipantsController::class,'clearByBa
 Route::post('/participant/save-attendance', [ParticipantsController::class, 'saveAttendance']);
 Route::post('/participant/set-all-hours', [ParticipantsController::class, 'setAllHours']);
 Route::post('/participants/{id}/move-order', [ParticipantsController::class, 'moveOrder']);
+Route::post('/participants/store', [ParticipantsController::class, 'store']);
 
 // REQUIREMENTS 
 Route::get('/programs/{id}/requirements', [ProgramsController::class,'showRequirement'])->name('view.requriement');
 Route::post('/create-requirement', [RequirementsController::class,'create']);
 Route::get('/get-requirements/{program}', [RequirementsController::class,'getRequirements']);
 Route::delete('/requirements/{id}/delete', [RequirementsController::class, 'destroy']);
+Route::get('/requirements/{program_code}/{participant_id}', [RequirementsController::class, 'getRequirementsView']);
 
 // COVERPAGE 
 Route::post('/upload-cover', [CoverPageController::class, 'upload']);
@@ -82,12 +86,32 @@ Route::get('/employees-data', [EmployeesController::class, 'employees']);
 Route::get('/employees', [EmployeesController::class, 'employeesList']);
 Route::get('/employee-trainings', [EmployeesController::class, 'getEmployeeTrainings']);
 Route::get('/employees-progress', fn () => view('monitoring.employees'));
+Route::get('/employees/search', [EmployeesController::class, 'searchSelect']);
 
 // TESDA ORDER
 Route::post('/TESDAOrder/store', [TESDAOrderController::class, 'store']);
 Route::get('/tesda-order/{id}', [TESDAOrderController::class, 'TESDAOrder']);
 Route::get('/tesda-orders/{program_code}', [TESDAOrderController::class, 'show']);
 Route::get('/tesda-orders/delete/{id}', [TESDAOrderController::class, 'destroy']);
+
+
+// DASHBOARD 
+Route::get('/batches/trend/data', [BatchesController::class, 'trendData']);
+
+// SUBMISSIONS 
+Route::post('/submissions/store', [SubmissionsController::class, 'store']);
+Route::delete('/submissions/delete/{submission}', [SubmissionsController::class, 'destroy'])->name('submissions.destroy');
+Route::get('/programs/{id}/submissions', [ProgramsController::class,'showSubmissions'])->name('view.submission');
+Route::get('/get-submissions', [SubmissionsController::class, 'index']);
+Route::get('/get-submission/{id}', [SubmissionsController::class, 'show']);
+Route::post('/update-submission/{id}', [SubmissionsController::class, 'update']);
+
+// CERTIFICATE 
+Route::get('/certificate/{template}', [CertificateController::class, 'builder']);
+Route::post('/certificate/save-position', [CertificateController::class, 'savePosition']);
+Route::get('/certificate/{template}/{name}/generate', [CertificateController::class, 'generateDOMPDF']);
+
+
 
 });
 
