@@ -20,7 +20,7 @@ return new class extends Migration
                 ->on('programs')
                 ->onDelete('cascade');
             $table->text('subject');
-            $table->string('series')->default(DB::raw('YEAR(CURRENT_DATE)'));
+            $table->string('series')->default(now()->year);
             $table->string('date_issued');
             $table->string('effectivity')->default('As Indicated');
             $table->string('supersedes')->nullable();
