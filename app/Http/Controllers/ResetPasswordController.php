@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Password;
 class ResetPasswordController extends Controller
 {
     public function index(Request $request){
-        return view("Auth.reset-password",[
+        return view("auth.reset-password",[
             'token' => $request->token,
             'email' => $request->email,
         ]);

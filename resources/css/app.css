@@ -36,6 +36,10 @@
   list-style-position: outside !important;
 }
 
+#toast-container {
+    z-index: 999999;
+}
+
 /* your poppins classes below... */
 
 

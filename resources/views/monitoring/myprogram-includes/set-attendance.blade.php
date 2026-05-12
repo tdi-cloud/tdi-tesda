@@ -9,26 +9,29 @@
   
 
 <dialog id="attendanceModal" class="modal">
-    <div class="modal-box w-full max-w-md bg-white rounded-2xl shadow-2xl p-0 overflow-visible"><!-- Modal Header -->
+    <div class="modal-box w-full max-w-md bg-white dark:!bg-slate-800 dark:text-slate-100 rounded-2xl shadow-2xl p-0 overflow-visible"><!-- Modal Header -->
      <div class="flex items-center justify-between px-6 pt-6 pb-2">
-      <h3 id="modalTitle" class="font-bold text-xl text-slate-800">Set Attendance</h3>
+      <h3 id="modalTitle" class="font-bold text-xl text-slate-800 dark:text-slate-100">Set Attendance</h3>
       <form method="dialog"><button class="btn btn-sm btn-circle btn-ghost text-slate-400 hover:text-slate-600"> <i data-lucide="x" style="width:18px;height:18px;"></i> </button>
       </form>
      </div>
-     <div class="divider my-0 px-6"></div><!-- Modal Body -->
+     <div class="divider my-0 px-6"></div>
+     <!-- Modal Body -->
      <div class="px-6 py-5 space-y-5"><!-- Participant Info -->
-      <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+      <div class="flex items-center gap-3 p-3 bg-slate-50  dark:bg-slate-600 rounded-xl">
        <div class="avatar placeholder">
-        <div class="bg-indigo-100 text-indigo-600 rounded-full w-10 h-10 flex items-center justify-center"><i data-lucide="user" style="width:20px;height:20px;"></i>
+        <div class="bg-indigo-100 text-indigo-600 rounded-full w-10 h-10 flex items-center justify-center">
+          <i data-lucide="user" style="width:20px;height:20px;"></i>
         </div>
        </div>
        <div>
-        <p class="font-semibold text-slate-700 text-sm" id="part_name">...</p>
-        <p class="text-xs text-slate-400" id="part_empcode">...</p>
+        <p class="font-semibold text-slate-700 text-sm dark:text-white" id="part_name">...</p>
+        <p class="text-xs text-slate-400 dark:text-slate-200" id="part_empcode">...</p>
        </div>
-      </div><!-- Status Select -->
-      <div class="form-control w-full"><label class="label" for="statusSelect"> <span class="label-text font-medium text-slate-600">Attendance Status</span> </label> 
-        <select id="statusSelect" class="select select-bordered w-full bg-white focus:outline-indigo-400"> 
+      </div>
+      <!-- Status Select -->
+      <div class="form-control w-full"><label class="label" for="statusSelect"> <span class="label-text font-medium text-slate-600 dark:text-slate-200">Attendance Status</span> </label> 
+        <select id="statusSelect" class="select dark:bg-slate-600 dark:text-white select-bordered w-full bg-white focus:outline-indigo-400"> 
             <option disabled selected value="">Select status…</option> 
             <option value="Complete">✅ Complete</option> 
             <option value="Absent">❌ Absent</option> 
@@ -41,7 +44,7 @@
       
       
       <div id="hoursSection" class="hidden fade-in">
-       <div class="form-control w-full"><label class="label" for="hoursInput"> <span class="label-text font-medium text-slate-600">Total Hours Attended</span> </label> <input id="hoursInput" type="number" min="0" max="24" step="0.5" placeholder="e.g. 8" class="input input-bordered w-full bg-white focus:outline-indigo-400"> 
+       <div class="form-control w-full"><label class="label" for="hoursInput"> <span class="label-text font-medium text-slate-600 dark:text-slate-200">Total Hours Attended</span> </label> <input id="hoursInput" type="number" min="0" max="24" step="0.5" placeholder="e.g. 8" class="input dark:bg-slate-600 input-bordered w-full bg-white focus:outline-indigo-400"> 
         {{-- <label class="label"> <span class="label-text-alt text-slate-400">Enter hours between 0 and 24</span> </label> --}}
        </div>
        
@@ -78,7 +81,8 @@
      </div><!-- Modal Footer -->
      <div class="px-6 pb-6 pt-2 flex gap-3 justify-end">
       <form method="dialog" class="inline"><button class="btn btn-ghost text-slate-500">Cancel</button>
-      </form><button id="saveBtn" disabled class="btn btn-primary text-white gap-2 shadow-md shadow-indigo-200 disabled:opacity-50"> <i data-lucide="save" style="width:16px;height:16px;"></i> Save </button>
+      </form>
+      <button id="saveBtn" disabled class="btn btn-primary text-white shadow-none gap-2 shadow-md shadow-indigo-200 disabled:opacity-50"> <i data-lucide="save" style="width:16px;height:16px;"></i> Save </button>
      </div>
     </div>
     <form method="dialog" class="modal-backdrop">

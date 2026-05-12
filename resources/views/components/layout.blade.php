@@ -41,11 +41,13 @@
 
     @vite('resources/css/app.css')
 
+    {{-- <link rel="stylesheet" href="{{ asset('build/assets/app-FREZGHDj.css') }}"> --}}
+
     {{-- DAISY UI  --}}
     <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
 
     {{-- LUCID ICONS  --}}
-    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
     {{-- FULL CALENDAR --}}
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
@@ -58,6 +60,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     
+   
 
     
 
@@ -134,7 +137,7 @@
         </div>
     @endif
 
-    <div id="toast-container" class="toast toast-top toast-end z-50"></div>
+    <div id="toast-container" class="toast toast-top toast-end"></div>
 
     <main class="flex-1 flex">
         {{ $slot }}
@@ -157,6 +160,9 @@
             } else {
                 icon.innerHTML = '<i class="fa-regular fa-sun"></i>';
             }
+
+            update8hrsBarChartTheme();
+            update40hrsBarChartTheme()
         }
 
         // ✅ Set correct icon on page load
@@ -213,6 +219,8 @@
             setTimeout(() => toast.remove(), 300);
         }, 3000);
         }
+
+        
 
     </script>
 

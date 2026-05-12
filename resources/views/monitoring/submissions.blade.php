@@ -25,7 +25,7 @@
         </div>
 
         <div class="flex gap-2 ">
-            <div class="dropdown dropdown-end poppins-regular">
+            <div class="dropdown dropdown-end poppins-regular hidden">
             <div tabindex="0" role="button" class="btn btn-default shadow-xl rounded-box">Generate <i class="fa-solid fa-angle-down"></i></div>
             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
                 <li  data-program='@json($myprogram)' class="open-to-modal  poppins-medium"><a><i class="fa-solid fa-file-lines text-indigo-600"></i> TESDA Order</a></li>
@@ -48,6 +48,8 @@
         <a href="/programs/{{ $myprogram->id }}/submissions" class="bg-white dark:bg-slate-600 btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-regular fa-file"></i> Submissions</a>      
 
         <a href="/programs/{{ $myprogram->id }}/requirements" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-regular fa-file"></i> Requirements</a>  
+
+        <a href="/programs/{{ $myprogram->id }}/certificate" class="hidden btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-award"></i> Certificate</a>
 
         @if($myprogram->tesdaOrders->isNotEmpty())
         <a href="/programs/{{ $myprogram->id }}/tesda-order" class="btn-ghost  hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-file-lines text-indigo-600"></i> TESDA Order</a> 
@@ -226,7 +228,7 @@ $(document).ready(function () {
                 <!-- Illustration -->
                 <div class="float fade-up">
                 <div class="relative inline-block">
-                <svg width="100" height="" viewbox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="100" height="100" viewbox="0 0 180 160" fill="none" xmlns="http://www.w3.org/2000/svg">
                 
                     <!-- Folder back --> 
                 <rect x="30" y="50" width="120" height="80" rx="8" fill="#c7d7e8" stroke="#8ba4bd" stroke-width="2" /> 
@@ -241,7 +243,6 @@ $(document).ready(function () {
                 <h2 id="heading" class="fade-up-2 text-2xl font-bold" style="color: #2d4059;">No data found</h2>
                 <!-- Text <p id="description" class="fade-up-3 text-base mb-8" style="color: #6b8299;">Add your first item to get started. It only takes a moment.</p>-->
                 
-
             </div>
 
             </div> 
@@ -311,16 +312,25 @@ $(document).ready(function () {
                 </div>
 
            
-
-
-                
-
-              
+                <div class="flex gap-4">
                     <button
                         onclick="viewSubmission(${sub.id})"
                         class="btn btn-sm btn-info text-white w-30 shadow-none">
                         <i class="fa-regular fa-eye"></i> Review
                     </button>
+
+                    <button  
+                        class="delete-submission-btn btn btn-sm btn-error btn-soft btn-circle text-red-600  shadow-none" data-id="${sub.id}">
+                        <i  class="fa-regular fa-trash-can"></i>
+                    </button>
+
+                    
+                </div>
+
+                
+
+              
+                    
                
                 
             </div>
@@ -392,6 +402,41 @@ $(document).ready(function () {
         return 'bg-yellow-500';
     }
 
+    document.addEventListener('click', function (e) {
+        if (e.target.classList.contains('delete-submission-btn')) {
+
+            const id = e.target.getAttribute('data-id');
+
+            if (!confirm('Are you sure you want to delete this submission?')) {
+                return;
+            }
+
+            fetch(`/submissions/admin/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                   'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    loadSubmissions(currentPage);
+                    // remove row from table (optional)
+                    // e.target.closest('tr').remove();
+                  
+                } else {
+                    alert('Failed to delete.');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Something went wrong.');
+            });
+        }
+    });
+
 });
 
 
@@ -436,6 +481,7 @@ window.viewSubmission = function (id) {
             `;
 
             if (sub.file_path) {
+                console.log(sub.file_path);
                 html += `
                     <div class="mt-4">
                         <a href="/storage/${sub.file_path}" target="_blank"
@@ -481,6 +527,11 @@ window.viewSubmission = function (id) {
         });
     }
 
+    
+
+
+
+    lucide.createIcons();
 
 </script>
 

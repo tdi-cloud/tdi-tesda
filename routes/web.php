@@ -4,12 +4,16 @@ use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\BatchesController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CertificateTemplateController;
 use App\Http\Controllers\ContextController;
 use App\Http\Controllers\CoverPageController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\ProgramsController;
+use App\Http\Controllers\Regionalreportcontroller;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\RequirementsController;
 use App\Http\Controllers\ResetPasswordController;
@@ -17,10 +21,6 @@ use App\Http\Controllers\SubmissionsController;
 use App\Http\Controllers\TESDAOrderController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
-
-
-
 
 Route::middleware('auth')->group(function () {
 //LOGOUT
@@ -48,6 +48,11 @@ Route::get('/programs-count', [ProgramsController::class, 'getProgramsCount']);
 Route::get('/programs/{id}/tesda-order', [ProgramsController::class, 'getTesdaOrders']);
 Route::get('/my-programs', [ProgramsController::class, 'myPrograms']);
 Route::get('/editor', function () { return view('editor');});
+Route::get('/programs/{id}/certificate', [ProgramsController::class,'showCertficates'])->name('view.certificates');
+Route::get('/programs/{id}/edit', [ProgramsController::class, 'edit']);
+Route::put('/programs/{id}', [ProgramsController::class, 'update']);
+Route::delete('/programs/{id}/delete', [ProgramsController::class, 'destroy'])->name('programs.destroy');
+
 
 
 //BATCHES
@@ -68,6 +73,8 @@ Route::post('/participant/save-attendance', [ParticipantsController::class, 'sav
 Route::post('/participant/set-all-hours', [ParticipantsController::class, 'setAllHours']);
 Route::post('/participants/{id}/move-order', [ParticipantsController::class, 'moveOrder']);
 Route::post('/participants/store', [ParticipantsController::class, 'store']);
+Route::get('/employees/{empcode}/profile', [ParticipantsController::class, 'show'])->name('employee.profile');
+ 
 
 // REQUIREMENTS 
 Route::get('/programs/{id}/requirements', [ProgramsController::class,'showRequirement'])->name('view.requriement');
@@ -87,6 +94,7 @@ Route::get('/employees', [EmployeesController::class, 'employeesList']);
 Route::get('/employee-trainings', [EmployeesController::class, 'getEmployeeTrainings']);
 Route::get('/employees-progress', fn () => view('monitoring.employees'));
 Route::get('/employees/search', [EmployeesController::class, 'searchSelect']);
+Route::get('/employee/{empcode}/view', [EmployeesController::class, 'view']);
 
 // TESDA ORDER
 Route::post('/TESDAOrder/store', [TESDAOrderController::class, 'store']);
@@ -95,22 +103,46 @@ Route::get('/tesda-orders/{program_code}', [TESDAOrderController::class, 'show']
 Route::get('/tesda-orders/delete/{id}', [TESDAOrderController::class, 'destroy']);
 
 
+
 // DASHBOARD 
 Route::get('/batches/trend/data', [BatchesController::class, 'trendData']);
+Route::post('/report/tpmr-pdf', [DashboardController::class, 'generateTPMRPdf']);
+Route::get('/user/program-count', [DashboardController::class, 'getUserProgramCount']);
+Route::get('/training-stats/8hrs', [DashboardController::class, 'getTrainingStats8hrs']);
+Route::get('/training-stats/40hrs', [DashboardController::class, 'getTrainingStats40hrs']);
+Route::get('/training-stats/8hrs/bars', [DashboardController::class, 'getTrainingStats8hrsBars']);
+Route::get('/training-stats/40hrs/bars', [DashboardController::class, 'getTrainingStats40hrsBars']);
 
 // SUBMISSIONS 
 Route::post('/submissions/store', [SubmissionsController::class, 'store']);
+Route::post('/submissions/admin/store', [SubmissionsController::class, 'adminStore']);
 Route::delete('/submissions/delete/{submission}', [SubmissionsController::class, 'destroy'])->name('submissions.destroy');
+Route::delete('/submissions/admin/delete/{id}', [SubmissionsController::class, 'adminDestroy'])->name('submissions.admindestroy');
 Route::get('/programs/{id}/submissions', [ProgramsController::class,'showSubmissions'])->name('view.submission');
 Route::get('/get-submissions', [SubmissionsController::class, 'index']);
 Route::get('/get-submission/{id}', [SubmissionsController::class, 'show']);
 Route::post('/update-submission/{id}', [SubmissionsController::class, 'update']);
+Route::get('/participants/{id}/available-requirements', [SubmissionsController::class, 'availableRequirements']);
 
 // CERTIFICATE 
-Route::get('/certificate/{template}', [CertificateController::class, 'builder']);
-Route::post('/certificate/save-position', [CertificateController::class, 'savePosition']);
-Route::get('/certificate/{template}/{name}/generate', [CertificateController::class, 'generateDOMPDF']);
 
+
+// TPMR
+Route::get('/tpmr', fn () => view('monitoring.tpmr.tpmr'));
+
+Route::get('/training-submissions', [RegionalReportController::class, 'index']);
+Route::post('/training-submissions', [RegionalReportController::class, 'store']);
+Route::delete('/training-submissions/{id}', [RegionalReportController::class, 'destroy']);
+
+// DECLARATION OF COMPLETERS
+// Check if batch has completers (AJAX)
+Route::get('/batches/{batch}/check-completers', [DeclarationController::class, 'checkCompleters'])->name('batches.check-completers');
+
+// Generate PDF
+Route::get('/batches/{batch}/declaration-pdf', [DeclarationController::class, 'generatePdf'])->name('batches.declaration-pdf');
+
+// Search employees for signatory (AJAX)
+Route::get('/employees/declaration/search', [DeclarationController::class, 'searchEmployee'])->name('employees.search');
 
 
 });
@@ -120,7 +152,7 @@ Route::get('/certificate/{template}/{name}/generate', [CertificateController::cl
 
 
 // REGISTRATION SECTION 
-Route::get('/register', fn() => view('Auth.register'))->name('register');
+Route::get('/register', fn() => view('auth.register'))->name('register');
 Route::post('/register/send-otp', [RegisterController::class, 'sendOtp'])->name('register.sendOtp');
 Route::get('/register/verify-otp', [RegisterController::class, 'showOtpForm'])->name('otp.verify.form');
 Route::post('/register/verify-otp', [RegisterController::class, 'verifyOtp'])->name('otp.verify');
@@ -130,7 +162,7 @@ Route::post('/register/check-empcode', [RegisterController::class,'checkEmpcode'
 
 
 //LOGIN SECTION
-Route::view('/login','Auth.login')->middleware('guest')->name('login');
+Route::view('/login','auth.login')->middleware('guest')->name('login');
 Route::post('/login', Login::class)->middleware('guest');
 
 

@@ -31,6 +31,11 @@ class Participant extends Model
         return $this->hasOne(AbsentJustification::class);
     }
 
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class, 'participant_id');
+    }
+
     
 
 }

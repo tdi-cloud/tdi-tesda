@@ -9,8 +9,20 @@
                     schedules</p>
             </div>
 
-            <button id='new_prog_btn' class="btn btn-info bg-blue-600 text-white rounded-lg shadow-none poppins-semibold"><i
+
+            <div class="poppins-regular">
+                <div class="dropdown dropdown-end">
+                <div tabindex="0" role="button" class="btn rounded-lg">Report <i class="fa-solid fa-angle-down"></i></div>
+                <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-100 p-2 shadow-sm">
+                    <li onclick="showtpmrgenerate()" class="poppins-bold"><a ><i class="fa-solid fa-file"></i> Training Program Monitoring Report (TPMR)</a></li>
+                </ul>
+                </div>
+
+                <button id='new_prog_btn' class="btn btn-info bg-blue-600 text-white rounded-lg shadow-none poppins-semibold"><i
                     class="fa-solid fa-plus"></i> Create Program</button>
+            </div>
+
+            
 
         </div>
 
@@ -39,7 +51,7 @@
                 </div>
 
                 <div class="w-full flex justify-end gap-2 poppins-regular p-5">
-                    <button class="btn btn-sm w-30 btn-success btn-outline rounded-lg">Yes</button>
+                    <button onclick="yesNotice()" class="btn btn-sm w-30 btn-success btn-outline rounded-lg">Yes</button>
                     <button id="openModalBtn"
                         class="btn btn-sm w-30 btn-success text-white rounded-lg shadow-none">No</button>
 
@@ -64,10 +76,12 @@
 
         </div>
 
-
+        @include('monitoring.myprogram-includes.create-notice-modal')
         @include('monitoring.create-program')
+        
         @include('monitoring.program-list')
         @include('components.loading')
+        @include('monitoring.dashboard.generate-tpmr-modal')
 
   
 

@@ -38,8 +38,8 @@ class RequirementsController extends Controller
             "program_code" => $request->program_code,
             "description" => $request->description,
             "required" => $request->required,
-            "day_due" => $rules[$title]['day'] + 0 ?? 5,
-            "month_due" => $rules[$title]['month'] + 0 ?? 0,
+            "day_due" => $rules[$title]['day'] ?? 5,
+            "month_due" => $rules[$title]['month'] ?? 0,
         ]);
 
         return response()->json([

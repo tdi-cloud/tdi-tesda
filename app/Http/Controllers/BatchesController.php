@@ -45,15 +45,26 @@ class BatchesController extends Controller
 
     public function getBatches($code){
 
+        $required = \App\Models\Requirement::where('program_code', $code)->count();
+
         $batches = Batch::where('program_code', $code)
             ->with([
-                'participants' => function ($query) {
+                'participants' => function ($query) use ($required) {
                     $query->orderBy('sort_order', 'asc')
-                        ->with('employee', 'justification');
+                        ->with(['employee', 'justification', 'submissions'])
+                        ->withCount('submissions');
                 }
             ])
             ->orderBy('date_start', 'asc')
             ->get();
+
+        // inject counts AFTER loading
+        foreach ($batches as $batch) {
+            foreach ($batch->participants as $p) {
+                $p->required_count = $required;
+                $p->submitted_count = $p->submissions_count;
+            }
+        }
 
         return response()->json([
             'data' => $batches
@@ -100,7 +111,7 @@ class BatchesController extends Controller
             return [
                 'title' => $batch->program->title,
                 'start' => $batch->date_start,
-                'end' => $batch->date_end,
+                'end' => \Carbon\Carbon::parse($batch->date_end)->addDay()->toDateString(),
                 
                 'extendedProps' => [
                     'batch' => $batch->batch,

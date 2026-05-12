@@ -99,14 +99,14 @@ const MAX_SIZE = 2 * 1024 * 1024;
 // INIT EXISTING IMAGE
 // ======================
 @if($cover && $cover->image)
-    setExistingImage("{{ asset('storage/' . $cover->image) }}");
+    setExistingImage("{{ asset('/public/' . $cover->image) }}");
 @endif
 
 function uploadModal() {
     upload_modal.showModal();
 
     @if($cover && $cover->image)
-        setExistingImage("{{ asset('storage/' . $cover->image) }}");
+        setExistingImage("{{ asset('/public/' . $cover->image) }}");
     @endif
 }
 

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Participant;
+use App\Models\Requirement;
 use App\Models\Submission;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -21,15 +23,16 @@ class SubmissionsController extends Controller
             'file' => 'required|mimes:pdf|max:20480',
         ]);
 
-        // store file
-        $path = $request->file('file')->store('submissions', 'public');
+        $file = $request->file('file');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $path = $file->storeAs('submissions', $filename, 'public');
 
         $submission = Submission::create([
             'participant_id' => $request->participant_id,
             'program_code' => $request->program_code,
             'batch_id' => $request->batch_id,
             'requirement_id' => $request->requirement_id,
-            'status' => 'Pending', // 👈 default from DB but explicit is better
+            'status' => 'Pending',
             'file_path' => $path,
             'notes' => $request->notes ?? '',
             'submitted_at' => Carbon::now(),
@@ -41,11 +44,78 @@ class SubmissionsController extends Controller
             'data' => $submission
         ]);
     }
+    public function adminStore(Request $request)
+    {
+        try {
+            $request->validate([
+                'participant_id' => 'required',
+                'batch_id'       => 'required',
+                'requirement_id' => 'required',
+                'file'           => 'required|file|max:10240',
+            ]);
+
+            // Check duplicate first
+            $exists = Submission::where('participant_id', $request->participant_id)
+                ->where('requirement_id', $request->requirement_id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Submission already exists'
+                ], 409);
+            }
+
+            // Validate file
+            $file = $request->file('file');
+
+            if (!$file->isValid()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Uploaded file is invalid or corrupted.'
+                ], 422);
+            }
+
+            // Store to storage/app/submissions/ (local disk, NOT public)
+            $path = $file->store('submissions', 'public');
+
+            if (!$path) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File could not be saved to storage.'
+                ], 500);
+            }
+
+            // Save submission record
+            $submission = Submission::create([
+                'participant_id' => $request->participant_id,
+                'batch_id'       => $request->batch_id,
+                'requirement_id' => $request->requirement_id,
+                'file_path'      => $path,
+                'program_code'   => $request->program_code,
+                'status' => 'Pending',
+                'submitted_at' => Carbon::now(),
+                'notes' => '',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data'    => $submission,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function destroy(Submission $submission)
     {
         try {
-            if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+            // delete file from public folder
+            if ($submission->file_path) {
                 Storage::disk('public')->delete($submission->file_path);
             }
 
@@ -63,6 +133,22 @@ class SubmissionsController extends Controller
                 'message' => 'Failed to delete submission: ' . $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function adminDestroy($id)
+    {
+        $submission = Submission::findOrFail($id);
+
+        if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+            Storage::disk('public')->delete($submission->file_path);
+        }
+
+        $submission->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Submission deleted successfully.'
+        ]);
     }
 
    public function index(Request $request)
@@ -149,6 +235,31 @@ public function update(Request $request, $id)
         'message' => 'Updated successfully'
     ]);
 }
+
+public function availableRequirements($participantId)
+{
+    $participant = Participant::with(['batch', 'submissions'])->findOrFail($participantId);
+
+    // get program_code from batch
+    $programCode = $participant->batch->program_code;
+
+    // ONLY requirements for this program
+    $allRequirements = Requirement::where('program_code', $programCode)->get();
+
+    // already submitted requirement IDs
+    $submittedIds = $participant->submissions
+        ->pluck('requirement_id')
+        ->toArray();
+
+    // filter out submitted ones
+    $available = $allRequirements->whereNotIn('id', $submittedIds)->values();
+
+    return response()->json([
+        'data' => $available
+    ]);
+}
+
+    
 
 
 }

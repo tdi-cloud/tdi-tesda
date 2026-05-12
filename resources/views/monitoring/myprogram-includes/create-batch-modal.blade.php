@@ -200,7 +200,7 @@ async function submitBatchForm() {
         document.getElementById('batch_submit_btn').disabled = false;
         document.getElementById('batch_load').classList.add('hidden');
         loading_modal.close();
-        fetchBatches();
+        location.reload();
         if(result.status === 'success'){
             create_batch_modal.close();
             document.getElementById('batchForm').reset();
@@ -241,7 +241,7 @@ async function submitEditBatchForm() {
         if(result.success){
             document.getElementById('batchForm').reset();
             create_batch_modal.close();
-            fetchBatches();
+            location.reload();
             showToast('Batch Updated!', 'success')
         }else console.log(result);
         

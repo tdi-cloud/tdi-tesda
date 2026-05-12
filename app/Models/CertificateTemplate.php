@@ -6,10 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class CertificateTemplate extends Model
 {
-    protected $fillable = ['name', 'background'];
+    protected $fillable = [
+        'template_name',
+        'background_image',
+        'signature_image',
+        'elements'
+    ];
 
-    public function fields()
-    {
-        return $this->hasMany(CertificateField::class, 'template_id');
-    }
+    protected $casts = [
+        'elements' => 'array'
+    ];
 }

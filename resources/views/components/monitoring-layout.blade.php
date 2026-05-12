@@ -38,15 +38,7 @@
                 </a>
             </li>
 
-            <li class="w-full">
-                <a href="/certificates" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
-                {{ request()->is('certificates') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
-                ">
-                    <i class="fa-solid fa-award text-yellow-500"></i>
-                    <span class="text-[13px]">Certificates</span>
-                    
-                </a>
-            </li>
+    
 
             <li class="w-full">
                 <a href="/employees-progress" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
@@ -54,6 +46,16 @@
                 ">
                     <i class="fa-solid fa-users text-md text-blue-600"></i>
                     <span class="text-[13px]">Employees Progress</span>
+                    
+                </a>
+            </li>
+
+            <li class="w-full">
+                <a href="/tpmr" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
+                {{ request()->is('tpmr') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
+                ">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span class="text-[13px]">TPMR Submissions</span>
                     
                 </a>
             </li>

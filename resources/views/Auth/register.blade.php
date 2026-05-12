@@ -12,7 +12,7 @@
     </div>
     @enderror
   
-    <div class="w-full container h-screen flex justify-center items-center">
+    <div class="w-full  h-screen flex justify-center items-center">
 
         <div class="card w-100 rounded-2xl p-5 border border-slate-300/50 bg-white">
             <div class="w-full  mb-4 flex items-center gap-2">

@@ -12,12 +12,16 @@
         </div>
 
         <div class="flex gap-2 ">
-            <button class="btn btn-default shadow-xl rounded-box"><i class="fa-solid fa-pen"></i>Edit</button>
+            <button onclick="editProgModal({{ $myprogram->id }})" class="btn btn-default shadow-xl rounded-box"><i class="fa-solid fa-pen"></i>Edit</button>
 
             <div class="dropdown dropdown-end poppins-regular">
             <div tabindex="0" role="button" class="btn btn-default shadow-xl rounded-box">Generate <i class="fa-solid fa-angle-down"></i></div>
             <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm">
-                <li  data-program='@json($myprogram)' class="open-to-modal  poppins-medium"><a><i class="fa-solid fa-file-lines text-indigo-600"></i> TESDA Order</a></li>
+                <li  data-program='@json($myprogram)' class="open-to-modal  poppins-medium">
+                    <a><i class="fa-solid fa-file-lines text-indigo-600"></i> TESDA Order</a>
+                </li>
+              
+            
             </ul>
             </div>
 
@@ -38,6 +42,8 @@
 
         <a href="/programs/{{ $myprogram->id }}/requirements" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-regular fa-file"></i> Requirements</a>  
 
+        <a href="/programs/{{ $myprogram->id }}/certificate" class="hidden btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-award"></i> Certificate</a>
+
         @if($myprogram->tesdaOrders->isNotEmpty())
         <a href="/programs/{{ $myprogram->id }}/tesda-order" class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-file-lines text-indigo-600"></i> TESDA Order</a> 
         @endif
@@ -50,6 +56,7 @@
     @include('monitoring.program-info')
     @include('monitoring.myprogram-includes.upload-cover')
     @include('monitoring.myprogram-includes.generate-to-modal')
+    @include('monitoring.myprogram-includes.edit-program')
 
     
     </div>

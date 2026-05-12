@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\employees;
+use App\Models\Participant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,6 +17,7 @@ class EmployeesController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('FIRSTNAME', 'LIKE', "%{$request->search}%")
+                ->orWhere('LASTNAME', 'LIKE', "%{$request->search}%")
                 ->orWhere('EMPCODE', 'LIKE', "%{$request->search}%")
                 ->orWhere('OFFICE/DIVISION', 'LIKE', "%{$request->search}%");
             });
@@ -29,6 +31,10 @@ class EmployeesController extends Controller
         // Status filter
         if ($request->status && $request->status !== 'all') {
             $query->where('PLANTILLA STATUS', $request->status);
+        }
+
+        if ($request->region) {
+            $query->where('REGION', $request->region);
         }
 
         $perPage = $request->per_page ?? 9;
@@ -64,7 +70,8 @@ class EmployeesController extends Controller
         ->whereExists(function ($query) {
             $query->selectRaw('1')
                 ->from('participants')
-                ->whereColumn('participants.empcode', 'employees.EMPCODE');
+                ->whereColumn('participants.empcode', 'employees.EMPCODE')
+                ->where('participants.attendance', '!=', 'Absent');
         })
         ->count();
 
@@ -75,6 +82,7 @@ class EmployeesController extends Controller
             'total' => $totalEmployees,
             'with_training' => $withTrainings,
             'no_training' => $noTrainings,
+            'region' =>  $region
         ]);
     }
 
@@ -90,9 +98,68 @@ class EmployeesController extends Controller
 
         $employees = employees::where('EMPCODE', 'like', "%{$q}%")
             ->orWhere('FIRSTNAME', 'like', "%{$q}%")
+            ->orWhere('LASTNAME', 'like', "%{$q}%")
             ->limit(20)
             ->get();
 
         return response()->json($employees);
+    }
+    
+    public function view($empcode)
+    {
+        $participants = Participant::with([
+        'batch.program',
+        'submissions.requirement',
+        'employee',
+        ])
+        ->where('empcode', $empcode)
+        ->get();
+
+        // ===== METRICS =====
+        $totalPrograms = $participants->count();
+
+        $completed = $participants->where('attendance', 'completed')->count();
+
+        $totalHours = $participants->sum('hours');
+
+        $totalRequirements = 0;
+        $submitted = 0;
+
+        foreach ($participants as $p) {
+            $reqCount = DB::table('requirements')
+                ->where('program_code', $p->batch->program_code)
+                ->count();
+
+            $totalRequirements += $reqCount;
+            $submitted += $p->submissions->count();
+        }
+
+        $submissionRate = $totalRequirements > 0
+            ? round(($submitted / $totalRequirements) * 100, 1)
+            : 0;
+
+        $completionRate = $totalPrograms > 0
+            ? round(($completed / $totalPrograms) * 100, 1)
+            : 0;
+
+        $rating = round(
+            ($completionRate * 0.4) +
+            ($submissionRate * 0.3) +
+            (min($totalHours / 40 * 100, 100) * 0.2) +
+            (90 * 0.1),
+            1
+        );
+
+        return response()->json([
+            'summary' => [
+                'totalPrograms' => $totalPrograms,
+                'completed' => $completed,
+                'hours' => $totalHours,
+                'submissionRate' => $submissionRate,
+                'rating' => $rating,
+            ],
+            'programs' => $participants
+        ]);
+
     }
 }

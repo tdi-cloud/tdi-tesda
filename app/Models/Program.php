@@ -20,4 +20,9 @@ class Program extends Model
     public function tesdaOrders(){
         return $this->hasMany(TESDAOrder::class, 'program_code', 'program_code');
     }
+
+    public function requirements()
+    {
+        return $this->hasMany(Requirement::class, 'program_code', 'program_code');
+    }
 }

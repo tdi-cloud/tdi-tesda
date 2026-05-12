@@ -1,5 +1,5 @@
 <input type="hidden" id="programCode" value="{{ $myprogram->program_code }}">
-
+@include('monitoring.create-submission-modal')
 <style>
     /* Per Page Selector */
     .per-page-wrap {
@@ -286,6 +286,7 @@
  </section>
 
 
+
   <script>
 function editBatchModal(id){
   create_batch_modal.showModal();
@@ -561,6 +562,7 @@ function deleteParticipant() {
       const paged       = paginate(filtered, batch.id);
       const isOpen      = state.openBatches[batch.id];
       const batchStatus = (batch.status || 'active').toLowerCase();
+     
  
       return `
         <div class="batch-card dark:bg-slate-800 dark:border-slate-600 border  rounded-2xl bg-white border-slate-300 radius-2xl overflow-hidden " style="animation-delay: ${index * 0.06}s">
@@ -619,6 +621,13 @@ function deleteParticipant() {
 
               <button onclick="addParticipantsSelect(${batch.id})" class="btn btn-ghost btn-sm poppins-semibold bg-blue-600 rounded-2xl text-white"><i class="fa-regular fa-plus"></i> Add Participants</button>
 
+              <div class="dropdown dropdown-end">
+              <button tabindex="0" role="button" class="btn btn-default btn-sm poppins-semibold  rounded-2xl bg-indigo-500 text-white">Generate <i class="fa-solid fa-angle-down"></i></button>
+              <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-80 p-2 shadow-sm">
+                <li onclick="openDeclarationModal(${batch.id})"><a><i class="fa-regular fa-file-lines"></i> Declaration of Completers</a></li>
+              </ul>
+            </div>
+
               <button onclick="deleteBatchModal(${batch.id})" class="btn btn-xs btn-circle btn-error btn-soft rounded-full"><i class="fa-regular fa-trash-can"></i></button>
  
               <!-- Chevron icon --> 
@@ -641,8 +650,9 @@ function deleteParticipant() {
               : `
               <!-- Participants Table -->
 
-              <div class="grid grid-cols-5 items-center text-sm border-b border-slate-300 dark:border-slate-600 dark:text-slate-400 text-slate-700">
-                  <div class=" poppins-semibold p-2 pl-5">
+              <div class="grid grid-cols-7 items-center text-sm border-b border-slate-300 dark:border-slate-600 dark:text-slate-400 text-slate-700">
+
+                  <div class="col-span-2 poppins-semibold p-2 pl-5">
                       <h1>Participant</h1>
                   </div>
 
@@ -654,22 +664,32 @@ function deleteParticipant() {
                       <h1>Sallary Grade</h1>
                   </div>
 
-                  <div class=" poppins-semibold p-2 text-center ">
+                  <div class=" poppins-semibold p-2 text-left ">
                       <h1>Attendance</h1>
                   </div>
 
+                  <div class=" poppins-semibold p-2 text-left ">
+                      <h1>Submission</h1>
+                  </div>
+
                   <div class=" poppins-semibold p-2 text-center pr-5">
-                      <h1>Action</h1>
+                      <h1 class="text-slate-400">Action</h1>
                   </div>
               </div>
 
-              ${paged.items.map((p, i) => `
-                <div class="grid grid-cols-5 hover:bg-slate-100 dark:hover:bg-slate-600 items-center  border-b border-slate-300 dark:border-slate-600">
-                    <div class=" poppins-regular p-2 pl-5 flex items-center gap-2 " >
+              ${paged.items.map((p, i) => { 
+                
+                const canSubmit = p.attendance?.toLowerCase() !== 'absent';
+                
+                return `<div class="grid grid-cols-7 hover:bg-slate-100 dark:hover:bg-slate-600 items-center  border-b border-slate-300 dark:border-slate-600">
+
+
+                    <div class="col-span-2 poppins-regular p-2 pl-5 flex items-center gap-2 " >
                         <img src="${`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.employee.FIRSTNAME)}&backgroundColor=53CBF3`}" alt="" class="object-cover min-w-8 min-h-8 max-w-8 max-h-8 rounded-full overflow-hidden">
 
                         <div>
-                        <h1 class="leading-4 poppins-semibold text-sm">${p.employee.FIRSTNAME} ${p.employee.MI} ${p.employee.LASTNAME}</h1>
+                          <!-- Employee Fullname -->
+                        <h1 class="leading-4 poppins-semibold text-sm whitespace-nowrap ">${p.employee.FIRSTNAME} ${p.employee.MI} ${p.employee.LASTNAME}</h1>
                         <p class="leading-5 poppins-regular text-xs text-slate-500 dark:text-slate-200">${highlight(p.empcode || '—')}</p>
                         </div>
                     </div>
@@ -684,25 +704,48 @@ function deleteParticipant() {
                         <h1 class="poppins-regular  text-sm">${p.employee.SG}</h1>
                     </div>
 
-                    <div class=" poppins-regular p-2 text-center">
+                    <div class=" poppins-regular p-2 text-center flex gap-2 justify-left items-center">
+                        <button onclick='setAtt(${JSON.stringify(p)})' class="btn btn-soft btn-sm btn-circle btn-primary dark:bg-indigo-500 text-white">
+                          <i data-lucide="pencil" class="w-4 dark:text-white  text-sky-900 hover:text-white"></i>
+                          </button>
                         <h1 class="poppins-bold  text-sm ${getAttendanceBadge(p.attendance)}">${p.attendance} • ${p.hours + 0}/${batch.hours}h</h1>
 
                     </div>
 
-                    <div class="poppins-regular p-2 text-center">
-                        <button onclick='setAtt(${JSON.stringify(p)})' class="btn btn-xs rounded-lg bg-indigo-500 text-white"><i class="fa-solid fa-clipboard-user"></i> Set Attendance</button>
+
+                    <div class="poppins-regular p-2 text-left space-y-1 flex gap-2 items-center">
+                        
                         
 
+                        ${canSubmit ? `
+                            <button onclick="openSubmissionModal(${p.id}, ${batch.id})"
+                                class="btn btn-sm btn-circle btn-success btn-soft ">
+                                <i data-lucide="file-plus" class="w-5 text-green-500"></i>
+                            </button>
+                        ` : `
+                            <span class="text-xs text-red-400"></span>
+                        `}
+
+                        <!-- submission progress -->
+                        <div class="text-xs text-slate-500">
+                            ${p.submitted_count ?? 0}/${p.required_count ?? 0} Submission
+                        </div>
+                    </div>
+                    
+
+                    <div class="poppins-regular p-2 text-center">
+                        
+                        
                         <!-- UP -->
                         <button onclick="moveParticipant(${p.id}, 'up', ${batch.id})"
-                            class="btn btn-xs btn-circle btn-success">
-                            <i class="fa-solid fa-arrow-up"></i>
+                            class="btn btn-sm btn-ghost btn-circle">
+                            <i class="fa-solid fa-angle-up"></i>
                         </button>
 
                         <!-- DOWN -->
                         <button onclick="moveParticipant(${p.id}, 'down', ${batch.id})"
-                            class="btn btn-xs btn-circle btn-warning">
-                            <i class="fa-solid fa-arrow-down"></i>
+                            class="btn btn-sm btn-ghost btn-circle">
+                            <i class="fa-solid fa-angle-down"></i>
                         </button>
 
                         <button onclick="deleteParticipantModal(${p.id})" class="btn btn-xs btn-ghost btn-circle btn-error"><i class="fa-solid fa-trash-can"></i></button>
@@ -711,14 +754,8 @@ function deleteParticipant() {
                     </div>
                 </div>
                       
-              `).join('')}
+              `}).join('')}
 
-              
-
-
-
-               
- 
               <!-- Pagination Controls -->
               <div class="pagination px-5 py-3">
  
@@ -759,6 +796,7 @@ function deleteParticipant() {
         </div>
       `;
     }).join('');
+    lucide.createIcons();
   }
   
   function showExistingFile(path) {
@@ -1015,7 +1053,7 @@ function deleteParticipant() {
       return `${baseClass} badge-success text-green-600`; // green
 
     case 'Pending':
-      return `${baseClass} badge-warning`; // yellow
+      return `${baseClass} badge-warning text-yellow-600`; // yellow
 
     case 'Absent':
       return `${baseClass} badge-primary `; // red (optional)
@@ -1049,6 +1087,11 @@ function moveParticipant(participantId, direction, batchId) {
   })
   .catch(err => console.error(err));
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+});
+
   </script>
 
 

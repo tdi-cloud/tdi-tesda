@@ -18,16 +18,32 @@ class CoverPageController extends Controller
         // 👉 Find existing record (if any)
         $cover = CoverPage::where('program_id', $request->program_id)->first();
 
+        $path = null;
+
         // 👉 If a new image is uploaded
         if ($request->hasFile('image')) {
 
-            // 🔥 Delete old image if exists
-            if ($cover && $cover->image && Storage::disk('public')->exists($cover->image)) {
-                Storage::disk('public')->delete($cover->image);
+            // // 🔥 Delete old image if exists
+            // if ($cover && $cover->image && Storage::disk('public')->exists($cover->image)) {
+            //     Storage::disk('public')->delete($cover->image);
+            // }
+
+            // // 📁 Store new image
+            // $path = $request->file('image')->store('cover_pages', 'public');
+
+            $file = $request->file('image');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // 📁 save directly to public/uploads/cover_pages
+            $file->move(public_path('uploads/cover_pages'), $filename);
+
+            $path = 'uploads/cover_pages/' . $filename;
+
+            // 🗑️ delete old file if exists
+            if ($cover && $cover->image && file_exists(public_path($cover->image))) {
+                unlink(public_path($cover->image));
             }
 
-            // 📁 Store new image
-            $path = $request->file('image')->store('cover_pages', 'public');
 
             // 💾 Create or Update record
             CoverPage::updateOrCreate(
@@ -58,8 +74,15 @@ class CoverPageController extends Controller
         $cover = CoverPage::findOrFail($id);
 
         // Delete image file
+        // if ($cover->image) {
+        //     Storage::disk('public')->delete($cover->image);
+        // }
         if ($cover->image) {
-            Storage::disk('public')->delete($cover->image);
+            $path = public_path($cover->image);
+
+            if (file_exists($path)) {
+                unlink($path);
+            }
         }
 
         // Delete DB record

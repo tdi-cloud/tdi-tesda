@@ -75,7 +75,6 @@
                     <div class="view-tabs border-b border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-sm poppins-regular ">
                         <button class="tab-btn p-2 active" data-target="requirements">Requriements</button>
                         <button class="tab-btn p-2 " data-target="certificate">Certificate</button>
-                        <button class="tab-btn p-2 " data-target="resource">Resource Speaker</button>
                     </div>
 
                     <div id="requirements" class="tab-panel active">
@@ -233,7 +232,13 @@
                 return;
             }
 
+            let submissionCount = 0;
+
             data.forEach(req => {
+
+                if (req.submissions && req.submissions.length > 0) {
+                    submissionCount += req.submissions.length;
+                }
                
                 let dueDates = req.due_date || [];
                 let today = new Date();
@@ -245,6 +250,9 @@
                 let submission = req.submissions[0] || null;
                 let actionButton = '';
                 let submissionHTML = ''; 
+
+          
+
                 if (submission) {
                     submissionHTML = `
                         <div class="${setSubState(submission.status)} flex gap-5 relative overflow-hidden dark:text-white mt-2 p-2 rounded-md text-xs poppins-regular">
@@ -279,15 +287,6 @@
                                 <p class="text-xs poppins-bold">Remarks:<p>
                                 <p class="text-xs poppins-regular">${submission.remarks}<p>        
                             </div>` : ''}
-
-
-                            
-
-                            
-                           
-                            
-                            
-
 
                         </div>
                     `;
@@ -343,6 +342,8 @@
                     </div>
                 `;
             });
+
+            $('#subCount').text(submissionCount);
 
 
             $('#requirementsList').html(html);

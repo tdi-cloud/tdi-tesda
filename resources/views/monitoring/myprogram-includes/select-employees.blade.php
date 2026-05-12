@@ -69,7 +69,7 @@
                         return {
                             results: data.map(emp => ({
                                 id: emp.EMPCODE,
-                                text: emp.EMPCODE + ' - ' + emp.FIRSTNAME
+                                text: `${emp.EMPCODE} - ${emp.FIRSTNAME} ${emp.MI} ${emp.LASTNAME}` 
                             }))
                         };
                     }

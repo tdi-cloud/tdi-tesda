@@ -37,7 +37,7 @@
             @if($cover)
             <div id="cover-panel">
                 <div class="flex items-center gap-2">
-                    <img class="w-10 h-10 object-cover rounded-lg border border-slate-300 dark:border-slate-600" src="/storage/{{ $cover->image }}" alt="">
+                    <img class="w-10 h-10 object-cover rounded-lg border border-slate-300 dark:border-slate-600" src="/public/{{ $cover->image }}" alt="">
                     <button onclick="deleteCover({{ $cover->id }})" class="btn btn-xs btn-circle btn-error btn-soft"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             </div>
@@ -105,7 +105,7 @@
 
         <div class="progitem border-l-4 p-2 border  rounded-lg border-slate-300 dark:border-slate-700 col-span-2 bg-white dark:bg-slate-800">
             <h1 class="text-[13px] poppins-semibold text-slate-500 ">Competency</h1>
-            <p class="poppins-medium text-[14px]"><i class="fa-regular fa-lightbulb text-yellow-500"></i> {{ $myprogram->competency }}</p>
+            <p class="poppins-medium text-[14px] leading-4 truncate hover:whitespace-normal hover:overflow-visible"><i class="fa-regular fa-lightbulb text-yellow-500"></i> {{ $myprogram->competency }}</p>
         </div>
 
     </div>

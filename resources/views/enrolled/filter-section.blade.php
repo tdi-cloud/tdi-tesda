@@ -18,6 +18,15 @@
 
 </fieldset>
 
+
+<fieldset class="fieldset w-30">
+    <legend class="fieldset-legend m-0 p-0">Year:</legend>
+        <select id="yearFilter" class="select w-full outline-none border border-slate-200 dark:border-slate-600 rounded-lg poppins-regular text-sm shadow-lg">
+            <option value="">All Years</option>
+           
+        </select>
+</fieldset>
+
 <fieldset class="fieldset w-20">
     <legend class="fieldset-legend m-0 p-0">Show:</legend>
         <select id="perPage" class="select w-full outline-none border border-slate-200 dark:border-slate-600 rounded-lg poppins-regular text-sm shadow-lg">
@@ -26,8 +35,6 @@
             <option value="25">25</option>
             <option value="50">50</option>
         </select>
-
-
 </fieldset>
 
 

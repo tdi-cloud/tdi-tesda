@@ -7,6 +7,8 @@ use App\Models\CoverPage;
 use App\Models\Program;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 // use Illuminate\Support\Facades\DB;
 
 
@@ -46,9 +48,13 @@ class ProgramsController extends Controller
     public function getAll(Request $request){
         $search = $request->query('search');
 
-        $programs = Program::with(['coverPages','batches' => function ($query) {
-            $query->withCount('participants');
+        $programs = Program::with([
+            'coverPages',
+            'batches' => function ($query) {
+            $query->withCount('participants')
+            ->orderBy('date_start', 'asc');
         }])
+        ->withCount('requirements')
         ->when($search, function($query) use ($search) {
             $query->where('title', 'LIKE', "%{$search}%")
                 ->orWhere('program_code', 'LIKE', "%{$search}%")
@@ -87,11 +93,25 @@ class ProgramsController extends Controller
         $cover = CoverPage::where('program_id', $id)->first();
         return view('monitoring.submissions', compact('myprogram','cover'));
     }
+    
+
+    public function showCertficates($id){
+        $myprogram = Program::find($id);
+        $cover = CoverPage::where('program_id', $id)->first();
+        return view('monitoring.certificate', compact('myprogram','cover'));
+    }
 
     public function showDetails($id){
         $myprogram = Program::find($id);
         $cover = CoverPage::where('program_id', $id)->first();
         return view('monitoring.prog-info', compact('myprogram','cover'));
+    }
+
+    public function edit($id)
+    {
+        $program = Program::findOrFail($id);
+
+        return response()->json($program);
     }
 
 
@@ -118,11 +138,13 @@ class ProgramsController extends Controller
         $programs = Program::with([
             'coverPages',
             'batches' => function ($batchQuery) use ($empcode) {
-                $batchQuery->with([
-                    'participants' => function ($participantQuery) use ($empcode) {
-                        $participantQuery->where('empcode', $empcode);
-                    }
-                ]);
+                $batchQuery->select('*')
+                    ->selectRaw('YEAR(date_start) as year')
+                    ->with([
+                        'participants' => function ($participantQuery) use ($empcode) {
+                            $participantQuery->where('empcode', $empcode);
+                        }
+                    ]);
             }
         ])
         ->whereHas('batches.participants', function ($q) use ($empcode) {
@@ -137,14 +159,104 @@ class ProgramsController extends Controller
             });
         }
 
+        $year = $request->get('year');
+
+        if ($year) {
+            $programs->whereHas('batches', function ($q) use ($year) {
+                $q->whereYear('date_start', $year);
+            });
+        }
+
+        $years = DB::table('batches')
+        ->join('participants', 'batches.id', '=', 'participants.batch_id')
+        ->where('participants.empcode', $empcode)
+        ->selectRaw('YEAR(batches.date_start) as year')
+        ->distinct()
+        ->orderBy('year', 'desc')
+        ->pluck('year');
+
         // ✅ paginate BEFORE get()
-        return response()->json(
-            $programs->orderBy('sort_order', 'asc')
-                    ->paginate($perPage)
-        );
+        return response()->json([
+            'data' => $programs->orderBy('sort_order', 'asc')->paginate($perPage),
+            'years' => $years
+        ]);
     }
   
+    public function update(Request $request, $id)
+    {
+        $program = Program::findOrFail($id);
 
+        $program->update([
+            'title' => $request->title,
+            'description' => $request->description,
+            'competency' => $request->competency,
+            'modality' => $request->modality,
+            'pax' => $request->pax,
+            'category' => $request->category,
+            'type' => $request->type,
+            'initiated' => $request->initiated,
+            'provider' => $request->provider,
+            'cost' => $request->cost,
+            'fund' => $request->fund,
+            'origin' => $request->origin,
+        ]);
+
+        return response()->json([
+            'message' => 'Program updated successfully',
+            'program' => $program
+        ]);
+    }
+
+
+    public function destroy($id)
+    {
+        $program = DB::table('programs')->where('id', $id)->first();
+
+        if (!$program) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Program not found.'
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Get related batch IDs
+            $batchIds = DB::table('batches')
+                ->where('program_code', $program->program_code)
+                ->pluck('id');
+
+            // Delete participants
+            DB::table('participants')
+                ->whereIn('batch_id', $batchIds)
+                ->delete();
+
+            // Delete batches
+            DB::table('batches')
+                ->where('program_code', $program->program_code)
+                ->delete();
+
+            // Delete program
+            DB::table('programs')->where('id', $id)->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Program, batches, and participants deleted successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Delete failed.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
  
 
    

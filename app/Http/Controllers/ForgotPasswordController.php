@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Password;
 class ForgotPasswordController extends Controller
 {
     public function index(){
-        return view("Auth.forgot-password");
+        return view("auth.forgot-password");
     }
 
     public function sendLink(Request $request){

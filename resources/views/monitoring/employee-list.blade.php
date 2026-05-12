@@ -30,12 +30,45 @@
     
         <input id="searchInput" type="text" placeholder="Search by Name, Office, or Empcode..." class="w-full pl-10 pr-4 py-3 rounded-xl border-0 text-sm bg-slate-200 dark:bg-slate-700 poppins-regular" >
      </div>
+
+     <!-- Region Filter -->
+    <div class="relative">
+        <label for="regionFilter" class="sr-only">Region</label>
+
+        <select id="regionFilter"
+            class="select appearance-none text-xs poppins-medium rounded-xl border-0 text-sm cursor-pointer bg-slate-200 dark:bg-slate-700">
+            
+            <option value="">All Regions</option>
+            <option value="CO">Central Office</option>
+            <option value="NCR">NCR</option>
+            <option value="R1">Region I</option>
+            <option value="R2">Region II</option>
+            <option value="R3">Region III</option>
+            <option value="R4A">Region IV-A</option>
+            <option value="R4B">Region IV-B</option>
+            <option value="R5">Region V</option>
+            <option value="R6">Region VI</option>
+            <option value="NIR">NIR</option>
+            <option value="R7">Region VII</option>
+            <option value="R8">Region VIII</option>
+            <option value="R9">Region IX</option>
+            <option value="R10">Region X</option>
+            <option value="R11">Region XI</option>
+            <option value="R12">Region XII</option>
+            <option value="CAR">CAR</option>
+            <option value="CARAGA">CARAGA</option>
+        </select>
+    </div>
+
+
      
      <!-- Department Filter -->
      <div class="relative hidden">
         
         <label for="deptFilter" class="sr-only">Department</label> <select id="deptFilter" class="appearance-none pl-4 pr-10 py-3 rounded-xl border-0 text-sm cursor-pointer" style="background:#fff;"> <option value="">All Departments</option> </select> <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" style="width:16px;height:16px;color:#888;"></i>
      </div>
+
+
      <!-- Page Size -->
      
      <div class="flex items-center gap-2"><span class="text-xs font-medium opacity-60">Show</span> 
@@ -49,7 +82,16 @@
     </div>
     
     <!-- Status Filter Chips -->
-    <div class="flex flex-wrap gap-2 " role="group" aria-label="Employment status filters"><button class="filter-chip active badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="all" style="background:#1a1a2e; color:#f0ede6;">All</button> <button class="filter-chip badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="PERMANENT" style="background:#d4edda; color:#155724;"><span class="w-2 h-2 rounded-full mr-2" style="background:#28a745;display:inline-block;"></span>Permanent</button> <button class="filter-chip badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="JOB ORDER" style="background:#fff3cd; color:#856404;"><span class="w-2 h-2 rounded-full mr-2" style="background:#ffc107;display:inline-block;"></span>Job Order</button> <button class="filter-chip badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="CTO" style="background:#cce5ff; color:#004085;"><span class="w-2 h-2 rounded-full mr-2" style="background:#007bff;display:inline-block;"></span>CTO</button>
+    <div class="flex flex-wrap gap-2 " role="group" aria-label="Employment status filters">
+        
+        <button class="filter-chip active badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="all" style="background:#1a1a2e; color:#f0ede6;">All</button> 
+        
+        <button class="filter-chip badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="PERMANENT" style="background:#d4edda; color:#155724;"><span class="w-2 h-2 rounded-full mr-2" style="background:#28a745;display:inline-block;"></span>Permanent</button> 
+        
+        <button class="filter-chip badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="JOB ORDER" style="background:#fff3cd; color:#856404;"><span class="w-2 h-2 rounded-full mr-2" style="background:#ffc107;display:inline-block;"></span>Job Order</button> 
+
+        <button class="filter-chip badge py-2 px-4 cursor-pointer border-0 text-xs" data-status="CTI" style="background:#cce5ff; color:#004085;"><span class="w-2 h-2 rounded-full mr-2" style="background:#007bff;display:inline-block;"></span>CTI
+        </button>
     </div><!-- Table Card -->
 
     <div class="rounded-2xl overflow-x-auto shadow-sm  h-[60vh]  " >
@@ -101,6 +143,7 @@
     </div>
 
 
+@include('monitoring.emp-progress.viewDetails')
 
 <script>
 
@@ -116,6 +159,7 @@ function loadEmployees(page = 1) {
 
     let search = document.getElementById('searchInput').value;
     let dept = document.getElementById('deptFilter').value;
+    let region = document.getElementById('regionFilter').value; // ✅ ADD THIS
     let perPage = document.getElementById('pageSize').value;
 
     $.ajax({
@@ -125,19 +169,22 @@ function loadEmployees(page = 1) {
             page: page,
             search: search,
             dept: dept,
+            region: region, // ✅ ADD THIS
             per_page: perPage,
             status: activeStatus
         },
         success: function (res) {
-
             renderTable(res.data);
             renderPagination(res);
             renderPageInfo(res);
-
             currentPage = res.current_page;
         }
     });
 }
+
+document.getElementById('regionFilter').addEventListener('change', () => {
+    loadEmployees(1);
+});
 
 /* =========================
    RENDER TABLE (GRID ROWS)
@@ -165,8 +212,9 @@ function renderTable(data) {
 
             <td class="px-5 py-2">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        style="background:${ac};">
+                    <!-- <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold"
+                        style="background:${ac};"> -->
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold bg-sky-900" > 
                         ${emp.FIRSTNAME.substring(0,2).toUpperCase()}
                     </div>
 
@@ -184,8 +232,8 @@ function renderTable(data) {
                 </span>
             </td>
 
-            <td class="px-5 py-4 hidden lg:table-cell mono text-xs">
-                <button  class="btn btn-sm rounded-lg btn-default"><i class="fa-regular fa-user"></i> View Details<button>
+            <td class="px-5 py-4 hidden lg:table-cell text-xs">
+                <button onclick="openParticipantProfile('${emp.EMPCODE}')" class="btn btn-sm rounded-lg btn-default"><i class="fa-regular fa-user"></i> View Details<button>
             </td>
         `;
 

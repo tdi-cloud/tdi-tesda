@@ -18,6 +18,30 @@
     },
     "dependencies": {
         "@tiptap/extension-image": "^3.22.3",
-        "@tiptap/extension-text-align": "^3.22.3"
-    }
+        "@tiptap/extension-text-align": "^3.22.3",
+        "body-parser": "^2.2.2",
+        "express": "^5.2.1",
+        "grapejs": "^2.1.2",
+        "interactjs": "^1.10.27",
+        "puppeteer": "^24.43.0",
+        "sweetalert2": "^11.26.24"
+    },
+    "name": "tdi",
+    "version": "1.0.0",
+    "description": "<p align=\"center\"><a href=\"https://laravel.com\" target=\"_blank\"><img src=\"https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg\" width=\"400\" alt=\"Laravel Logo\"></a></p>",
+    "main": "tailwind.config.js",
+    "directories": {
+        "test": "tests"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tdi-cloud/tdi-tesda.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tdi-cloud/tdi-tesda/issues"
+    },
+    "homepage": "https://github.com/tdi-cloud/tdi-tesda#readme"
 }
