@@ -14,7 +14,7 @@ class TESDAOrderController extends Controller
         'program_code' => ['required','string','exists:programs,program_code'],
         'subject' => ['required','string','max:255'],
         'series' => ['nullable','string','max:50'],
-        'date_issued' => ['nullable','date'],
+        'date_issued' => ['nullable','string'],
         'effectivity' => ['nullable','string','max:255'],
         'supersedes' => ['nullable','string'],
         'body' => ['required','string'],

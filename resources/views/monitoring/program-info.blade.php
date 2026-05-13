@@ -37,7 +37,7 @@
             @if($cover)
             <div id="cover-panel">
                 <div class="flex items-center gap-2">
-                    <img class="w-10 h-10 object-cover rounded-lg border border-slate-300 dark:border-slate-600" src="/public/{{ $cover->image }}" alt="">
+                    <img class="w-10 h-10 object-cover rounded-lg border border-slate-300 dark:border-slate-600" src="/storage/{{ $cover->image }}" alt="">
                     <button onclick="deleteCover({{ $cover->id }})" class="btn btn-xs btn-circle btn-error btn-soft"><i class="fa-regular fa-trash-can"></i></button>
                 </div>
             </div>

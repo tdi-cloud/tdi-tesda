@@ -36,7 +36,9 @@ class ParticipantsController extends Controller
                 $notFound->push($code);
                 continue;
             }
-            $exists = Participant::where('empcode', $code)->exists();
+            $exists = Participant::where('empcode', $code)
+            ->where('batch_id', $request->batch_id)
+            ->exists();
             if ($exists) {
                 $skipped->push($code);
                 continue;
@@ -56,7 +58,8 @@ class ParticipantsController extends Controller
 
         return response()->json([
             'success'  => $inserted->count() . ' participant(s) added successfully.',
-            'skipped'  => $skipped->count() > 0
+            '
+            '  => $skipped->count() > 0
                 ? 'Skipped ' . $skipped->count() . ' already existing: ' . $skipped->join(', ')
                 : null,
             'notfound' => $notFound->count() > 0

@@ -106,7 +106,7 @@ function uploadModal() {
     upload_modal.showModal();
 
     @if($cover && $cover->image)
-        setExistingImage("{{ asset('/public/' . $cover->image) }}");
+        setExistingImage("{{ asset('/storage/' . $cover->image) }}");
     @endif
 }
 
