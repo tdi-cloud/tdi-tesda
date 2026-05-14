@@ -57,7 +57,7 @@ class Regionalreportcontroller extends Controller
  
         // Store the uploaded PDF
         $file     = $request->file('pdf');
-        $fileName = $file->getClientOriginalName();
+        $fileName = time().'_'.uniqid().'.'.$file->getClientOriginalExtension();
         // $filePath = $file->store('regional_reports', 'public'); // storage/app/public/regional_reports
         $filePath = $file->storeAs('regional_reports', $fileName, 'public');
  
