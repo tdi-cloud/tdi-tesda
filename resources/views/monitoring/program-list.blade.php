@@ -138,8 +138,8 @@
         return `<span class="badge badge-sm badge-soft ${badgeClass}">${status}</span>`;
     }
 
-    async function getPrograms(search = '') {
-        const response = await fetch(`/get-programs?search=${search}`, {
+    async function getPrograms(search = '', status = '') {
+        const response = await fetch(`/get-programs?search=${search}&status=${status}`, {
             headers: {
                 'Accept': 'application/json',
             }
@@ -150,8 +150,20 @@
         renderPrograms(result.data);
     }
 
+    document.getElementById('statusFilter').addEventListener('change', function () {
+
+        const search = document.getElementById('searchInput').value;
+
+        getPrograms(search, this.value);
+
+    });
+
     document.getElementById('searchInput').addEventListener('keyup', function() {
-        getPrograms(this.value);
+
+        const status = document.getElementById('statusFilter').value;
+
+        getPrograms(this.value, status);
+
     });
     
     function formatDate(dateStr) {
@@ -163,7 +175,7 @@
         } catch { return dateStr; }
     }
 
-    getPrograms();
+    getPrograms('', '');
 
     $(document).on('click', '.delete-program-btn', function () {
         let id = $(this).data('id');
@@ -181,7 +193,7 @@
             success: function (res) {
                 alert(res.message);
                 // location.reload(); // or remove row dynamically
-                getPrograms();
+                getPrograms('', '');
             },
             error: function (err) {
                 alert('Error deleting record.');

@@ -10,6 +10,7 @@ use App\Http\Controllers\CoverPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\ForeignController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\ProgramsController;
@@ -144,6 +145,10 @@ Route::get('/batches/{batch}/declaration-pdf', [DeclarationController::class, 'g
 // Search employees for signatory (AJAX)
 Route::get('/employees/declaration/search', [DeclarationController::class, 'searchEmployee'])->name('employees.search');
 
+// FOREIGN SCHOLARSHIP PROGRAMS 
+Route::get('/foreign-programs/create', [ForeignController::class, 'create']);
+Route::post('/foreign-programs/store', [ForeignController::class, 'store'])
+    ->name('foreign-programs.store');
 
 });
 

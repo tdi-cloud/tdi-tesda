@@ -61,7 +61,7 @@
 
 
         {{-- FILTERS --}}
-        <div class="px-5">
+        <div class="px-5 flex gap-2">
 
             <label class="input w-full rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm" >
                 <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -72,7 +72,18 @@
                     </g>
                 </svg>
                 <input type="search" id="searchInput" class="grow w-full" placeholder="Search Programs..." />
+
+                <!-- STATUS FILTER -->
+                
             </label>
+
+            <select id="statusFilter" class="select  rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
+                    <option value="">All Batch Status</option>
+                    <option value="Active">Active Batch</option>
+                    <option value="Completed">Completed Batch</option>
+                    <option value="Upcoming">Upcoming Batch</option>
+                    <option value="Rescheduled">Rescheduled Batch</option>
+                </select>
 
         </div>
 

@@ -45,21 +45,47 @@ class ProgramsController extends Controller
         ]);
     }
 
-    public function getAll(Request $request){
+    public function getAll(Request $request)
+    {
         $search = $request->query('search');
+        $status = $request->query('status');
 
-        $programs = Program::with([
+        $programs = Program::whereHas('batches', function ($query) use ($status) {
+
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+        })
+        ->with([
             'coverPages',
-            'batches' => function ($query) {
-            $query->withCount('participants')
-            ->orderBy('date_start', 'asc');
-        }])
+
+            'batches' => function ($query) use ($status) {
+
+                // FILTER STATUS
+                if ($status) {
+                    $query->where('status', $status);
+                }
+
+                $query->withCount('participants')
+                    ->orderBy('date_start', 'asc');
+            }
+
+        ])
         ->withCount('requirements')
-        ->when($search, function($query) use ($search) {
-            $query->where('title', 'LIKE', "%{$search}%")
+
+        ->when($search, function ($query) use ($search) {
+
+            $query->where(function ($q) use ($search) {
+
+                $q->where('title', 'LIKE', "%{$search}%")
                 ->orWhere('program_code', 'LIKE', "%{$search}%")
                 ->orWhere('description', 'LIKE', "%{$search}%");
+
+            });
+
         })
+
         ->latest()
         ->get();
 

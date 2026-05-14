@@ -88,6 +88,7 @@
             font-size: 12pt;
             margin-bottom: 30px;
             line-height: 1.4;
+            text-indent: 40px;
         }
 
         .signatory-section {
