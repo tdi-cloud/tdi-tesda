@@ -455,86 +455,107 @@
   // ---------- Form Submit ----------
   document.getElementById('upload-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const region = document.getElementById('region-select').value;
     const month  = document.getElementById('month-select').value;
     const notes  = document.getElementById('notes-input').value.trim();
     const file   = fileInput.files[0];
 
     if (!region || !month) return showToast('Please select region and month.', 'error');
-    if (!file)             return showToast('Please choose a PDF file.', 'error');
-    if (!file.name.toLowerCase().endsWith('.pdf')) return showToast('Only PDF files are allowed.', 'error');
+    if (!file) return showToast('Please choose a PDF file.', 'error');
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+        return showToast('Only PDF files are allowed.', 'error');
+    }
 
     const MAX_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
-
     if (file.size > MAX_SIZE) {
         return showToast('File exceeds 2GB limit.', 'error');
     }
 
     const duplicate = currentData.find(
-      d => d.region === region && d.month === month && parseInt(d.year) === currentYear
+        d => d.region === region &&
+             d.month === month &&
+             parseInt(d.year) === currentYear
     );
-    if (duplicate) return showToast(`${region} already submitted for ${month}.`, 'error');
+
+    if (duplicate) {
+        return showToast(`${region} already submitted for ${month}.`, 'error');
+    }
 
     const btn   = document.getElementById('submit-btn');
     const label = document.getElementById('submit-label');
+
     btn.disabled = true;
     btn.classList.add('opacity-70');
     label.innerHTML = '<span class="spinner"></span> Submitting…';
 
     try {
-      const fd = new FormData();
-      fd.append('region', region);
-      fd.append('month',  month);
-      fd.append('year',   currentYear);
-      fd.append('notes',  notes);
-      fd.append('pdf',    file);  
+        const fd = new FormData();
+        fd.append('region', region);
+        fd.append('month', month);
+        fd.append('year', currentYear);
+        fd.append('notes', notes);
+        fd.append('pdf', file);
 
-      const headers = {
-          'Accept': 'application/json',
-          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-      };
-      const res = await fetch(`/training-submissions`, {
-          method: 'POST',
-          headers,
-          body: fd,
-      });
+        const headers = {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+        };
 
-      let data;
+        const res = await fetch('/training-submissions', {
+            method: 'POST',
+            headers,
+            body: fd,
+        });
 
-      try {
-          data = await res.json();
-      } catch {
-          const text = await res.text();
+        let data = null;
+        let errorText = null;
 
-          if (text.includes('413') || res.status === 413) {
-              throw new Error('The uploaded file exceeds the allowed size limit.');
-          }
+        const contentType = res.headers.get('content-type');
 
-          throw new Error(`Server error (${res.status})`);
-      }
-      if (!res.ok) {
-          const msg =
-              data.message ||
-              (data.errors
-                  ? Object.values(data.errors).flat().join(' ')
-                  : `HTTP ${res.status}`);
+        try {
+            if (contentType && contentType.includes('application/json')) {
+                data = await res.json();
+            } else {
+                errorText = await res.text();
+            }
+        } catch (e) {
+            errorText = 'Unexpected server response';
+        }
 
-          throw new Error(msg);
-      }
+        if (!res.ok) {
+            let msg = `HTTP ${res.status}`;
 
-      currentData.push(data);
-      renderAll();
-      closeModal();
-      showToast(`Report submitted for ${month} · ${region}`);
+            if (data?.message) {
+                msg = data.message;
+            } else if (data?.errors) {
+                msg = Object.values(data.errors).flat().join(' ');
+            } else if (errorText) {
+                if (res.status === 413 || errorText.includes('413')) {
+                    msg = 'The uploaded file is too large.';
+                } else {
+                    msg = errorText;
+                }
+            }
+
+            throw new Error(msg);
+        }
+
+        currentData.push(data);
+        renderAll();
+        closeModal();
+        showToast(`Report submitted for ${month} · ${region}`);
+
     } catch (err) {
-      console.error(err);
-      showToast('Submission failed: ' + err.message, 'error');
+        console.error(err);
+        showToast('Submission failed: ' + err.message, 'error');
+
     } finally {
-      btn.disabled = false;
-      btn.classList.remove('opacity-70');
-      label.textContent = 'Submit Report';
+        btn.disabled = false;
+        btn.classList.remove('opacity-70');
+        label.textContent = 'Submit Report';
     }
-  });
+});
 
   // ---------- Load Submissions ----------
   async function loadSubmissions() {
