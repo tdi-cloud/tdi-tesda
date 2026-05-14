@@ -197,11 +197,6 @@
 
 
 
-{{-- ============================================================
-     Drop this <script> block in place of the existing one
-     in your Blade view. Update API_BASE to your app's URL.
-     ============================================================ --}}
-
 <script>
   // ---------- Reference Data ----------
   const REGIONS = [
@@ -420,7 +415,12 @@
 
   window.viewSubmission = (id) => {
     const rec = currentData.find(d => d.id === id);
-    if (rec) showToast(`${rec.file_name} — submitted ${new Date(rec.submitted_at).toLocaleDateString()}`);
+    if (!rec) {
+        return showToast('File not found.', 'error');
+    }
+
+    // Open PDF in new tab
+    window.open(`/storage/${rec.file_path}`, '_blank');
   };
 
   window.removeSubmission = async (id) => {
@@ -464,6 +464,12 @@
     if (!file)             return showToast('Please choose a PDF file.', 'error');
     if (!file.name.toLowerCase().endsWith('.pdf')) return showToast('Only PDF files are allowed.', 'error');
 
+    const MAX_SIZE = 2 * 1024 * 1024 * 1024; // 2GB
+
+    if (file.size > MAX_SIZE) {
+        return showToast('File exceeds 2GB limit.', 'error');
+    }
+
     const duplicate = currentData.find(
       d => d.region === region && d.month === month && parseInt(d.year) === currentYear
     );
@@ -488,17 +494,32 @@
           'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
       };
       const res = await fetch(`/training-submissions`, {
-        method: 'POST',
-        headers,
-        body: fd,
+          method: 'POST',
+          headers,
+          body: fd,
       });
 
-      const data = await res.json();
+      let data;
+
+      try {
+          data = await res.json();
+      } catch {
+          const text = await res.text();
+
+          if (text.includes('413') || res.status === 413) {
+              throw new Error('The uploaded file exceeds the allowed size limit.');
+          }
+
+          throw new Error(`Server error (${res.status})`);
+      }
       if (!res.ok) {
-        const msg = data.message || data.errors
-          ? Object.values(data.errors || {}).flat().join(' ')
-          : `HTTP ${res.status}`;
-        throw new Error(msg);
+          const msg =
+              data.message ||
+              (data.errors
+                  ? Object.values(data.errors).flat().join(' ')
+                  : `HTTP ${res.status}`);
+
+          throw new Error(msg);
       }
 
       currentData.push(data);

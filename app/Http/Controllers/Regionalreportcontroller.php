@@ -39,7 +39,8 @@ class Regionalreportcontroller extends Controller
             'month'          => 'required|string|max:20',
             'year'           => 'required|integer|min:2000|max:2100',
             'notes'          => 'nullable|string|max:1000',
-            'pdf'            => 'required|file|mimes:pdf|max:10240', // 10 MB max
+            'pdf'            => 'required|file|mimes:pdf|max:2097152', // 2 GB max
+            // 'pdf'            => 'required|file|mimes:pdf|max:10240', // 10 MB max
         ]);
  
         // Prevent duplicate submissions for the same region + month + year
