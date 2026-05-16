@@ -125,26 +125,111 @@ class DashboardController extends Controller
     }
 
     public function getTrainingStats8hrs(Request $request)
-    {
-        $region      = $request->region;
-        $statuses    = $request->plant_status;
-        $officeFilter = $request->office_filter;
+{
+    $region      = $request->region;
+    $statuses    = $request->plant_status;
+    $officeFilter = $request->office_filter;
 
-        $allRegions = [
-            'CO','NCR','R1','R2','R3','R4A','R4B','R5',
-            'NIR','R6','R7','R8','R9','R10','R11','R12',
-            'CAR','CARAGA',
-        ];
+    $allRegions = [
+        'CO','NCR','R1','R2','R3','R4A','R4B','R5',
+        'NIR','R6','R7','R8','R9','R10','R11','R12',
+        'CAR','CARAGA',
+    ];
 
-        /*
-        |---------------------------------------
-        | TOTAL EMPLOYEES
-        |---------------------------------------
-        */
-        $totalEmployees = DB::table('employees')
-            ->when($region && $region !== 'ALL', function ($q) use ($region) {
-                $q->where('REGION', $region);
-            })
+    /*
+    |---------------------------------------
+    | TOTAL EMPLOYEES
+    |---------------------------------------
+    */
+    $totalEmployees = DB::table('employees')
+        ->when($region && $region !== 'ALL', function ($q) use ($region) {
+            $q->where('REGION', $region);
+        })
+        ->when(!empty($statuses), function ($q) use ($statuses) {
+            $q->whereIn('PLANTILLA STATUS', $statuses);
+        })
+        ->when($officeFilter === 'OPCR', function ($q) {
+            $q->where(function ($query) {
+                $query->where('OFFICE/DIVISION', 'LIKE', 'CO-%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%ROD%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%ORD%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%PO-%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%DO%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%FASD%');
+            });
+        })
+        ->count();
+
+    /*
+    |---------------------------------------
+    | TRAINED EMPLOYEES
+    |---------------------------------------
+    */
+    $trainedEmployees = DB::table('employees')
+        ->join('participants', 'employees.EMPCODE', '=', 'participants.empcode')
+        ->join('batches', 'participants.batch_id', '=', 'batches.id')
+        ->when($region && $region !== 'ALL', function ($q) use ($region) {
+            $q->where('employees.REGION', $region);
+        })
+        ->when(!empty($statuses), function ($q) use ($statuses) {
+            $q->whereIn('employees.PLANTILLA STATUS', $statuses);
+        })
+        ->when($officeFilter === 'OPCR', function ($q) {
+            $q->where(function ($query) {
+                $query->where('employees.OFFICE/DIVISION', 'LIKE', 'CO-%')
+                    ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%ROD%')
+                    ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%ORD%')
+                    ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%PO-%')
+                    ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%DO%')
+                    ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%FASD%');
+            });
+        })
+        ->where('participants.attendance', '!=', 'Absent')
+        ->where('batches.hours', '>=', 8)
+        ->distinct()
+        ->count('employees.EMPCODE');
+
+    /*
+    |---------------------------------------
+    | NOT TRAINED
+    |---------------------------------------
+    */
+    $notTrained = $totalEmployees - $trainedEmployees;
+
+    /*
+    |---------------------------------------
+    | PERCENTAGES
+    |---------------------------------------
+    */
+    $trainedPercentage = $totalEmployees > 0
+        ? round(($trainedEmployees / $totalEmployees) * 100, 2)
+        : 0;
+
+    $notTrainedPercentage = $totalEmployees > 0
+        ? round(($notTrained / $totalEmployees) * 100, 2)
+        : 0;
+
+    /*
+    |---------------------------------------
+    | REGIONAL BREAKDOWN (always all regions)
+    |---------------------------------------
+    */
+    $regionsBreakdown = [];
+
+    foreach ($allRegions as $reg) {
+
+        // If a specific region is selected, zero out all other regions
+        if ($region && $region !== 'ALL' && $reg !== $region) {
+            $regionsBreakdown[] = [
+                'total'       => 0,
+                'trained'     => 0,
+                'not_trained' => 0,
+            ];
+            continue;
+        }
+
+        $regTotal = DB::table('employees')
+            ->where('REGION', $reg)
             ->when(!empty($statuses), function ($q) use ($statuses) {
                 $q->whereIn('PLANTILLA STATUS', $statuses);
             })
@@ -160,17 +245,10 @@ class DashboardController extends Controller
             })
             ->count();
 
-        /*
-        |---------------------------------------
-        | TRAINED EMPLOYEES
-        |---------------------------------------
-        */
-        $trainedEmployees = DB::table('employees')
+        $regTrained = DB::table('employees')
             ->join('participants', 'employees.EMPCODE', '=', 'participants.empcode')
             ->join('batches', 'participants.batch_id', '=', 'batches.id')
-            ->when($region && $region !== 'ALL', function ($q) use ($region) {
-                $q->where('employees.REGION', $region);
-            })
+            ->where('employees.REGION', $reg)
             ->when(!empty($statuses), function ($q) use ($statuses) {
                 $q->whereIn('employees.PLANTILLA STATUS', $statuses);
             })
@@ -189,230 +267,35 @@ class DashboardController extends Controller
             ->distinct()
             ->count('employees.EMPCODE');
 
-        /*
-        |---------------------------------------
-        | NOT TRAINED
-        |---------------------------------------
-        */
-        $notTrained = $totalEmployees - $trainedEmployees;
-
-        /*
-        |---------------------------------------
-        | PERCENTAGES
-        |---------------------------------------
-        */
-        $trainedPercentage = $totalEmployees > 0
-            ? round(($trainedEmployees / $totalEmployees) * 100, 2)
-            : 0;
-
-        $notTrainedPercentage = $totalEmployees > 0
-            ? round(($notTrained / $totalEmployees) * 100, 2)
-            : 0;
-
-        /*
-        |---------------------------------------
-        | REGIONAL BREAKDOWN (always all regions)
-        |---------------------------------------
-        */
-        $regionsBreakdown = [];
-
-        foreach ($allRegions as $reg) {
-
-            $regTotal = DB::table('employees')
-                ->where('REGION', $reg)
-                ->when(!empty($statuses), function ($q) use ($statuses) {
-                    $q->whereIn('PLANTILLA STATUS', $statuses);
-                })
-                ->when($officeFilter === 'OPCR', function ($q) {
-                    $q->where(function ($query) {
-                        $query->where('OFFICE/DIVISION', 'LIKE', 'CO-%')
-                            ->orWhere('OFFICE/DIVISION', 'LIKE', '%ROD%')
-                            ->orWhere('OFFICE/DIVISION', 'LIKE', '%ORD%')
-                            ->orWhere('OFFICE/DIVISION', 'LIKE', '%PO-%')
-                            ->orWhere('OFFICE/DIVISION', 'LIKE', '%DO%')
-                            ->orWhere('OFFICE/DIVISION', 'LIKE', '%FASD%');
-                    });
-                })
-                ->count();
-
-            $regTrained = DB::table('employees')
-                ->join('participants', 'employees.EMPCODE', '=', 'participants.empcode')
-                ->join('batches', 'participants.batch_id', '=', 'batches.id')
-                ->where('employees.REGION', $reg)
-                ->when(!empty($statuses), function ($q) use ($statuses) {
-                    $q->whereIn('employees.PLANTILLA STATUS', $statuses);
-                })
-                ->when($officeFilter === 'OPCR', function ($q) {
-                    $q->where(function ($query) {
-                        $query->where('employees.OFFICE/DIVISION', 'LIKE', 'CO-%')
-                            ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%ROD%')
-                            ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%ORD%')
-                            ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%PO-%')
-                            ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%DO%')
-                            ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%FASD%');
-                    });
-                })
-                ->where('participants.attendance', '!=', 'Absent')
-                ->where('batches.hours', '>=', 8)
-                ->distinct()
-                ->count('employees.EMPCODE');
-
-            $regionsBreakdown[] = [
-                'total'       => $regTotal,
-                'trained'     => $regTrained,
-                'not_trained' => $regTotal - $regTrained,
-            ];
-        }
-
-        $regionsTrained    = array_values(array_map(fn($v) => $v['trained'],     $regionsBreakdown));
-        $regionsNotTrained = array_values(array_map(fn($v) => $v['not_trained'], $regionsBreakdown));
-
-        return response()->json([
-            'total'                  => $totalEmployees,
-            'trained'                => $trainedEmployees,
-            'not_trained'            => $notTrained,
-            'trained_percentage'     => $trainedPercentage,
-            'not_trained_percentage' => $notTrainedPercentage,
-            'statuses'               => $statuses,
-            'region'                 => $region,
-            'office_filter'          => $officeFilter,
-            'regions'                => $allRegions,
-            'regions_trained'        => $regionsTrained,
-            'regions_not_trained'    => $regionsNotTrained,
-        ]);
+        $regionsBreakdown[] = [
+            'total'       => $regTotal,
+            'trained'     => $regTrained,
+            'not_trained' => $regTotal - $regTrained,
+        ];
     }
 
-    public function getTrainingStats8hrsBars(Request $request)
-    {
-        $selected = $request->region;
-        $statuses = $request->plant_status;
+    $regionsTrained    = array_values(array_map(fn($v) => $v['trained'],     $regionsBreakdown));
+    $regionsNotTrained = array_values(array_map(fn($v) => $v['not_trained'], $regionsBreakdown));
 
-        /*
-        |---------------------------------------
-        | REGION MAPPING (frontend → DB)
-        |---------------------------------------
-        */
-        $regionMap = [
-            'CO' => 'CO',
-            'NCR' => 'NCR',
-            'R1' => 'R1',
-            'R2' => 'R2',
-            'R3' => 'R3',
-            'R4A' => 'R4A',
-            'R4B' => 'R4B',
-            'R5' => 'R5',
-            'NIR' => 'NIR',
-            'R6' => 'R6',
-            'R7' => 'R7',
-            'R8' => 'R8',
-            'R9' => 'R9',
-            'R10' => 'R10',
-            'R11' => 'R11',
-            'R12' => 'R12',
-            'CAR' => 'CAR',
-            'CARAGA' => 'CARAGA',
-        ];
+    return response()->json([
+        'total'                  => $totalEmployees,
+        'trained'                => $trainedEmployees,
+        'not_trained'            => $notTrained,
+        'trained_percentage'     => $trainedPercentage,
+        'not_trained_percentage' => $notTrainedPercentage,
+        'statuses'               => $statuses,
+        'region'                 => $region,
+        'office_filter'          => $officeFilter,
+        'regions'                => $allRegions,
+        'regions_trained'        => $regionsTrained,
+        'regions_not_trained'    => $regionsNotTrained,
+    ]);
+}
 
-        /*
-        |---------------------------------------
-        | FULL REGION LIST (for chart consistency)
-        |---------------------------------------
-        */
-        $allRegions = [
-            'CO',
-            'NCR',
-            'R1',
-            'R2',
-            'R3',
-            'R4A',
-            'R4B',
-            'R5',
-            'NIR',
-            'R6',
-            'R7',
-            'R8',
-            'R9',
-            'R10',
-            'R11',
-            'R12',
-            'CAR',
-            'CARAGA',
-        ];
-
-        /*
-        |---------------------------------------
-        | DETERMINE SELECTED REGION (if any)
-        |---------------------------------------
-        */
-        $selectedRegionName = null;
-
-        if ($selected !== 'ALL' && isset($regionMap[$selected])) {
-            $selectedRegionName = $regionMap[$selected];
-        }
-
-        $trained = [];
-        $notTrained = [];
-
-        /*
-        |---------------------------------------
-        | LOOP ALL REGIONS (IMPORTANT)
-        |---------------------------------------
-        */
-        foreach ($allRegions as $region) {
-
-            // TOTAL EMPLOYEES
-            $total = DB::table('employees')
-                ->where('REGION', $region)
-                ->when($statuses && count($statuses), function ($q) use ($statuses) {
-                    $q->whereIn('PLANTILLA STATUS', $statuses);
-                })
-                ->count();
-
-            // TRAINED EMPLOYEES
-            $trainedCount = DB::table('employees')
-                ->join('participants', 'employees.EMPCODE', '=', 'participants.empcode')
-                ->join('batches', 'participants.batch_id', '=', 'batches.id')
-                ->where('employees.REGION', $region)
-                ->when($statuses && count($statuses), function ($q) use ($statuses) {
-                    $q->whereIn('employees.PLANTILLA STATUS', $statuses);
-                })
-                ->where('participants.attendance', '!=', 'Absent')
-                ->where('batches.hours', '>=', 8)
-                ->distinct('employees.EMPCODE')
-                ->count('employees.EMPCODE');
-
-            /*
-            |---------------------------------------
-            | FILTER LOGIC (THIS IS THE KEY)
-            |---------------------------------------
-            */
-            if ($selected !== 'ALL') {
-                if ($region !== $selectedRegionName) {
-                    $trained[] = 0;
-                    $notTrained[] = 0;
-                    continue;
-                }
-            }
-
-            $trained[] = $trainedCount;
-            $notTrained[] = max($total - $trainedCount, 0);
-        }
-
-        /*
-        |---------------------------------------
-        | RESPONSE
-        |---------------------------------------
-        */
-        return response()->json([
-            'regions' => $allRegions,
-            'trained' => $trained,
-            'not_trained' => $notTrained,
-            'selected' => $selected
-        ]);
-    }
+   
 
 
-    public function getTrainingStats40hrs(Request $request)
+public function getTrainingStats40hrs(Request $request)
 {
     $region      = $request->region;
     $statuses    = $request->plant_status;
@@ -503,6 +386,16 @@ class DashboardController extends Controller
     $regionsBreakdown = [];
 
     foreach ($allRegions as $reg) {
+
+        // If a specific region is selected, zero out all other regions
+        if ($region && $region !== 'ALL' && $reg !== $region) {
+            $regionsBreakdown[] = [
+                'total'       => 0,
+                'trained'     => 0,
+                'not_trained' => 0,
+            ];
+            continue;
+        }
 
         $regTotal = DB::table('employees')
             ->where('REGION', $reg)

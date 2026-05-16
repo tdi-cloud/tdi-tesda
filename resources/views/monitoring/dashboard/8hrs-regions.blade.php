@@ -197,14 +197,10 @@ $(document).ready(function () {
 
 
 
-$('#region_select').on('change', function () {
+$('#region_select, input[name="plant_status[]"], #office_filter').on('change', function () {
     showRegionEightHours();
 });
 
-$('input[name="plant_status[]"]').on('change', function () {
-   
-    showRegionEightHours();
-});
 
 
 function update8hrsBarChartTheme() {
