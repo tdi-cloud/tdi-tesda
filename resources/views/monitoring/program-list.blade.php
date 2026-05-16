@@ -92,25 +92,36 @@
                 
 
                 <div class="px-4 pb-4 space-y-2 cursor-pointer" onclick="window.location.href='/programs/${program.id}/participants'">
-                    ${program.batches.map(batch => `
+    
+                    ${program.batches.slice(0, 2).map(batch => `
                         <div class="rounded-lg border-slate-300 dark:border-slate-600 text-sm hover:bg-slate-100 dark:hover:bg-slate-700 duration-500">
                             <p class="poppins-semibold mb-1">
                                 <i class="fa-solid fa-layer-group text-violet-500"></i> ${batch.batch}
                                 ${getStatusBadge(batch.status)} 
                             </p>
+
                             <div class="text-xs flex gap-3">
                                 <p class="poppins-regular text-slate-500 dark:text-slate-300">
                                     <i class="fa-regular fa-calendar text-cyan-600"></i> ${formatDate(batch.date_start)}
                                 </p>
+
                                 <p class="poppins-regular text-slate-500 dark:text-slate-300">
                                     <i class="fa-regular fa-clock text-cyan-600"></i> ${batch.hours}hrs
                                 </p>
+
                                 <p class="poppins-regular text-slate-500 dark:text-slate-300">
                                     <i class="fa-solid fa-user-group text-cyan-600"></i> ${batch.participants_count} Participants
                                 </p>
                             </div>
                         </div>
                     `).join('')}
+
+                    ${program.batches.length > 2 ? `
+                        <div class="text-xs text-center text-slate-500 dark:text-slate-400 poppins-medium pt-1">
+                            +${program.batches.length - 2} more
+                        </div>
+                    ` : ''}
+
                 </div>
             </div>
         `).join('');

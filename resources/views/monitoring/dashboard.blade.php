@@ -81,10 +81,14 @@
 
 getTrainings();
 function getTrainings() {
+
     $('#wait_trainings').fadeIn();
+
     let region = $('#region_select').val();
+    let office_filter = $('#office_filter').val();
 
     let types = [];
+
     $('.type_checkbox:checked').each(function () {
         types.push($(this).val());
     });
@@ -94,29 +98,37 @@ function getTrainings() {
         type: 'GET',
         data: {
             region: region,
-            types: types
+            types: types,
+            office_filter: office_filter
         },
         success: function (res) {
-            console.log(res);
+
+            // console.log(res);
+
             $('#wait_trainings').fadeOut();
-            let with_training_percent = Math.round(((res.with_training + 0) / (res.total + 0)) * 100);
+
+            let with_training_percent =
+                Math.round(((res.with_training + 0) / (res.total + 0)) * 100);
 
             $('.trainings_loading').addClass('hidden');
+
             animateNumber('#with_training', 0, res.with_training, 500);
             animateNumber('#no_training', 0, res.no_training, 500);
             animateNumber('#total_employees', 0, res.total, 500);
             animateNumber('#with_training_percents', 0, with_training_percent, 500);
-            chart.updateSeries([with_training_percent]);
 
-            
+            chart.updateSeries([with_training_percent]);
         }
     });
 }
 
 
-$('#region_select, .type_checkbox').on('change', function () {
+$('#region_select, .type_checkbox ,#office_filter').on('change', function () {
     getTrainings();
+    chart.updateSeries([100]);
 });
+
+
 
 
 function animateNumber(selector, start, end, duration) {

@@ -47,7 +47,8 @@ class EmployeesController extends Controller
     public function getEmployeeTrainings(Request $request)
     {
         $region = $request->region;
-        $types = $request->types; // array from checkbox
+        $types = $request->types;
+        $officeFilter = $request->office_filter;
 
         // Base query
         $employees = \App\Models\employees::query();
@@ -57,23 +58,44 @@ class EmployeesController extends Controller
             $employees->where('REGION', $region);
         }
 
-        // Filter by types (checkboxes)
+        // Filter by plantilla status
         if (!empty($types)) {
             $employees->whereIn('PLANTILLA STATUS', $types);
         }
 
-        // Clone queries to avoid conflict
+        /*
+        |--------------------------------------------------------------------------
+        | OPCR FILTER
+        |--------------------------------------------------------------------------
+        */
+        if ($officeFilter === 'OPCR') {
+
+            $employees->where(function ($query) {
+
+                $query->where('OFFICE/DIVISION', 'LIKE', 'CO-%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%ROD%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%ORD%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%PO-%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%DO%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%FASD%');
+
+            });
+        }
+
+        // Total Employees
         $totalEmployees = (clone $employees)->count();
 
-        // With Trainings (exists in participants)
+        // With Trainings
         $withTrainings = (clone $employees)
-        ->whereExists(function ($query) {
-            $query->selectRaw('1')
-                ->from('participants')
-                ->whereColumn('participants.empcode', 'employees.EMPCODE')
-                ->where('participants.attendance', '!=', 'Absent');
-        })
-        ->count();
+            ->whereExists(function ($query) {
+
+                $query->selectRaw('1')
+                    ->from('participants')
+                    ->whereColumn('participants.empcode', 'employees.EMPCODE')
+                    ->where('participants.attendance', '!=', 'Absent');
+
+            })
+            ->count();
 
         // No Trainings
         $noTrainings = $totalEmployees - $withTrainings;
@@ -82,7 +104,7 @@ class EmployeesController extends Controller
             'total' => $totalEmployees,
             'with_training' => $withTrainings,
             'no_training' => $noTrainings,
-            'region' =>  $region
+            'region' => $region
         ]);
     }
 

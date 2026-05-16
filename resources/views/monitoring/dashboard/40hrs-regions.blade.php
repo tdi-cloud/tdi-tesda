@@ -162,7 +162,7 @@ function showRegionFortyHours(){
 
 
     $.ajax({
-        url: '/training-stats/40hrs/bars',
+        url: '/training-stats/40hrs',
         data: {
             region: $('#region_select').val(),
             plant_status: $('input[name="plant_status[]"]:checked').map(function () {
@@ -172,6 +172,7 @@ function showRegionFortyHours(){
             sg_value: $('#sg_value').val()
         },
         success: function(res) {
+            // console.log(res.regions_trained)
             forty_regions_chart.updateOptions({
                 xaxis: {
                     categories: res.regions
@@ -179,11 +180,11 @@ function showRegionFortyHours(){
                 series: [
                     {
                         name: 'With Training',
-                        data: res.trained
+                        data: res.regions_trained   
                     },
                     {
                         name: 'No Training',
-                        data: res.not_trained
+                        data: res.regions_not_trained
                     }
                 ]
             });
@@ -199,23 +200,11 @@ $(document).ready(function () {
     debouncedDescribeSG();
 });
 
-$('#region_select').on('change', function () {
-    showRegionFortyHours();
-});
-
-$('#sg_condition').on('change', function () {
+$('#region_select, #sg_condition, #sg_value, input[name="plant_status[]"], #office_filter').on('change', function () {
     showRegionFortyHours();
     debouncedDescribeSG();
 });
 
-$('#sg_value').on('input', function () {
-    showRegionFortyHours();
-    debouncedDescribeSG();
-});
-
-$('input[name="plant_status[]"]').on('change', function () {
-    showRegionFortyHours();
-});
 
 
 

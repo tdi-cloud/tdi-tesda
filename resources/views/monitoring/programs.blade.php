@@ -12,7 +12,7 @@
 
             <div class="poppins-regular">
                 <div class="dropdown dropdown-end">
-                <div tabindex="0" role="button" class="btn rounded-lg">Report <i class="fa-solid fa-angle-down"></i></div>
+                <div tabindex="0" role="button" class="btn rounded-lg">Generate Report <i class="fa-solid fa-angle-down"></i></div>
                 <ul tabindex="-1" class="dropdown-content menu bg-base-100 rounded-box z-1 w-100 p-2 shadow-sm">
                     <li onclick="showtpmrgenerate()" class="poppins-bold"><a ><i class="fa-solid fa-file"></i> Training Program Monitoring Report (TPMR)</a></li>
                 </ul>
@@ -61,7 +61,9 @@
 
 
         {{-- FILTERS --}}
-        <div class="px-5 flex gap-2">
+        <div class="px-5 flex gap-2 items-center">
+        
+            <p class="poppins-regular text-sm">Filter:</p>
 
             <label class="input w-full rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm" >
                 <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

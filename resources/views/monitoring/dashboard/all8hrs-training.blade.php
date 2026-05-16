@@ -116,10 +116,11 @@ function loadTrainingStats8hrs() {
         method: 'GET',
         data: {
             region: $('#region_select').val(),
-            plant_status: statuses
+            plant_status: statuses,
+            office_filter: $('#office_filter').val()
         },
         success: function (res) {
-
+            console.log(res)
             // LEFT NUMBERS
             animateNumber('#WT_eight', 0, res.trained, 500);
             animateNumber('#NT_eight', 0, res.not_trained, 500);
@@ -139,12 +140,7 @@ function loadTrainingStats8hrs() {
 /* =========================================================
    3. EVENTS (AUTO REFRESH)
 ========================================================= */
-$('#region_select').on('change', function () {
-    loadTrainingStats8hrs();
-    EightHrsChart.updateSeries([100]);
-});
-
-$('input[name="plant_status[]"]').on('change', function () {
+$('#region_select, input[name="plant_status[]"], #office_filter').on('change', function () {
     loadTrainingStats8hrs();
     EightHrsChart.updateSeries([100]);
 });

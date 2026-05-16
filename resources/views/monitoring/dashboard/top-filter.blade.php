@@ -10,8 +10,16 @@
 
             {{-- FILTER  --}}
             <div class=" flex items-center space-x-4">
+
+                <select id="office_filter"
+                    class="select dark:bg-slate-600 min-w-50 dark:text-white text-sky-900 bg-white text-slate-900 text-black poppins-medium text-sm rounded-lg outline-none focus:outline-none cursor-pointer border-none">
+
+                    <option value="ALL" selected>Nationwide Target</option>
+                    <option value="OPCR" >OPCR Target</option>
+
+                </select>
                     
-                    <select id="region_select"  class="select dark:bg-slate-600 dark:text-white text-sky-900 bg-white text-slate-900  text-black  poppins-medium  text-sm rounded-lg outline-none focus:outline-none cursor-pointer border-none"> 
+                    <select id="region_select"  class="select min-w-40 dark:bg-slate-600 dark:text-white text-sky-900 bg-white text-slate-900  text-black  poppins-medium  text-sm rounded-lg outline-none focus:outline-none cursor-pointer border-none"> 
                         <option value="ALL">All Regions</option> 
                         <option value="CO">Central Office</option> 
                         <option value="NCR">NCR</option> 

@@ -158,7 +158,7 @@ function showRegionEightHours(){
 
 
     $.ajax({
-        url: '/training-stats/8hrs/bars',
+        url: '/training-stats/8hrs',
         data: {
             region: $('#region_select').val(),
             plant_status: $('input[name="plant_status[]"]:checked').map(function () {
@@ -174,11 +174,13 @@ function showRegionEightHours(){
                 series: [
                     {
                         name: 'With Training',
-                        data: res.trained
+                        data: res.regions_trained
+
                     },
                     {
                         name: 'No Training',
-                        data: res.not_trained
+                        data: res.regions_not_trained
+
                     }
                 ]
             });

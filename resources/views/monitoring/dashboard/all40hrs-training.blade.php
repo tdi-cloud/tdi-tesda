@@ -133,6 +133,7 @@ function loadTrainingStats40hrs() {
             sg_value: $('#sg_value').val(),   
         },
         success: function (res) {
+            // console.log(res)
 
             // LEFT NUMBERS
             animateNumber('#WT_forty', 0, res.trained, 500);
@@ -152,18 +153,9 @@ function loadTrainingStats40hrs() {
 /* =========================================================
    3. EVENTS (AUTO REFRESH)
 ========================================================= */
-$('#region_select').on('change', function () {
+$('#region_select,#sg_value,#sg_condition, #office_filter, input[name="plant_status[]"]').on('change', function () {
   loadTrainingStats40hrs();
-});
-$('#sg_condition').on('change', function () {
-  loadTrainingStats40hrs();
-});
-$('#sg_value').on('input', function () {
-  loadTrainingStats40hrs();
-});
-
-$('input[name="plant_status[]"]').on('change', function () {
-    loadTrainingStats40hrs();
+  FortyHrsChart.updateSeries([100]);
 });
 
 /* =========================================================
