@@ -140,10 +140,10 @@
         @foreach($program->batches as $batch)
 
         @if($program->with_batch == 1)
-            @php
-                $start = \Carbon\Carbon::parse($batch->date_start);
-                $end = \Carbon\Carbon::parse($batch->date_end);
-            @endphp
+        @php
+            $start = \Carbon\Carbon::createFromFormat('d/m/Y', $batch->date_start);
+            $end = \Carbon\Carbon::createFromFormat('d/m/Y', $batch->date_end);
+        @endphp
 
             <p>
             <b>{{ $batch->batch }}:</b>

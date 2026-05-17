@@ -46,6 +46,11 @@ class TESDAOrderController extends Controller
             'program',
             'batches.participants'
         ])->findOrFail($id);
+
+        $program->batches->each(function ($batch) {
+            $batch->date_start_parsed = \Carbon\Carbon::createFromFormat('d/m/Y', $batch->date_start);
+            $batch->date_end_parsed   = \Carbon\Carbon::createFromFormat('d/m/Y', $batch->date_end);
+        });
       
 
         $pdf = Pdf::loadView('pdfGenerate.tesda-order', [
