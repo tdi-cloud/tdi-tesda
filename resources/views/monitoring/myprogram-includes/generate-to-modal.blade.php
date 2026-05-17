@@ -209,52 +209,74 @@
 <script>
 
 
-    function submitTESDAOrder(){
-        loading_modal.showModal();
-      
+    function submitTESDAOrder() {
+      loading_modal.showModal();
 
-          const data = {
-              program_code: document.getElementById('programCode').value,
-              subject: document.getElementById('subject').value,
-              series: document.getElementById('series').value,
-              date_issued: document.getElementById('date_issued').value,
-              effectivity: document.getElementById('effectivity').value,
-              supersedes: document.getElementById('supersedes').value,
-              body: document.getElementById('body_input').value,
-              with_employees: document.getElementById('with_employees').value,
-              with_batch: document.getElementById('with_batch').value,
-              closure: document.getElementById('closure_input').value,
-              signatory_name: document.getElementById('signatory_name').value,
-              signatory_position: document.getElementById('signatory_position').value
-          };
+      const data = {
+          program_code: document.getElementById('programCode').value,
+          subject: document.getElementById('subject').value,
+          series: document.getElementById('series').value,
+          date_issued: document.getElementById('date_issued').value,
+          effectivity: document.getElementById('effectivity').value,
+          supersedes: document.getElementById('supersedes').value,
+          body: document.getElementById('body_input').value,
+          with_employees: document.getElementById('with_employees').value,
+          with_batch: document.getElementById('with_batch').value,
+          closure: document.getElementById('closure_input').value,
+          signatory_name: document.getElementById('signatory_name').value,
+          signatory_position: document.getElementById('signatory_position').value
+      };
 
-          fetch('/TESDAOrder/store', {
-              method: 'POST',
-              headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-              },
-              body: JSON.stringify(data)
-          })
-          .then(res => res.json())
-          .then(res => {
-              loading_modal.close();
-              if(res.errors){
-                console.log(res.errors);
-              }else{
-                TO_modal.close();
-                window.open(`/tesda-order/${res.data.id}`, '_blank');
-                window.location.reload();
+      fetch('/TESDAOrder/store', {
+          method: 'POST',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify(data)
+      })
+      .then(res => {
+          // ✅ Capture status before parsing JSON
+          const status = res.status;
+          return res.text().then(text => {
+              console.log('📦 Raw response:', text);       // see EXACTLY what Laravel returns
+              console.log('📊 Status code:', status);      // 200, 422, 500, etc.
+              try {
+                  return { status, data: JSON.parse(text) };
+              } catch (e) {
+                  // Laravel returned HTML (error page, not JSON)
+                  console.error('❌ Laravel returned HTML, not JSON. Full response:');
+                  console.error(text);                     // this shows the full Laravel error page
+                  throw new Error('Non-JSON response from server');
               }
-              
-          })
-          .catch(err => {
-              loading_modal.close();
-              // console.error('Error:', err);
           });
-      
-    }
+      })
+      .then(({ status, data }) => {
+          loading_modal.close();
+
+          if (status === 422) {
+              // Validation errors
+              console.error('❌ Validation errors:', data.errors);
+              alert('Validation error:\n' + JSON.stringify(data.errors, null, 2));
+          } else if (status === 500) {
+              // Server error
+              console.error('❌ Server error:', data);
+              alert('Server error: ' + (data.message || 'Unknown error'));
+          } else if (data.errors) {
+              console.error('❌ App errors:', data.errors);
+          } else {
+              TO_modal.close();
+              window.open(`/tesda-order/${data.data.id}`, '_blank');
+              window.location.reload();
+          }
+      })
+      .catch(err => {
+          loading_modal.close();
+          console.error('❌ Fetch/Network error:', err.message);  // ✅ uncommented
+          alert('Something went wrong: ' + err.message);
+      });
+  }
 
     function setEmp(val) {
         document.getElementById('with_employees').value = val;
