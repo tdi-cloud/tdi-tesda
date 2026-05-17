@@ -29,7 +29,7 @@ class TESDAOrderController extends Controller
     $data['effectivity'] = $data['effectivity'] ?: 'As indicated';
     $data['supersedes'] = $data['supersedes'] ?: ' ';
 
-    $order = \App\Models\TesdaOrder::create($data);
+    $order = \App\Models\TESDAOrder::create($data);
     $order->load('program');
 
     return response()->json([
