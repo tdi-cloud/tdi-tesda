@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Program;
+
 use App\Models\TESDAOrder;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -82,7 +82,7 @@ class TESDAOrderController extends Controller
     public function show($program_code)
     {
         
-        $orders = TesdaOrder::where('program_code', $program_code)
+        $orders = TESDAOrder::where('program_code', $program_code)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -90,7 +90,7 @@ class TESDAOrderController extends Controller
     }
 
     public function destroy($id){
-        $order = TesdaOrder::findOrFail($id);
+        $order = TESDAOrder::findOrFail($id);
         $order->delete();
 
         return response()->json([
