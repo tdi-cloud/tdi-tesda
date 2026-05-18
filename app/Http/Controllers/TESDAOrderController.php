@@ -48,8 +48,8 @@ class TESDAOrderController extends Controller
         ])->findOrFail($id);
 
         $program->batches->each(function ($batch) {
-            $batch->date_start_parsed = \Carbon\Carbon::createFromFormat('d/m/Y', $batch->date_start);
-            $batch->date_end_parsed   = \Carbon\Carbon::createFromFormat('d/m/Y', $batch->date_end);
+            $batch->date_start_parsed = \Carbon\Carbon::createFromFormat('Y-m-d', $batch->date_start);
+            $batch->date_end_parsed   = \Carbon\Carbon::createFromFormat('Y-m-d', $batch->date_end);
         });
       
 

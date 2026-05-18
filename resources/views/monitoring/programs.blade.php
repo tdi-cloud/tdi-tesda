@@ -26,10 +26,6 @@
 
         </div>
 
-
-
-
-
         <script>
             document.getElementById('new_prog_btn').addEventListener('click', function() {
                 blank_modal.showModal();
@@ -61,10 +57,10 @@
 
 
         {{-- FILTERS --}}
-        <div class="px-5 flex gap-2 items-center">
+        <div class="px-5 flex gap-2 items-center mb-1">
         
-            <p class="poppins-regular text-sm">Filter:</p>
-
+            <fieldset class="fieldset w-full p-0">
+            <legend class="fieldset-legend">Search</legend>
             <label class="input w-full rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm" >
                 <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none"
@@ -78,15 +74,38 @@
                 <!-- STATUS FILTER -->
                 
             </label>
+            </fieldset>
 
-            <select id="statusFilter" class="select  rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
-                    <option value="">All Batch Status</option>
-                    <option value="Active">Active Batch</option>
-                    <option value="Completed">Completed Batch</option>
-                    <option value="Upcoming">Upcoming Batch</option>
-                    <option value="Rescheduled">Rescheduled Batch</option>
+            
+
+            
+
+            <fieldset class="fieldset w-50 p-0">
+            <legend class="fieldset-legend">Batch Status</legend>
+            <select id="statusFilter" class="select rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
+                <option value="">All</option>
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Rescheduled">Rescheduled</option>
+            </select>
+            </fieldset>
+
+            <!-- Per-page selector -->
+            <fieldset class="fieldset p-0">
+            <legend class="fieldset-legend">Show</legend>
+            <div class="flex items-center gap-2 text-sm text-slate-500 poppins-regular w-40">
+                <select id="perPageSelect" class="select flex-1 rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
+                    <option value="6">6</option>
+                    <option value="9" selected>9</option>
+                    <option value="12">12</option>
+                    <option value="24">24</option>
                 </select>
+                <span class="">per page</span>
+            </div>
+            </fieldset>
 
+            
         </div>
 
         @include('monitoring.myprogram-includes.create-notice-modal')

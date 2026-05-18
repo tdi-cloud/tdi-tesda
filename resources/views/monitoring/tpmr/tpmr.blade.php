@@ -150,7 +150,7 @@
    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg fade-in">
     <div class="px-6 py-5 border-b border-stone-200 flex items-center justify-between">
      <div>
-      <h3 class="font-display text-2xl font-bold">Submit Report</h3>
+      <h3 class="font-display text-2xl font-bold">Submit Signed TPMR</h3>
       <p class="text-xs text-stone-500 mt-0.5">Upload the Training Program Monitoring PDF</p>
      </div><button id="close-modal" class="w-8 h-8 rounded-lg hover:bg-stone-100 flex items-center justify-center"> <i data-lucide="x" class="w-4 h-4"></i> </button>
     </div>

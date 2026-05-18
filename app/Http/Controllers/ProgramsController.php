@@ -47,54 +47,48 @@ class ProgramsController extends Controller
 
     public function getAll(Request $request)
     {
-        $search = $request->query('search');
-        $status = $request->query('status');
+        $search   = $request->query('search');
+        $status   = $request->query('status');
+        $perPage  = (int) $request->query('per_page', 9); // configurable, default 9
+        $page     = (int) $request->query('page', 1);
 
         $programs = Program::whereHas('batches', function ($query) use ($status) {
-
-            if ($status) {
-                $query->where('status', $status);
-            }
-
-        })
-        ->with([
-            'coverPages',
-
-            'batches' => function ($query) use ($status) {
-
-                // FILTER STATUS
                 if ($status) {
                     $query->where('status', $status);
                 }
-
-                $query->withCount('participants')
-                    ->orderBy('date_start', 'asc');
-            }
-
-        ])
-        ->withCount('requirements')
-
-        ->when($search, function ($query) use ($search) {
-
-            $query->where(function ($q) use ($search) {
-
-                $q->where('title', 'LIKE', "%{$search}%")
-                ->orWhere('program_code', 'LIKE', "%{$search}%")
-                ->orWhere('description', 'LIKE', "%{$search}%");
-
-            });
-
-        })
-
-        ->latest()
-        ->get();
+            })
+            ->with([
+                'coverPages',
+                'batches' => function ($query) use ($status) {
+                    if ($status) {
+                        $query->where('status', $status);
+                    }
+                    $query->withCount('participants')
+                        ->orderBy('date_start', 'asc');
+                }
+            ])
+            ->withCount('requirements')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'LIKE', "%{$search}%")
+                    ->orWhere('program_code', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%");
+                });
+            })
+            ->latest()
+            ->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
             'status' => 'success',
-            'data'   => $programs,
+            'data'   => $programs->items(),
+            'meta'   => [
+                'current_page' => $programs->currentPage(),
+                'last_page'    => $programs->lastPage(),
+                'per_page'     => $programs->perPage(),
+                'total'        => $programs->total(),
+            ],
         ]);
     }
-
  
     public function show($id)
     {
