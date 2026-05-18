@@ -34,7 +34,8 @@ class ProgramSupportingDocumentController extends Controller
         $validated = $request->validate([
             'program_id'      => ['required', 'integer', 'exists:programs,id'],
             'program_code'    => ['nullable', 'string', 'max:255'],
-            'document_type'   => ['required', 'string', 'in:Memorandum,Circular,Order,Resolution,Department Order,Executive Order,Administrative Order,Other'],
+            // 'document_type'   => ['required', 'string', 'in:Memorandum,Circular,Order,Resolution,Department Order,Executive Order,Administrative Order,Other'],
+            'document_type'   => ['required', 'string'],
             'subject'         => ['required', 'string', 'max:500'],
             'document_series' => ['required', 'integer', 'digits:4', 'min:1900', 'max:' . (date('Y') + 5)],
             'origin'          => ['nullable', 'string', 'max:255'],
