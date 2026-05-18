@@ -25,4 +25,9 @@ class Program extends Model
     {
         return $this->hasMany(Requirement::class, 'program_code', 'program_code');
     }
+
+    public function supportingDocuments()
+    {
+        return $this->hasMany(ProgramSupportingDocument::class);
+    }
 }

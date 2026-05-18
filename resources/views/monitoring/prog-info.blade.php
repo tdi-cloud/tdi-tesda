@@ -57,6 +57,8 @@
     @include('monitoring.myprogram-includes.upload-cover')
     @include('monitoring.myprogram-includes.generate-to-modal')
     @include('monitoring.myprogram-includes.edit-program')
+    @include('monitoring.myprogram-includes.supporting-documents')
+
 
     
     </div>

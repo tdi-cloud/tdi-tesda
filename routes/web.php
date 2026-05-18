@@ -3,9 +3,6 @@
 use App\Http\Controllers\Auth\Login;
 use App\Http\Controllers\Auth\Logout;
 use App\Http\Controllers\BatchesController;
-use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\CertificateTemplateController;
-use App\Http\Controllers\ContextController;
 use App\Http\Controllers\CoverPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeclarationController;
@@ -14,6 +11,7 @@ use App\Http\Controllers\ForeignController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\ProgramsController;
+use App\Http\Controllers\ProgramSupportingDocumentController;
 use App\Http\Controllers\Regionalreportcontroller;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\RequirementsController;
@@ -21,6 +19,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SubmissionsController;
 use App\Http\Controllers\TESDAOrderController;
 use App\Http\Controllers\UserController;
+use App\Models\ProgramSupportingDocument;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth')->group(function () {
@@ -149,6 +148,31 @@ Route::get('/employees/declaration/search', [DeclarationController::class, 'sear
 Route::get('/foreign-programs/create', [ForeignController::class, 'create']);
 Route::post('/foreign-programs/store', [ForeignController::class, 'store'])
     ->name('foreign-programs.store');
+
+
+// SUPPORTING DOCS 
+// routes/web.php
+
+Route::prefix('programs/{program}/supporting-documents')
+    ->name('supporting-documents.')
+    ->group(function () {
+
+        // Full page view
+        Route::get('/', [ProgramSupportingDocumentController::class, 'show'])
+            ->name('show');
+
+        // JSON — fetchDocs() AJAX call
+        Route::get('/data', [ProgramSupportingDocumentController::class, 'index'])
+            ->name('index');
+    });
+
+// AJAX POST store
+Route::post('supporting-documents', [ProgramSupportingDocumentController::class, 'store'])
+    ->name('supporting-documents.store');
+
+// AJAX DELETE
+Route::delete('supporting-documents/{supportingDocument}', [ProgramSupportingDocumentController::class, 'destroy'])
+    ->name('supporting-documents.destroy');
 
 });
 
