@@ -110,7 +110,7 @@ class EmployeesController extends Controller
 
 
     public function employeesList(){
-        $employees = \App\Models\employees::limit(500)->get();
+        $employees = \App\Models\employees::limit(6000)->get();
         return response()->json($employees);
     }
 

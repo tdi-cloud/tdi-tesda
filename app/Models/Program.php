@@ -30,4 +30,14 @@ class Program extends Model
     {
         return $this->hasMany(ProgramSupportingDocument::class);
     }
+
+    public function resourceSpeakers()
+    {
+        return $this->hasMany(ResourceSpeaker::class, 'program_code', 'program_code');
+    }
+
+    public function hasBatches(): bool
+    {
+        return $this->batches()->exists();
+    }
 }

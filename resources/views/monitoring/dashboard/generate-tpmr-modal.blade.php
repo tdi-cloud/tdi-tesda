@@ -125,17 +125,20 @@
   <dialog id="employee_selector_modal" class="modal">
    <div class="modal-box bg-white max-w-md border border-slate-200 shadow-xl rounded-2xl p-0">
     <div class="flex items-center justify-between px-6 pt-5 pb-3 border-b border-slate-100">
+
      <h3 class="text-base font-bold text-slate-800">Select Employee</h3>
+
      <form method="dialog"><button class="btn btn-sm btn-ghost btn-circle text-slate-400 hover:text-slate-600"> <i data-lucide="x" class="w-5 h-5"></i> </button>
      </form>
     </div>
     
     <!-- Search -->
     <div class="px-6 pt-4 pb-2">
-     <div class="relative"> <i class="fa-solid fa-magnifying-glass  absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+     <div class="relative"> <i class="fa-solid fa-magnifying-glass  absolute left-3 top-1/2 -translate-y-1/2 text-slate-800"></i>
       
       <input type="text" id="employee_search" class="input input-bordered w-full pl-10 bg-white border-slate-300 focus:border-blue-500 focus:outline-none text-slate-700 text-sm" placeholder="Search employees..." oninput="filterEmployees()">
      </div>
+
     </div><!-- Employee List -->
     <div id="employee_list" class="px-4 pb-4 max-h-64 overflow-y-auto space-y-1 mt-2"><!-- Populated dynamically -->
     </div>
@@ -280,6 +283,7 @@
 
     function openEmployeeSelector(target) {
       currentTarget = target;
+      lucide.createIcons();
 
     document.getElementById('employee_search').value = '';
     document.getElementById('employee_list').innerHTML = '<div class="text-center py-4"><span class="loading loading-spinner loading-sm"></span> Loading...</div>';

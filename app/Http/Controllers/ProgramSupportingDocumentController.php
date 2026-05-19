@@ -63,4 +63,62 @@ class ProgramSupportingDocumentController extends Controller
             'message' => 'Document deleted successfully.',
         ]);
     }
+
+    public function main_index(Request $request)
+    {
+        $query = ProgramSupportingDocument::with('program');
+ 
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                  ->orWhere('document_number', 'like', "%{$search}%")
+                  ->orWhere('program_code', 'like', "%{$search}%")
+                  ->orWhereHas('program', function ($q2) use ($search) {
+                      $q2->where('title', 'like', "%{$search}%");
+                  });
+            });
+        }
+ 
+        // Filter: document_type
+        if ($request->filled('document_type')) {
+            $query->where('document_type', $request->document_type);
+        }
+ 
+        // Filter: document_series (year)
+        if ($request->filled('document_series')) {
+            $query->where('document_series', $request->document_series);
+        }
+ 
+        // Filter: program_id
+        if ($request->filled('program_id')) {
+            $query->where('program_id', $request->program_id);
+        }
+ 
+        // Filter: origin
+        if ($request->filled('origin')) {
+            $query->where('origin', $request->origin);
+        }
+ 
+        $documents = $query->latest()->paginate(15)->withQueryString();
+ 
+        // For filter dropdowns
+        $documentTypes = ProgramSupportingDocument::select('document_type')
+            ->distinct()->orderBy('document_type')->pluck('document_type');
+ 
+        $documentSeries = ProgramSupportingDocument::select('document_series')
+            ->distinct()->orderByDesc('document_series')->pluck('document_series');
+ 
+        $origins = ProgramSupportingDocument::select('origin')
+            ->whereNotNull('origin')->distinct()->orderBy('origin')->pluck('origin');
+ 
+        $programs = Program::orderBy('title')->get(['id', 'title', 'program_code']);
+ 
+        return view('supporting-docs.supporting-documents', compact(
+            'documents', 'documentTypes', 'documentSeries', 'origins', 'programs'
+        ));
+    }
+
+
 }

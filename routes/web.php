@@ -19,8 +19,9 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SubmissionsController;
 use App\Http\Controllers\TESDAOrderController;
 use App\Http\Controllers\UserController;
-use App\Models\ProgramSupportingDocument;
+use App\Http\Controllers\ResourceSpeakerController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Program;
 
 Route::middleware('auth')->group(function () {
 //LOGOUT
@@ -173,6 +174,25 @@ Route::post('supporting-documents', [ProgramSupportingDocumentController::class,
 // AJAX DELETE
 Route::delete('supporting-documents/{supportingDocument}', [ProgramSupportingDocumentController::class, 'destroy'])
     ->name('supporting-documents.destroy');
+
+    Route::get('/program-supporting-documents', [ProgramSupportingDocumentController::class, 'main_index'])
+    ->name('program-supporting-documents.mainindex');
+
+// RESOURCE SPEAKER
+// routes/web.php
+Route::get('/programs/{program}/resource-speakers', [ResourceSpeakerController::class, 'page'])->name('resource-speakers.page');
+
+// AJAX routes
+Route::prefix('programs/{program}/resource-speakers')
+    ->name('resource-speakers.')
+    ->group(function () {
+        Route::get('/list',                [ResourceSpeakerController::class, 'index'])  ->name('index');
+        Route::post('/',                   [ResourceSpeakerController::class, 'store'])  ->name('store');
+        Route::get('/{resourceSpeaker}',   [ResourceSpeakerController::class, 'show'])   ->name('show');
+        Route::put('/{resourceSpeaker}',   [ResourceSpeakerController::class, 'update']) ->name('update');
+        Route::delete('/{resourceSpeaker}',[ResourceSpeakerController::class, 'destroy'])->name('destroy');
+    });
+
 
 });
 
