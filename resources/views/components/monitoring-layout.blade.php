@@ -65,7 +65,7 @@
                 {{ request()->is('program-supporting-documents') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
                 ">
                     <i class="fa-regular fa-file-lines text-cyan-600"></i>
-                    <span class="text-[13px]">Supproting Docs</span>
+                    <span class="text-[13px]">Supporting Docs</span>
                     
                 </a>
             </li>
