@@ -6,6 +6,7 @@ use App\Http\Controllers\BatchesController;
 use App\Http\Controllers\CoverPageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeclarationController;
+use App\Http\Controllers\EnrolledProgramsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\ForeignController;
 use App\Http\Controllers\ForgotPasswordController;
@@ -125,6 +126,7 @@ Route::get('/get-submission/{id}', [SubmissionsController::class, 'show']);
 Route::post('/update-submission/{id}', [SubmissionsController::class, 'update']);
 Route::get('/participants/{id}/available-requirements', [SubmissionsController::class, 'availableRequirements']);
 
+
 // CERTIFICATE 
 
 
@@ -192,6 +194,22 @@ Route::prefix('programs/{program}/resource-speakers')
         Route::put('/{resourceSpeaker}',   [ResourceSpeakerController::class, 'update']) ->name('update');
         Route::delete('/{resourceSpeaker}',[ResourceSpeakerController::class, 'destroy'])->name('destroy');
     });
+
+// ENROLLED PROGRAM 
+// Show single program enrollment detail
+    Route::get('enrolled/{participant}', [EnrolledProgramsController::class, 'show'])
+        ->name('enrollment.show');
+ 
+    // Submit a requirement
+    Route::post('enrolled/submissions', [EnrolledProgramsController::class, 'store'])
+        ->name('enrolled.submissions.store');
+ 
+    // Download certificate
+    Route::get('enrolled/{participant}/certificate', [EnrolledProgramsController::class, 'downloadCertificate'])
+        ->name('certificate.download');
+
+        Route::delete('enrolled/submission/{id}', [EnrolledProgramsController::class, 'destroy'])
+    ->name('enrolled.submission.destroy');
 
 
 });

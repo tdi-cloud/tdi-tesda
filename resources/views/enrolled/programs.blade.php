@@ -137,16 +137,21 @@
 
             let div = document.createElement('div');
 
+
             div.className = `
                 border border-slate-300 rounded-lg
                 dark:border-slate-600 bg-white dark:bg-slate-700
-                p-4 mb-3 hover:scale-[1.05] duration-300
+                overflow-hidden mb-3 hover:scale-[1.05] duration-300
                 popup-item hover:shadow-lg
             `;
 
             div.style.animationDelay = (index * 60) + "ms";
 
             div.innerHTML = `<div class="cursor-pointer">
+                    <img src="/storage/${program.cover_pages?.[0]?.image ?? 'default.png'}" class="max-h-40 w-full object-cover" >
+
+                    <div class="p-4">
+
                     <span >
                         <div class="badge badge-primary badge-soft poppins-bold badge-sm">${program.batches?.[0]?.batch ?? 'No Batch'}</div>
                         <div class="badge badge-sm badge-soft poppins-semibold  ${getStatusBadgeClass(program.batches?.[0]?.status)}">
@@ -166,11 +171,13 @@
                         <span>${formatReadable(program.batches?.[0]?.date_start)}</span>    
                     </p>
                     </div>
+
+                    </div>
                     
                 </div>
             `;
 
-            div.addEventListener('click', () => openProgramModal(program));
+            div.addEventListener('click', () => openProgramNew(program.batches?.[0]?.participants?.[0]?.id));
 
             container.appendChild(div);
         });
@@ -267,6 +274,10 @@
 
         loadPrograms(1, '', 10, selectedYear);
     });
+
+    function openProgramNew(id){
+        window.location.href = `/enrolled/${id}`;
+    }
 
     function openProgramModal(program){
         document.querySelector('#programCover').src = `/storage/${program.cover_pages?.[0]?.image ?? 'default.png'}`;
