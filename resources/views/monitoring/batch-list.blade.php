@@ -597,13 +597,20 @@ function deleteParticipant() {
                 
 
                 <div class="flex gap-2 items-center">
+
                   <p class="text-[13px] poppins-regular text-slate-500 dark:text-slate-200">
-                    <i class="fa-regular fa-calendar"></i>
+                    <i class="fa-regular fa-clock"></i>
+                   ${batch.hours} hours
+                  </p>
+
+
+                  <p class="text-[13px] poppins-regular text-slate-500 dark:text-slate-200">
+                    <i class="fa-regular fa-calendar text-sky-500"></i>
                    ${formatDate(batch.date_start)} – ${formatDate(batch.date_end)}
                   </p>
 
                   <p class="text-[13px] poppins-regular text-slate-500 dark:text-slate-200">
-                    <i class="fa-solid fa-location-dot"></i>
+                    <i class="fa-solid fa-location-dot text-green-500"></i>
                     ${batch.venue}
                   </p>
 

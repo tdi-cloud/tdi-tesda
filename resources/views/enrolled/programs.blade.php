@@ -148,7 +148,7 @@
             div.style.animationDelay = (index * 60) + "ms";
 
             div.innerHTML = `<div class="cursor-pointer">
-                    <img src="/storage/${program.cover_pages?.[0]?.image ?? 'default.png'}" class="max-h-40 w-full object-cover" >
+                    <img src="/storage/${program.cover_pages?.[0]?.image ?? '/storage/cover_pages/default.png'}" class="max-h-40 w-full object-cover" >
 
                     <div class="p-4">
 

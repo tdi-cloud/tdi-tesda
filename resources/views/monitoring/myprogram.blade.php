@@ -41,7 +41,7 @@
         <a href="/programs/{{ $myprogram->id }}/certificate" class="hidden btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-award"></i> Certificate</a>
 
         <a href="/programs/{{ $myprogram->id }}/resource-speakers"
-           class="btn-ghost hover:bg-white dark:bg-slate-600 hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
+           class="btn-ghost hover:bg-white  hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
            <i class="fa-solid fa-chalkboard-teacher"></i> Resource Speakers
         </a>
 

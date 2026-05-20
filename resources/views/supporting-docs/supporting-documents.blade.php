@@ -169,7 +169,7 @@
                                         </div>
                                         @if($doc->program_code)
                                             <div class="badge badge-ghost badge-sm mt-1 font-mono">
-                                                {{ $doc->program_code }} {{ $doc->program->id }}
+                                                {{ $doc->program_code }} 
                                             </div>
                                         @endif
                                     @else

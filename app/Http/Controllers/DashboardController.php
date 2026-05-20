@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Participant;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -458,6 +459,140 @@ public function getTrainingStats40hrs(Request $request)
         'regions'                => $allRegions,
         'regions_trained'        => $regionsTrained,
         'regions_not_trained'    => $regionsNotTrained,
+    ]);
+}
+
+
+public function treapDashboard(Request $request)
+{
+    $officeFilter = $request->office_filter ?? 'ALL';
+    $regionFilter = $request->region ?? 'ALL';
+    $plantStatus  = $request->plant_status ?? []; // ✅ ADDED
+
+    $regions = [
+        'CO','NCR','R1','R2','R3','R4A','R4B','R5',
+        'NIR','R6','R7','R8','R9','R10','R11','R12',
+        'CAR','CARAGA'
+    ];
+
+    /**
+     * BASE QUERY
+     */
+    $base = Participant::query()
+        ->where('participants.attendance', '!=', 'Absent')
+        ->join('batches', 'participants.batch_id', '=', 'batches.id')
+        ->join('requirements', 'batches.program_code', '=', 'requirements.program_code')
+        ->join('employees', 'participants.empcode', '=', 'employees.EMPCODE')
+        ->where('requirements.title', 'TREAP');
+
+    /**
+     * PLANTILLA STATUS FILTER (✅ NEW)
+     */
+    if (!empty($plantStatus)) {
+        $base->whereIn('employees.PLANTILLA STATUS', $plantStatus);
+    }
+
+    /**
+     * OPCR FILTER
+     */
+    if ($officeFilter === 'OPCR') {
+        $base->where(function ($q) {
+            $q->where('employees.OFFICE/DIVISION', 'LIKE', 'CO-%')
+              ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%ROD%')
+              ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%ORD%')
+              ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%PO-%')
+              ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%DO%')
+              ->orWhere('employees.OFFICE/DIVISION', 'LIKE', '%FASD%');
+        });
+    }
+
+    /**
+     * REGION FILTER
+     */
+    if ($regionFilter !== 'ALL') {
+        $base->where('employees.REGION', $regionFilter);
+    }
+
+    /**
+     * DUE DATE FILTER (SQL equivalent of your PHP logic)
+     */
+    $base->whereRaw("
+        CASE 
+            WHEN requirements.day_due > 0 THEN 
+                DATE_ADD(batches.date_end, INTERVAL requirements.day_due DAY)
+            WHEN requirements.month_due > 0 THEN 
+                DATE_ADD(batches.date_end, INTERVAL requirements.month_due MONTH)
+            ELSE NULL
+        END <= NOW()
+    ");
+
+    /**
+     * WITH / WITHOUT SUBMISSION PER REGION
+     */
+    $raw = (clone $base)
+        ->leftJoin('submissions', function ($join) {
+            $join->on('submissions.participant_id', '=', 'participants.id')
+                 ->on('submissions.requirement_id', '=', 'requirements.id');
+        })
+        ->select(
+            'employees.REGION',
+            DB::raw("COUNT(CASE WHEN submissions.id IS NOT NULL THEN 1 END) as with_submission"),
+            DB::raw("COUNT(CASE WHEN submissions.id IS NULL THEN 1 END) as without_submission")
+        )
+        ->groupBy('employees.REGION')
+        ->get()
+        ->keyBy('REGION');
+
+    /**
+     * FORMAT FOR APEX CHART (FIXED ORDER)
+     */
+    $with = [];
+    $without = [];
+
+    foreach ($regions as $r) {
+        $with[] = $raw[$r]->with_submission ?? 0;
+        $without[] = $raw[$r]->without_submission ?? 0;
+    }
+
+    /**
+     * TOTALS
+     */
+    $totalWith = array_sum($with);
+    $totalWithout = array_sum($without);
+
+    $total = $totalWith + $totalWithout;
+
+    $percentage = $total > 0
+        ? round(($totalWith / $total) * 100, 2)
+        : 0;
+
+    /**
+     * RESPONSE
+     */
+    return response()->json([
+        'region_chart' => [
+            'xaxis' => $regions,
+            'series' => [
+                [
+                    'name' => 'With Training',
+                    'data' => $with
+                ],
+                [
+                    'name' => 'No Training',
+                    'data' => $without
+                ]
+            ]
+        ],
+
+        'radial_chart' => [
+            'series' => [$percentage]
+        ],
+
+        'totals' => [
+            'with' => $totalWith,
+            'without' => $totalWithout,
+            'percentage' => $percentage
+        ]
     ]);
 }
 

@@ -59,6 +59,42 @@ class Requirement extends Model
         })->values(); // 👈 important
     }
 
+    public function getDueDateForBatch($batch)
+    {
+        if (!$batch) {
+            return null;
+        }
+
+        $date = Carbon::parse($batch->date_end);
+
+        // DAY-BASED
+        if ($this->day_due > 0) {
+
+            $count = 0;
+
+            while ($count < $this->day_due) {
+
+                $date->addDay();
+
+                if (!$date->isWeekend()) {
+                    $count++;
+                }
+            }
+        }
+
+        // MONTH-BASED
+        if ($this->month_due > 0) {
+
+            $date->addMonthsNoOverflow($this->month_due);
+
+            while ($date->isWeekend()) {
+                $date->addDay();
+            }
+        }
+
+        return $date;
+    }
+
     public function submissions()
     {
         return $this->hasMany(Submission::class, 'requirement_id', 'id');

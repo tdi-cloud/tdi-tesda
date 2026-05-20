@@ -39,16 +39,18 @@
            class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
            <i class="fa-regular fa-file"></i> Requirements
         </a>
+        
+        <a href="/programs/{{ $program->id }}/resource-speakers"
+           class="btn-default bg-white dark:bg-slate-600 hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
+           <i class="fa-solid fa-chalkboard-teacher"></i> Resource Speakers
+        </a>
+
         @if($program->tesdaOrders->isNotEmpty())
         <a href="/programs/{{ $program->id }}/tesda-order"
            class="btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
            <i class="fa-solid fa-file-lines text-indigo-600"></i> TESDA Order
         </a>
         @endif
-        <a href="/programs/{{ $program->id }}/resource-speakers"
-           class="btn-default bg-white dark:bg-slate-600 hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
-           <i class="fa-solid fa-chalkboard-teacher"></i> Resource Speakers
-        </a>
     </div>
 
     {{-- ── RESOURCE SPEAKERS CONTENT ── --}}

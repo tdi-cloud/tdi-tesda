@@ -52,7 +52,7 @@
         <a href="/programs/{{ $myprogram->id }}/certificate" class="hidden btn-ghost hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl  shadow-none"><i class="fa-solid fa-award"></i> Certificate</a>
 
         <a href="/programs/{{ $myprogram->id }}/resource-speakers"
-           class="btn-ghost hover:bg-white dark:bg-slate-600 hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
+           class="btn-ghost hover:bg-white  hover:bg-white dark:hover:bg-slate-600 btn btn-sm poppins-semibold rounded-2xl shadow-none">
            <i class="fa-solid fa-chalkboard-teacher"></i> Resource Speakers
         </a>
 
@@ -63,9 +63,15 @@
     </div>
 
     <div class=" flex-1  overflow-auto flex flex-col px-5">
-        <div class="py-4">
-            <h1 class="poppins-bold text-yellow-600">POST Training Submission Responses</h1>
+        <div class="py-4 flex w-full justify-between">
+            <h1 class="poppins-bold text-slate-800 dark:text-yellow-400">POST Training Submission Responses</h1>
+
+            @include('monitoring.submissions-include.missing-submissions')
         </div>
+
+    
+
+
         <div class=" space-y-4">
 
         <!-- Filters -->
@@ -108,6 +114,9 @@
 
 
     </div>
+
+
+    
 
 
 

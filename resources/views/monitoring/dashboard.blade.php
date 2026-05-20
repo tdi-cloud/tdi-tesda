@@ -38,6 +38,25 @@
     
 
         {{-- 2ND SECTION  --}}
+
+
+        <section class=" bg-white dark:bg-slate-700 to-sky-800 dark:border-slate-600 border border-slate-300 rounded-2xl">
+        
+            <div class="text-md poppins-bold uppercase p-5">
+                <i class="fa-regular fa-file-lines"></i> EMPLOYEES Training Compliance Rate
+            </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4  px-5">
+
+            
+        </div>
+
+    </section>
+
+
+
+
+
     <div class="grid grind-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 ">
 
         <div class="w-full bg-white dark:bg-slate-700 dark:border-slate-600 border border-slate-300 rounded-2xl pt-4">

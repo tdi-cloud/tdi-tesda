@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Batch;
 use App\Models\CoverPage;
 use App\Models\Program;
+use App\Models\Requirement;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -111,7 +112,18 @@ class ProgramsController extends Controller
     public function showSubmissions($id){
         $myprogram = Program::find($id);
         $cover = CoverPage::where('program_id', $id)->first();
-        return view('monitoring.submissions', compact('myprogram','cover'));
+
+         $batches = Batch::where(
+            'program_code',
+            $myprogram->program_code
+        )->get();
+
+        $requirements = Requirement::where(
+            'program_code',
+            $myprogram->program_code
+        )->get();
+
+        return view('monitoring.submissions', compact('myprogram','cover','batches','requirements'));
     }
     
 

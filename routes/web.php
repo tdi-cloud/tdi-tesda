@@ -211,6 +211,12 @@ Route::prefix('programs/{program}/resource-speakers')
         Route::delete('enrolled/submission/{id}', [EnrolledProgramsController::class, 'destroy'])
     ->name('enrolled.submission.destroy');
 
+// MISSING SUBMISSIONS 
+
+Route::get(
+    '/programs/{program_code}/missing-submissions',
+    [SubmissionsController::class, 'missingSubmissions']
+);
 
 });
 

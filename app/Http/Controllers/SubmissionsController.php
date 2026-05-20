@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Batch;
+use App\Models\employees;
 use App\Models\Participant;
 use App\Models\Requirement;
 use App\Models\Submission;
@@ -257,6 +259,93 @@ public function availableRequirements($participantId)
     return response()->json([
         'data' => $available
     ]);
+}
+
+
+public function missingSubmissions(Request $request, $programCode)
+{
+    $search = $request->search;
+    $batchId = $request->batch_id;
+    $requirementId = $request->requirement_id;
+
+    $requirements = Requirement::where(
+        'program_code',
+        $programCode
+    )
+
+    ->when($requirementId && $requirementId != 'all', function ($q) use ($requirementId) {
+
+        $q->where('id', $requirementId);
+
+    })
+
+    ->get();
+
+    if ($requirements->isEmpty()) {
+        return response()->json([]);
+    }
+
+    $participants = Participant::with(['employee', 'batch'])
+
+        ->whereHas('batch', function ($q) use ($programCode, $batchId) {
+
+            $q->where('program_code', $programCode);
+
+            if ($batchId && $batchId !== 'all') {
+                $q->where('id', $batchId);
+            }
+        })
+
+        ->whereRaw('LOWER(attendance) != ?', ['absent'])
+
+        ->when($search, function ($q) use ($search) {
+
+            $q->whereHas('employee', function ($emp) use ($search) {
+
+                $emp->where('FIRSTNAME', 'like', "%{$search}%")
+                    ->orWhere('LASTNAME', 'like', "%{$search}%")
+                    ->orWhere('EMPCODE', 'like', "%{$search}%");
+
+            });
+
+        })
+
+        ->get();
+
+    $missing = [];
+
+    foreach ($participants as $participant) {
+
+        foreach ($requirements as $requirement) {
+
+            $exists = Submission::where('participant_id', $participant->id)
+                ->where('requirement_id', $requirement->id)
+                ->exists();
+
+            if (!$exists) {
+
+                $dueDate = $requirement
+                    ->getDueDateForBatch($participant->batch);
+
+                $missing[] = [
+                    'employee' => $participant->employee->FIRSTNAME . ' ' .
+                                  $participant->employee->LASTNAME,
+
+                    'empcode' => $participant->empcode,
+
+                    'batch' => $participant->batch->batch,
+
+                    'requirement' => $requirement->title,
+
+                    'due_date' => $dueDate?->format('F d, Y'),
+
+                    'is_overdue' => now()->gt($dueDate),
+                ];
+            }
+        }
+    }
+
+    return response()->json($missing);
 }
 
     
