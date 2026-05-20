@@ -423,6 +423,80 @@
     </div>
   </section>
 
+  @if($requirements->isNotEmpty())
+
+  {{-- ── Requirement Templates ──────────────────────── --}}
+<section>
+  <h2 class="serif text-xl font-bold text-slate-800 mb-5">Requirement Report Templates</h2>
+
+  @php
+    $allTemplates = [
+      'TREAP' => [
+        'title'       => 'Terminal Report',
+        'abbr'        => 'TREAP',
+        'description' => 'A report submitted after training that summarizes what an employee learned and includes an action plan on how they will apply it at work, including steps, needed resources, and timeline.',
+        'link'        => 'https://docs.google.com/document/d/1ZXxSHO0XNxXhfXh6CARzRh4My2Tdmv_j/edit',
+      ],
+      'REAP' => [
+        'title'       => 'Terminal and Re-entry Action Plan',
+        'abbr'        => 'REAP',
+        'description' => 'A post-training document submitted after programs longer than 4 days that summarizes an employee’s learnings and includes an action plan with activities, outputs, schedule, and budget needed for implementation.',
+        'link'        => 'https://docs.google.com/document/d/1ZXxSHO0XNxXhfXh6CARzRh4My2Tdmv_j/edit',
+      ],
+      'TDOR' => [
+        'title'       => 'Training Development Outcome Report',
+        'abbr'        => 'TDOR',
+        'description' => 'A report filled out by an employee and supervisor about 6 months after training to assess its effectiveness and include the supervisor’s recommendations for the employee.',
+        'link'        => 'https://docs.google.com/document/d/1aagF8BVWRtwqvaoAQx6qQG8juc1V_B12/edit',
+      ],
+    ];
+
+    // Only keep templates whose key matches a requirement title in this batch
+    $reqTitles       = $requirements->pluck('title')->toArray();
+    $visibleTemplates = array_filter($allTemplates, fn($key) => in_array($key, $reqTitles), ARRAY_FILTER_USE_KEY);
+  @endphp
+
+  @if(!empty($visibleTemplates))
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    @foreach($visibleTemplates as $tpl)
+    <div class="card p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
+      <div class="flex items-start gap-3">
+        <span class="flex-shrink-0 w-9 h-9 rounded-lg bg-emerald-50 flex items-center justify-center">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </span>
+        <div>
+          <p class="text-sm font-semibold text-slate-800 leading-snug">{{ $tpl['title'] }}</p>
+          <span class="inline-block mt-1 text-[11px] px-1.5 py-0.5 rounded font-mono bg-slate-100 text-slate-500">
+            {{ $tpl['abbr'] }}
+          </span>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-500 leading-relaxed">{{ $tpl['description'] }}</p>
+
+      <a href="{{ $tpl['link'] }}"
+         target="_blank"
+         class="mt-auto inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:underline transition">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+        Open Template
+      </a>
+    </div>
+    @endforeach
+  </div>
+  @else
+    <div class="card py-10 text-center text-slate-400 text-sm">No templates available for your requirements.</div>
+  @endif
+
+</section>
+
+@endif
+
   {{-- ── Certificate Section ─────────────────────── --}}
   @php
     $allApproved   = $totalReqs > 0 && $approved >= $totalReqs;

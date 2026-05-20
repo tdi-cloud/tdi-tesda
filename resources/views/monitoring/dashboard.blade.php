@@ -42,7 +42,7 @@
 
         <section class=" bg-white dark:bg-slate-700 to-sky-800 dark:border-slate-600 border border-slate-300 rounded-2xl">
         
-            <div class="text-md poppins-bold uppercase p-5">
+            <div class="hidden text-md poppins-bold uppercase p-5">
                 <i class="fa-regular fa-file-lines"></i> EMPLOYEES Training Compliance Rate
             </div>
 

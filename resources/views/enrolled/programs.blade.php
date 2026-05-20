@@ -139,7 +139,7 @@
 
 
             div.className = `
-                border border-slate-300 rounded-lg
+                border border-slate-300 rounded-2xl
                 dark:border-slate-600 bg-white dark:bg-slate-700
                 overflow-hidden mb-3 hover:scale-[1.05] duration-300
                 popup-item hover:shadow-lg
