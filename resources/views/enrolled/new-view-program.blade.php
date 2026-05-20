@@ -67,12 +67,13 @@
 {{-- HERO BANNER                                   --}}
 {{-- ══════════════════════════════════════════════ --}}
 <header class="relative h-72 md:h-80 overflow-hidden">
-  @if($coverPage)
-    <img src="{{ asset('storage/' . $coverPage->image) }}"
-         class="w-full h-full object-cover" alt="{{ $program->title }}">
-  @else
+  {{-- @if($coverPage) --}}
+    <img src="{{ $coverPage ? asset('storage/' . $coverPage->image) : asset('storage/default.png') }}"
+         class="w-full h-full object-cover" alt="">
+  {{-- @else
+    <img src="{{ asset('storage/default.png') }}"
     <div class="w-full h-full bg-gradient-to-br from-emerald-800 to-teal-600"></div>
-  @endif
+  @endif --}}
   <div class="hero-overlay absolute inset-0"></div>
 
   {{-- Back link --}}
@@ -89,7 +90,7 @@
       {{ $batch->status === 'Completed' ? 'bg-emerald-400/20 text-emerald-200' : 'bg-amber-400/20 text-amber-200' }}">
       {{ $batch->status }}
     </span>
-    <h1 class="text-white text-2xl md:text-3xl drop-shadow-sm poppins-bold">
+    <h1 class="text-white text-2xl md:text-3xl  leading-snug drop-shadow-sm font-bold">
       {{ $program->title }}
     </h1>
     <p class="text-white/70 text-sm mt-1">{{ $program->program_code }} · {{ $batch->batch }}</p>
