@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="{{ asset('images/favicon_io/android-chrome-512x512.png') }}">
+  @vite('resources/css/app.css')
 
   
   <style>
@@ -76,7 +77,7 @@
 
   {{-- Back link --}}
   <a href="./"
-     class="absolute top-5 left-5 flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium transition">
+     class="btn btn-success btn-sm btn-soft absolute top-5 left-5 flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium transition">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
     </svg>
@@ -88,10 +89,10 @@
       {{ $batch->status === 'Completed' ? 'bg-emerald-400/20 text-emerald-200' : 'bg-amber-400/20 text-amber-200' }}">
       {{ $batch->status }}
     </span>
-    <h1 class="text-white text-2xl md:text-3xl font-bold leading-snug drop-shadow-sm">
+    <h1 class="text-white text-2xl md:text-3xl drop-shadow-sm poppins-bold">
       {{ $program->title }}
     </h1>
-    <p class="text-white/70 text-sm mt-1">{{ $program->program_code }} · Batch {{ $batch->batch }}</p>
+    <p class="text-white/70 text-sm mt-1">{{ $program->program_code }} · {{ $batch->batch }}</p>
   </div>
 </header>
 
