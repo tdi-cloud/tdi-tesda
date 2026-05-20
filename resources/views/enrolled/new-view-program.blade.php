@@ -337,7 +337,21 @@
           {{-- Info --}}
           <div class="flex-1 min-w-0">
             <div class="flex flex-wrap items-center gap-2">
-              <p class="text-sm font-medium text-slate-800">{{ $req->title }}</p>
+             <p class="text-sm font-medium text-slate-800">
+                  {{
+                      $req->title === 'TREAP'
+                          ? 'Terminal Report'
+                          : (
+                              $req->title === 'REAP'
+                                  ? 'Terminal and Re-entry Action Plan'
+                                  : (
+                                      $req->title === 'TDOR'
+                                          ? 'Training Development Outcome Report'
+                                          : $req->title
+                                  )
+                          )
+                  }}
+              </p>
               @if($req->required === 'Yes')
                 <span class="text-[11px] px-1.5 py-0.5 rounded bg-red-50 text-red-500 font-medium">Required</span>
               @endif
@@ -345,7 +359,16 @@
             @if($req->description)
               <p class="text-xs text-slate-500 mt-0.5">{{ $req->description }}</p>
             @endif
-            <p class="text-xs text-slate-400 mt-1">Due: {{ $due }}</p>
+
+
+            @php
+                $dueDate = $req->getDueDateForBatch($batch);
+            @endphp
+
+            <p class="text-xs text-slate-400 mt-1">
+                Due:
+                {{ $dueDate ? \Carbon\Carbon::parse($dueDate)->format('M d, Y') : 'No due date' }}
+            </p>
             @if($sub && $sub->remarks)
               <p class="text-xs text-amber-600 mt-1 italic">Remarks: {{ $sub->remarks }}</p>
             @endif
