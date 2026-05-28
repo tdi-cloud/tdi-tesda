@@ -3,8 +3,8 @@
 <x-monitoring-layout>
     @include('components.loading')
 
-<div class="space-y-4 p-5">
- 
+<div class="space-y-4 p-5 overflow-auto">
+
     {{-- PAGE HEADER --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
@@ -20,7 +20,7 @@
             </button>
         </div>
     </div>
- 
+
     {{-- SUMMARY CARDS --}}
     <div id="summary-cards" class="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div class="card bg-base-100 border border-base-200 shadow-sm">
@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
- 
+
     {{-- FILTERS --}}
     <div class="card bg-base-100 border border-base-200 shadow-sm">
         <div class="card-body p-4">
@@ -62,7 +62,7 @@
                 </button>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
- 
+
                 {{-- Search by name / empcode --}}
                 <div class="form-control w-full">
                     <label class="label py-0.5">
@@ -80,7 +80,7 @@
                         </svg>
                     </div>
                 </div>
- 
+
                 {{-- Office filter --}}
                 <div class="form-control w-full">
                     <label class="label py-0.5">
@@ -93,7 +93,7 @@
                         @endforeach
                     </select>
                 </div>
- 
+
                 {{-- Requirement title filter --}}
                 <div class="form-control w-full">
                     <label class="label py-0.5">
@@ -106,7 +106,7 @@
                         @endforeach
                     </select>
                 </div>
- 
+
                 {{-- Submission status filter --}}
                 <div class="form-control w-full">
                     <label class="label py-0.5">
@@ -118,7 +118,7 @@
                         <option value="not_submitted">No Submission Yet</option>
                     </select>
                 </div>
- 
+
                 {{-- Date from --}}
                 <div class="form-control w-full">
                     <label class="label py-0.5">
@@ -126,7 +126,7 @@
                     </label>
                     <input type="date" id="filter-date-from" class="input input-bordered input-sm w-full text-sm">
                 </div>
- 
+
                 {{-- Date to --}}
                 <div class="form-control w-full">
                     <label class="label py-0.5">
@@ -134,7 +134,7 @@
                     </label>
                     <input type="date" id="filter-date-to" class="input input-bordered input-sm w-full text-sm">
                 </div>
- 
+
                 {{-- Overdue only toggle --}}
                 <div class="form-control w-full justify-end">
                     <label class="label py-0.5">
@@ -145,16 +145,15 @@
                         <span class="label-text text-sm text-base-content/70">Show overdue only</span>
                     </label>
                 </div>
- 
+
             </div>
         </div>
     </div>
- 
+
     {{-- TABLE CONTAINER --}}
     <div class="card bg-base-100 border border-base-200 shadow-sm">
         <div class="card-body p-0">
             <div id="table-container">
-                {{-- Loaded via AJAX --}}
                 <div class="flex items-center justify-center py-16 text-base-content/40">
                     <span class="loading loading-spinner loading-md mr-2"></span>
                     <span class="text-sm">Loading data...</span>
@@ -162,9 +161,9 @@
             </div>
         </div>
     </div>
- 
+
 </div>
- 
+
 {{-- DETAIL MODAL --}}
 <dialog id="detail-modal" class="modal modal-bottom sm:modal-middle">
     <div class="modal-box w-11/12 max-w-2xl">
@@ -180,43 +179,65 @@
         <button>close</button>
     </form>
 </dialog>
- 
+
 <script>
-let allRows = [];
+let allRows      = [];   // full dataset — used for CSV export and showDetail()
+let currentPage  = 1;
+let perPage      = 25;
+let lastPage     = 1;
 let debounceTimer = null;
- 
+
 document.addEventListener('DOMContentLoaded', function () {
     fetchData();
     bindFilters();
 });
- 
+
+// ── FILTERS ────────────────────────────────────────────────────────────────────
+
 function bindFilters() {
+    const resetAndFetch = () => { currentPage = 1; fetchData(); };
     const debounced = () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(fetchData, 350);
+        debounceTimer = setTimeout(resetAndFetch, 350);
     };
- 
+
     document.getElementById('filter-search').addEventListener('input', debounced);
-    document.getElementById('filter-office').addEventListener('change', fetchData);
-    document.getElementById('filter-requirement').addEventListener('change', fetchData);
-    document.getElementById('filter-submission-status').addEventListener('change', fetchData);
-    document.getElementById('filter-date-from').addEventListener('change', fetchData);
-    document.getElementById('filter-date-to').addEventListener('change', fetchData);
-    document.getElementById('filter-overdue').addEventListener('change', fetchData);
+    document.getElementById('filter-office').addEventListener('change', resetAndFetch);
+    document.getElementById('filter-requirement').addEventListener('change', resetAndFetch);
+    document.getElementById('filter-submission-status').addEventListener('change', resetAndFetch);
+    document.getElementById('filter-date-from').addEventListener('change', resetAndFetch);
+    document.getElementById('filter-date-to').addEventListener('change', resetAndFetch);
+    document.getElementById('filter-overdue').addEventListener('change', resetAndFetch);
 }
- 
+
 function getFilters() {
     return {
-        search: document.getElementById('filter-search').value,
-        office: document.getElementById('filter-office').value,
-        requirement_id: document.getElementById('filter-requirement').value,
+        search:            document.getElementById('filter-search').value,
+        office:            document.getElementById('filter-office').value,
+        requirement_id:    document.getElementById('filter-requirement').value,
         submission_status: document.getElementById('filter-submission-status').value,
-        date_from: document.getElementById('filter-date-from').value,
-        date_to: document.getElementById('filter-date-to').value,
-        overdue: document.getElementById('filter-overdue').checked ? '1' : '',
+        date_from:         document.getElementById('filter-date-from').value,
+        date_to:           document.getElementById('filter-date-to').value,
+        overdue:           document.getElementById('filter-overdue').checked ? '1' : '',
+        page:              currentPage,
+        per_page:          perPage,
     };
 }
- 
+
+function resetFilters() {
+    document.getElementById('filter-search').value            = '';
+    document.getElementById('filter-office').value            = '';
+    document.getElementById('filter-requirement').value       = '';
+    document.getElementById('filter-submission-status').value = '';
+    document.getElementById('filter-date-from').value         = '';
+    document.getElementById('filter-date-to').value           = '';
+    document.getElementById('filter-overdue').checked         = false;
+    currentPage = 1;
+    fetchData();
+}
+
+// ── DATA FETCHING ───────────────────────────────────────────────────────────────
+
 function fetchData() {
     const container = document.getElementById('table-container');
     container.innerHTML = `
@@ -225,17 +246,19 @@ function fetchData() {
             <span class="text-sm">Loading data...</span>
         </div>
     `;
- 
+
     const params = new URLSearchParams(getFilters());
- 
+
     fetch(`{{ route('requirements-tracker.data') }}?${params.toString()}`, {
         headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
     })
     .then(res => res.json())
     .then(data => {
-        allRows = data.rows;
+        allRows     = data.all_rows;                  // full set for CSV + showDetail
+        lastPage    = data.pagination.last_page;
+        currentPage = data.pagination.current_page;
         updateSummary(data.summary);
-        renderTable(data.rows);
+        renderTable(data.rows, data.pagination);
     })
     .catch(() => {
         container.innerHTML = `
@@ -248,17 +271,21 @@ function fetchData() {
         `;
     });
 }
- 
+
+// ── SUMMARY ─────────────────────────────────────────────────────────────────────
+
 function updateSummary(summary) {
-    document.getElementById('summary-total').textContent = summary.total.toLocaleString();
-    document.getElementById('summary-submitted').textContent = summary.submitted.toLocaleString();
+    document.getElementById('summary-total').textContent         = summary.total.toLocaleString();
+    document.getElementById('summary-submitted').textContent     = summary.submitted.toLocaleString();
     document.getElementById('summary-not-submitted').textContent = summary.not_submitted.toLocaleString();
-    document.getElementById('summary-overdue').textContent = summary.overdue.toLocaleString();
+    document.getElementById('summary-overdue').textContent       = summary.overdue.toLocaleString();
 }
- 
-function renderTable(rows) {
+
+// ── TABLE RENDERING ──────────────────────────────────────────────────────────────
+
+function renderTable(rows, pagination) {
     const container = document.getElementById('table-container');
- 
+
     if (rows.length === 0) {
         container.innerHTML = `
             <div class="flex flex-col items-center justify-center py-16 text-base-content/40 gap-2">
@@ -271,7 +298,10 @@ function renderTable(rows) {
         `;
         return;
     }
- 
+
+    // Global row-number offset for correct numbering across pages
+    const offset = (pagination.current_page - 1) * pagination.per_page;
+
     let html = `
         <div class="overflow-x-auto">
             <table class="table table-sm w-full" id="tracker-table">
@@ -290,20 +320,22 @@ function renderTable(rows) {
                 </thead>
                 <tbody class="divide-y divide-base-200">
     `;
- 
+
     rows.forEach((row, index) => {
+        const globalIndex = offset + index; // index into allRows for showDetail()
+        const rowNumber   = offset + index + 1;
         const statusBadge = getStatusBadge(row);
         const overdueBadge = row.is_overdue
             ? `<span class="badge badge-error badge-outline badge-xs ml-1">Overdue</span>`
             : '';
- 
+
         const dueDateDisplay = row.due_date
             ? `<span class="${row.is_overdue ? 'text-error font-semibold' : 'text-base-content/70'}">${formatDate(row.due_date)}</span>${overdueBadge}`
             : `<span class="text-base-content/30 text-xs">—</span>`;
- 
+
         html += `
-            <tr class="hover:bg-base-50 transition-colors ${row.is_overdue ? 'bg-error/5' : ''}" data-index="${index}">
-                <td class="px-4 py-2.5 text-base-content/40 text-xs font-mono">${index + 1}</td>
+            <tr class="hover:bg-base-50 transition-colors ${row.is_overdue ? 'bg-error/5' : ''}">
+                <td class="px-4 py-2.5 text-base-content/40 text-xs font-mono">${rowNumber}</td>
                 <td class="px-4 py-2.5">
                     <div class="font-medium text-sm text-base-content">${escHtml(row.fullname)}</div>
                     <div class="text-xs text-base-content/50 font-mono">${escHtml(row.empcode)}</div>
@@ -327,7 +359,7 @@ function renderTable(rows) {
                 <td class="px-4 py-2.5 whitespace-nowrap">${statusBadge}</td>
                 <td class="px-4 py-2.5">
                     <button
-                        onclick="showDetail(${index})"
+                        onclick="showDetail(${globalIndex})"
                         class="btn btn-ghost btn-xs text-primary hover:bg-primary/10"
                         title="View details"
                     >
@@ -341,45 +373,170 @@ function renderTable(rows) {
             </tr>
         `;
     });
- 
+
     html += `</tbody></table></div>`;
-    html += `<div class="px-4 py-2 border-t border-base-200 text-xs text-base-content/40">${rows.length.toLocaleString()} record(s) found</div>`;
- 
+
+    // ── PAGINATION FOOTER ───────────────────────────────────────────────────────
+    html += `
+        <div class="px-4 py-3 border-t border-base-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-base-content/50">
+
+            <div class="flex items-center gap-3 flex-wrap">
+                <span>
+                    Showing
+                    <span class="font-semibold text-base-content/70">${pagination.from}</span>–<span class="font-semibold text-base-content/70">${pagination.to}</span>
+                    of
+                    <span class="font-semibold text-base-content/70">${pagination.total.toLocaleString()}</span>
+                    record(s)
+                </span>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-40">Rows per page:</span>
+                    <select
+                        onchange="changePerPage(this.value)"
+                        class="select select-bordered select-xs text-xs"
+                        style="min-height:1.5rem;height:1.5rem;padding-top:0;padding-bottom:0;"
+                    >
+                        ${[10, 25, 50, 100].map(n =>
+                            `<option value="${n}" ${n === pagination.per_page ? 'selected' : ''}>${n}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1 flex-wrap">
+                <button
+                    onclick="goToPage(1)"
+                    ${pagination.current_page === 1 ? 'disabled' : ''}
+                    class="btn btn-xs btn-ghost font-mono disabled:opacity-30"
+                    title="First page"
+                >«</button>
+                <button
+                    onclick="goToPage(${pagination.current_page - 1})"
+                    ${pagination.current_page === 1 ? 'disabled' : ''}
+                    class="btn btn-xs btn-ghost disabled:opacity-30"
+                    title="Previous page"
+                >‹</button>
+
+                ${buildPageButtons(pagination.current_page, pagination.last_page)}
+
+                <button
+                    onclick="goToPage(${pagination.current_page + 1})"
+                    ${pagination.current_page === pagination.last_page ? 'disabled' : ''}
+                    class="btn btn-xs btn-ghost disabled:opacity-30"
+                    title="Next page"
+                >›</button>
+                <button
+                    onclick="goToPage(${pagination.last_page})"
+                    ${pagination.current_page === pagination.last_page ? 'disabled' : ''}
+                    class="btn btn-xs btn-ghost font-mono disabled:opacity-30"
+                    title="Last page"
+                >»</button>
+            </div>
+
+        </div>
+    `;
+
     container.innerHTML = html;
 }
- 
+
+// ── PAGINATION HELPERS ──────────────────────────────────────────────────────────
+
+/**
+ * Builds numbered page buttons with ellipsis for large page counts.
+ * Always shows first, last, and a window of ±2 pages around current.
+ */
+function buildPageButtons(current, last) {
+    if (last <= 1) return '';
+
+    const delta = 2;
+    const pages = [];
+
+    for (let i = 1; i <= last; i++) {
+        if (
+            i === 1 ||
+            i === last ||
+            (i >= current - delta && i <= current + delta)
+        ) {
+            pages.push(i);
+        }
+    }
+
+    let html = '';
+    let prev = null;
+
+    for (const page of pages) {
+        if (prev !== null && page - prev > 1) {
+            html += `<span class="px-1 text-base-content/30 select-none">…</span>`;
+        }
+        html += `
+            <button
+                onclick="goToPage(${page})"
+                class="btn btn-xs ${page === current ? 'btn-primary pointer-events-none' : 'btn-ghost'}"
+                ${page === current ? 'aria-current="page"' : ''}
+            >${page}</button>
+        `;
+        prev = page;
+    }
+
+    return html;
+}
+
+function goToPage(page) {
+    if (page < 1 || page > lastPage) return;
+    currentPage = page;
+    fetchData();
+    // Scroll table back into view smoothly
+    document.getElementById('table-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function changePerPage(value) {
+    perPage     = parseInt(value, 10);
+    currentPage = 1;
+    fetchData();
+}
+
+// ── STATUS BADGE ────────────────────────────────────────────────────────────────
+
 function getStatusBadge(row) {
     if (!row.submitted) {
         if (row.is_overdue) {
             return `<span class="badge badge-error badge-sm gap-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
                 Overdue
             </span>`;
         }
         return `<span class="badge badge-warning badge-sm gap-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             Not Submitted
         </span>`;
     }
- 
+
     const statusMap = {
-        pending:  { cls: 'badge-info',    label: 'Pending' },
+        pending:  { cls: 'badge-info',    label: 'Pending'  },
         approved: { cls: 'badge-success', label: 'Approved' },
         rejected: { cls: 'badge-error',   label: 'Rejected' },
     };
     const s = statusMap[row.submission_status] || { cls: 'badge-success', label: 'Submitted' };
+
     return `<span class="badge ${s.cls} badge-sm gap-1">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
         ${s.label}
     </span>`;
 }
- 
+
+// ── DETAIL MODAL ────────────────────────────────────────────────────────────────
+
 function showDetail(index) {
-    const row = allRows[index];
+    const row = allRows[index]; // allRows = full dataset, not just current page
     if (!row) return;
- 
+
     document.getElementById('modal-title').textContent = row.fullname;
- 
+
     const fields = [
         ['Employee Code',     row.empcode],
         ['Office',            row.office],
@@ -396,76 +553,72 @@ function showDetail(index) {
         ['Date Submitted',    row.submitted_at ? formatDate(row.submitted_at) : '—'],
         ['Notes',             row.submission_notes || '—'],
     ];
- 
-    const bodyHtml = fields.map(([label, value]) => `
+
+    document.getElementById('modal-body').innerHTML = fields.map(([label, value]) => `
         <div class="flex gap-3 py-1.5 border-b border-base-200 last:border-0">
             <span class="text-base-content/50 w-36 flex-shrink-0 text-xs pt-0.5">${label}</span>
-            <span class="text-base-content font-medium text-xs flex-1">${escHtml(String(value))}</span>
+            <span class="text-base-content font-medium text-xs flex-1">${escHtml(String(value ?? '—'))}</span>
         </div>
     `).join('');
- 
-    document.getElementById('modal-body').innerHTML = bodyHtml;
+
     document.getElementById('detail-modal').showModal();
 }
- 
-function resetFilters() {
-    document.getElementById('filter-search').value = '';
-    document.getElementById('filter-office').value = '';
-    document.getElementById('filter-requirement').value = '';
-    document.getElementById('filter-submission-status').value = '';
-    document.getElementById('filter-date-from').value = '';
-    document.getElementById('filter-date-to').value = '';
-    document.getElementById('filter-overdue').checked = false;
-    fetchData();
-}
- 
+
+// ── CSV EXPORT ──────────────────────────────────────────────────────────────────
+
 function exportCSV() {
     if (!allRows.length) {
         alert('No data to export.');
         return;
     }
- 
-    const headers = ['#', 'Empcode', 'Full Name', 'Office', 'Program Code', 'Program Title', 'Batch', 'Date Start', 'Date End', 'Requirement', 'Required', 'Due Date', 'Overdue', 'Submitted', 'Status', 'Date Submitted'];
+
+    const headers = [
+        '#', 'Empcode', 'Full Name', 'Office', 'Program Code', 'Program Title',
+        'Batch', 'Date Start', 'Date End', 'Requirement', 'Required',
+        'Due Date', 'Overdue', 'Submitted', 'Status', 'Date Submitted',
+    ];
     const csvRows = [headers.join(',')];
- 
+
     allRows.forEach((row, i) => {
         const cols = [
             i + 1,
             row.empcode,
-            `"${row.fullname}"`,
-            `"${row.office}"`,
+            `"${(row.fullname  || '').replace(/"/g, '""')}"`,
+            `"${(row.office    || '').replace(/"/g, '""')}"`,
             row.program_code,
-            `"${row.program_title}"`,
-            `"${row.batch}"`,
-            row.batch_date_start,
-            row.batch_date_end,
-            `"${row.requirement_title}"`,
+            `"${(row.program_title    || '').replace(/"/g, '""')}"`,
+            `"${(row.batch            || '').replace(/"/g, '""')}"`,
+            row.batch_date_start || '',
+            row.batch_date_end   || '',
+            `"${(row.requirement_title || '').replace(/"/g, '""')}"`,
             row.required,
-            row.due_date || '',
-            row.is_overdue ? 'Yes' : 'No',
-            row.submitted ? 'Yes' : 'No',
-            row.submission_status || '',
-            row.submitted_at || '',
+            row.due_date            || '',
+            row.is_overdue          ? 'Yes' : 'No',
+            row.submitted           ? 'Yes' : 'No',
+            row.submission_status   || '',
+            row.submitted_at        || '',
         ];
         csvRows.push(cols.join(','));
     });
- 
+
     const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `requirements-tracker-${new Date().toISOString().slice(0,10)}.csv`;
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `requirements-tracker-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
 }
- 
+
+// ── UTILITIES ───────────────────────────────────────────────────────────────────
+
 function formatDate(dateStr) {
     if (!dateStr) return '—';
     const d = new Date(dateStr);
     if (isNaN(d)) return dateStr;
     return d.toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' });
 }
- 
+
 function escHtml(str) {
     if (!str) return '—';
     return String(str)
@@ -475,7 +628,6 @@ function escHtml(str) {
         .replace(/"/g, '&quot;');
 }
 </script>
-    
-    
+
 </x-monitoring-layout>
 </x-layout>

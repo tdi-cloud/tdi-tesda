@@ -64,7 +64,6 @@ class RequirementsTrackerController extends Controller
         // Filter: requirement title (requirement_id)
         if ($request->filled('requirement_id')) {
             $requirementId = $request->requirement_id;
-            // Kung may specific requirement, i-filter kung sino ang may/wala submission sa requirement na ito
             $query->whereHas('batch', function ($q) use ($requirementId) {
                 $q->whereHas('program', function ($q2) use ($requirementId) {
                     $q2->whereHas('requirements', function ($q3) use ($requirementId) {
@@ -127,7 +126,7 @@ class RequirementsTrackerController extends Controller
                     ->first();
  
                 // Kalkulahin ang due date
-                $dueDate = $requirement->getDueDateForBatch($batch);
+                $dueDate  = $requirement->getDueDateForBatch($batch);
                 $isOverdue = $dueDate && Carbon::now()->gt($dueDate) && !$submission;
  
                 // Submission status filter (para sa walang specific requirement filter)
@@ -137,44 +136,45 @@ class RequirementsTrackerController extends Controller
                 }
  
                 $rows[] = [
-                    'participant_id'     => $participant->id,
-                    'empcode'            => $employee->EMPCODE,
-                    'fullname'           => trim($employee->LASTNAME . ', ' . $employee->FIRSTNAME . ' ' . $employee->MI),
-                    'office'             => $employee->OFFICE,
-                    'division'           => $employee->{'OFFICE/DIVISION'},
-                    'position'           => $employee->POSITION,
-                    'program_code'       => $batch->program_code,
-                    'program_title'      => $batch->program->title ?? '-',
-                    'batch'              => $batch->batch,
-                    'batch_date_start'   => $batch->date_start,
-                    'batch_date_end'     => $batch->date_end,
-                    'requirement_id'     => $requirement->id,
-                    'requirement_title'  => $requirement->title,
-                    'required'           => $requirement->required,
-                    'due_date'           => $dueDate ? $dueDate->toDateString() : null,
-                    'is_overdue'         => $isOverdue,
-                    'submitted'          => $submission ? true : false,
-                    'submission_status'  => $submission ? $submission->status : null,
-                    'submitted_at'       => $submission ? optional($submission->submitted_at)->format('Y-m-d') : null,
-                    'submission_file'    => $submission ? $submission->file_path : null,
-                    'submission_notes'   => $submission ? $submission->notes : null,
+                    'participant_id'   => $participant->id,
+                    'empcode'          => $employee->EMPCODE,
+                    'fullname'         => trim($employee->LASTNAME . ', ' . $employee->FIRSTNAME . ' ' . $employee->MI),
+                    'office'           => $employee->OFFICE,
+                    'division'         => $employee->{'OFFICE/DIVISION'},
+                    'position'         => $employee->POSITION,
+                    'program_code'     => $batch->program_code,
+                    'program_title'    => $batch->program->title ?? '-',
+                    'batch'            => $batch->batch,
+                    'batch_date_start' => $batch->date_start,
+                    'batch_date_end'   => $batch->date_end,
+                    'requirement_id'   => $requirement->id,
+                    'requirement_title'=> $requirement->title,
+                    'required'         => $requirement->required,
+                    'due_date'         => $dueDate ? $dueDate->toDateString() : null,
+                    'is_overdue'       => $isOverdue,
+                    'submitted'        => $submission ? true : false,
+                    'submission_status'=> $submission ? $submission->status : null,
+                    'submitted_at'     => $submission ? optional($submission->submitted_at)->format('Y-m-d') : null,
+                    'submission_file'  => $submission ? $submission->file_path : null,
+                    'submission_notes' => $submission ? $submission->notes : null,
                 ];
             }
         }
  
-        // Pagkatapos mag-build ng rows, i-apply ang overdue filter kung meron
+        // Overdue filter
         if ($request->filled('overdue') && $request->overdue === '1') {
             $rows = array_filter($rows, fn($r) => $r['is_overdue']);
             $rows = array_values($rows);
         }
  
-        // Sort: overdue muna, tapos not submitted, tapos submitted
+        // Sort: overdue muna, tapos not submitted, tapos submitted; alphabetical within group
         usort($rows, function ($a, $b) {
             if ($b['is_overdue'] !== $a['is_overdue']) return $b['is_overdue'] <=> $a['is_overdue'];
             if ($b['submitted'] !== $a['submitted']) return $a['submitted'] <=> $b['submitted'];
             return strcmp($a['fullname'], $b['fullname']);
         });
  
+        // Summary (computed from ALL rows before slicing)
         $summary = [
             'total'         => count($rows),
             'submitted'     => count(array_filter($rows, fn($r) => $r['submitted'])),
@@ -182,13 +182,31 @@ class RequirementsTrackerController extends Controller
             'overdue'       => count(array_filter($rows, fn($r) => $r['is_overdue'])),
         ];
  
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'rows'    => $rows,
-                'summary' => $summary,
-            ]);
-        }
+        // ── PAGINATION ──────────────────────────────────────────────────────────
+        $perPage  = max(1, (int) $request->input('per_page', 25));
+        $page     = max(1, (int) $request->input('page', 1));
+        $total    = count($rows);
+        $lastPage = $total > 0 ? (int) ceil($total / $perPage) : 1;
+        $page     = min($page, $lastPage); // clamp so we never go past last page
+        $offset   = ($page - 1) * $perPage;
  
-        return view('requirements-tracker.partials.table', compact('rows', 'summary'));
+        $pagedRows = array_slice($rows, $offset, $perPage);
+ 
+        $pagination = [
+            'total'        => $total,
+            'per_page'     => $perPage,
+            'current_page' => $page,
+            'last_page'    => $lastPage,
+            'from'         => $total > 0 ? $offset + 1 : 0,
+            'to'           => min($offset + $perPage, $total),
+        ];
+        // ────────────────────────────────────────────────────────────────────────
+ 
+        return response()->json([
+            'rows'       => $pagedRows, // current page only
+            'all_rows'   => $rows,      // full set for CSV export
+            'summary'    => $summary,
+            'pagination' => $pagination,
+        ]);
     }
 }
