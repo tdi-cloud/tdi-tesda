@@ -75,7 +75,17 @@
                 {{ request()->is('requirements-tracker') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
                 ">
                     <i class="fa-regular fa-file-lines text-indigo-600"></i>
-                    <span class="text-[13px] leading-4">Requirements Tracker</span>
+                    <span class="text-[13px] leading-4">POST Training Requirements Tracker</span>
+                    
+                </a>
+            </li>
+
+            <li class="w-full">
+                <a href="/foreign-programs" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
+                {{ request()->is('foreign-programs') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
+                ">
+                    <i class="fa-solid fa-chalkboard-user text-emerald-600"></i>
+                    <span class="text-[13px] leading-4">FSTP Nomination</span>
                     
                 </a>
             </li>

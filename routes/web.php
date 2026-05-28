@@ -9,6 +9,8 @@ use App\Http\Controllers\DeclarationController;
 use App\Http\Controllers\EnrolledProgramsController;
 use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\ForeignController;
+use App\Http\Controllers\ForeignParticipantController;
+use App\Http\Controllers\ForeignProgramController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ParticipantsController;
 use App\Http\Controllers\ProgramsController;
@@ -225,6 +227,55 @@ Route::prefix('requirements-tracker')->name('requirements-tracker.')->group(func
     Route::get('/', [RequirementsTrackerController::class, 'index'])->name('index');
     Route::get('/data', [RequirementsTrackerController::class, 'getData'])->name('data');
 });
+
+
+// FSTP PROGRAMS
+// Route::prefix('foreign-programs')->name('foreign-programs.')->group(function () {
+//     // Programs CRUD
+//     Route::get('/',                        [ForeignProgramController::class, 'index'])->name('index');
+//     Route::post('/',                       [ForeignProgramController::class, 'store'])->name('store');
+//     Route::get('/{foreignProgram}',        [ForeignProgramController::class, 'show'])->name('show');
+//     Route::put('/{foreignProgram}',        [ForeignProgramController::class, 'update'])->name('update');
+//     Route::delete('/{foreignProgram}',     [ForeignProgramController::class, 'destroy'])->name('destroy');
+ 
+//     // Participants per program
+//     Route::prefix('/{foreignProgram}/participants')->name('participants.')->group(function () {
+//         Route::get('/',                          [ForeignParticipantController::class, 'index'])->name('index');
+//         Route::post('/',                         [ForeignParticipantController::class, 'store'])->name('store');
+//         Route::get('/{participant}',             [ForeignParticipantController::class, 'show'])->name('show');
+//         Route::put('/{participant}',             [ForeignParticipantController::class, 'update'])->name('update');
+//         Route::delete('/{participant}',          [ForeignParticipantController::class, 'destroy'])->name('destroy');
+//     });
+// });
+
+Route::prefix('foreign-programs')->name('foreign-programs.')->group(function () {
+
+    // ✅ Specific routes FIRST, bago ang wildcard
+    Route::get('/', [ForeignProgramController::class, 'index'])->name('index');
+    Route::post('/', [ForeignProgramController::class, 'store'])->name('store');
+
+    // ✅ Participants nested routes — DAPAT nasa itaas ng {foreignProgram} routes
+    Route::prefix('/{foreignProgram}/participants')->name('participants.')->group(function () {
+        Route::get('/',              [ForeignParticipantController::class, 'index'])->name('index');
+        Route::post('/',             [ForeignParticipantController::class, 'store'])->name('store');
+        Route::get('/{participant}', [ForeignParticipantController::class, 'show'])->name('show');
+        Route::put('/{participant}', [ForeignParticipantController::class, 'update'])->name('update');
+        Route::delete('/{participant}', [ForeignParticipantController::class, 'destroy'])->name('destroy');
+    });
+
+    // ✅ Wildcard {foreignProgram} routes — DAPAT nasa ibaba
+    Route::get('/{foreignProgram}',    [ForeignProgramController::class, 'show'])->name('show');
+    Route::put('/{foreignProgram}',    [ForeignProgramController::class, 'update'])->name('update');
+    Route::delete('/{foreignProgram}', [ForeignProgramController::class, 'destroy'])->name('destroy');
+});
+
+
+
+
+
+
+
+
  
 
 });
