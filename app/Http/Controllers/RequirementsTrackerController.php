@@ -144,6 +144,7 @@ class RequirementsTrackerController extends Controller
                     'position'         => $employee->POSITION,
                     'program_code'     => $batch->program_code,
                     'program_title'    => $batch->program->title ?? '-',
+                    'program_id'    => $batch->program->id,
                     'batch'            => $batch->batch,
                     'batch_date_start' => $batch->date_start,
                     'batch_date_end'   => $batch->date_end,

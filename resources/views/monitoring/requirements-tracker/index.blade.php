@@ -254,6 +254,7 @@ function fetchData() {
     })
     .then(res => res.json())
     .then(data => {
+        // console.log(data);
         allRows     = data.all_rows;                  // full set for CSV + showDetail
         lastPage    = data.pagination.last_page;
         currentPage = data.pagination.current_page;
@@ -532,32 +533,56 @@ function getStatusBadge(row) {
 // ── DETAIL MODAL ────────────────────────────────────────────────────────────────
 
 function showDetail(index) {
-    const row = allRows[index]; // allRows = full dataset, not just current page
+    const row = allRows[index];
     if (!row) return;
 
     document.getElementById('modal-title').textContent = row.fullname;
 
+    // Build each field's value HTML individually (some need links, not plain text)
+    console.log(row);
     const fields = [
-        ['Employee Code',     row.empcode],
-        ['Office',            row.office],
-        ['Position',          row.position],
-        ['Program',           `${row.program_code} – ${row.program_title}`],
-        ['Batch',             row.batch],
+        ['Employee Code',     escHtml(row.empcode)],
+        ['Office',            escHtml(row.office)],
+        ['Position',          escHtml(row.position)],
+        // ── Program: clickable link to program page ──
+        ['Program', `
+            <a href="/programs/${escHtml(row.program_id)}"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="text-blue-500 underline underline-offset-2 hover:text-blue-600 transition-colors">
+                ${escHtml(row.program_code)} – ${escHtml(row.program_title)}
+            </a>
+        `],
+        ['Batch',             escHtml(row.batch)],
         ['Batch Dates',       `${formatDate(row.batch_date_start)} to ${formatDate(row.batch_date_end)}`],
-        ['Requirement',       row.requirement_title],
+        ['Requirement',       escHtml(row.requirement_title)],
         ['Required',          row.required === 'yes' ? 'Yes (Required)' : 'No (Optional)'],
         ['Due Date',          row.due_date ? formatDate(row.due_date) : '—'],
         ['Overdue',           row.is_overdue ? '⚠️ Yes' : 'No'],
         ['Submitted',         row.submitted ? 'Yes' : 'No'],
-        ['Submission Status', row.submission_status || '—'],
+        ['Submission Status', escHtml(row.submission_status) || '—'],
         ['Date Submitted',    row.submitted_at ? formatDate(row.submitted_at) : '—'],
-        ['Notes',             row.submission_notes || '—'],
+        ['Notes',             escHtml(row.submission_notes) || '—'],
+        // ── Submitted File: clickable if file_path exists ──
+        ['Submitted File', row.submission_file
+            ? `<a href="/storage/${escHtml(row.submission_file)}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 text-blue-500 underline underline-offset-2 hover:text-blue-600 transition-colors">
+                   <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                   </svg>
+                   View Submitted File
+               </a>`
+            : '<span class="text-base-content/30">No file attached</span>'
+        ],
     ];
 
-    document.getElementById('modal-body').innerHTML = fields.map(([label, value]) => `
+    // Note: values are already HTML (not plain text), so render directly — no escHtml wrapper here
+    document.getElementById('modal-body').innerHTML = fields.map(([label, valueHtml]) => `
         <div class="flex gap-3 py-1.5 border-b border-base-200 last:border-0">
             <span class="text-base-content/50 w-36 flex-shrink-0 text-xs pt-0.5">${label}</span>
-            <span class="text-base-content font-medium text-xs flex-1">${escHtml(String(value ?? '—'))}</span>
+            <span class="text-base-content font-medium text-xs flex-1">${valueHtml}</span>
         </div>
     `).join('');
 
