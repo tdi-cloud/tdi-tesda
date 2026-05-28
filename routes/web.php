@@ -16,6 +16,7 @@ use App\Http\Controllers\ProgramSupportingDocumentController;
 use App\Http\Controllers\Regionalreportcontroller;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\RequirementsController;
+use App\Http\Controllers\RequirementsTrackerController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SubmissionsController;
 use App\Http\Controllers\TESDAOrderController;
@@ -218,6 +219,13 @@ Route::get(
     '/programs/{program_code}/missing-submissions',
     [SubmissionsController::class, 'missingSubmissions']
 );
+
+// SUBMISSIONS OR REQUIREMENTS TRACKER 
+Route::prefix('requirements-tracker')->name('requirements-tracker.')->group(function () {
+    Route::get('/', [RequirementsTrackerController::class, 'index'])->name('index');
+    Route::get('/data', [RequirementsTrackerController::class, 'getData'])->name('data');
+});
+ 
 
 });
 

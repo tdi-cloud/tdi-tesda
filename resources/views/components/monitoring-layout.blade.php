@@ -3,7 +3,7 @@
 <section class="w-full flex flex-1 overflow-x-hidden">
 
     {{-- LEFT --}}
-    <div class="w-60 bg-white dark:bg-slate-900 pl-10 pr-4 border-r border-slate-300 dark:border-slate-600 ">
+    <div class="w-65 bg-white dark:bg-slate-900 pl-10 pr-4 border-r border-slate-300 dark:border-slate-600 ">
         <ul class="space-y-1 py-4">
 
             <li class="w-full">
@@ -66,6 +66,16 @@
                 ">
                     <i class="fa-regular fa-file-lines text-cyan-600"></i>
                     <span class="text-[13px]">Supporting Docs</span>
+                    
+                </a>
+            </li>
+
+            <li class="w-full">
+                <a href="/requirements-tracker" class="flex gap-2 items-center hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg p-2 poppins-regular text-sm text-slate-700 dark:text-slate-200 block duration-500
+                {{ request()->is('requirements-tracker') ? 'bg-slate-200 dark:bg-slate-700 poppins-bold' : 'hover:bg-slate-200' }}
+                ">
+                    <i class="fa-regular fa-file-lines text-indigo-600"></i>
+                    <span class="text-[13px] leading-4">Requirements Tracker</span>
                     
                 </a>
             </li>

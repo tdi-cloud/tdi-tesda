@@ -34,4 +34,9 @@ class Submission extends Model
     {
         return $this->belongsTo(Requirement::class);
     }
+    
+     public function batch()
+    {
+        return $this->belongsTo(Batch::class, 'batch_id');
+    }
 }

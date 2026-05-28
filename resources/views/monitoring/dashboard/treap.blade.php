@@ -53,7 +53,7 @@
     })
     .then(res => res.json())
     .then(data => {
-        console.log(data.region_chart);
+        console.log(data);
         TreapRadialChart.updateSeries([Number(data.totals.percentage)]);
         animateNumber('#treapPerc', 0, data.radial_chart.series, 500);
         animateNumber('#SubmittedNumber', 0, data.totals.with, 500);
@@ -157,11 +157,11 @@ var treap_regional_options = {
   series: [
     {
         name: 'Submitted',
-        data: [100,100,50,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100],
+        data: [100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100],
     },     
     {
         name: 'No Submission',
-        data: [0,0,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        data: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
     }
   ],
   xaxis: {
