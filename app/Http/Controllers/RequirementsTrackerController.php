@@ -15,7 +15,14 @@ class RequirementsTrackerController extends Controller
     public function index()
     {
         // Kunin lahat ng requirement titles para sa filter dropdown
-        $requirementTitles = Requirement::select('id', 'title', 'program_code')->orderBy('title')->get();
+        $requirementTitles = Requirement::select('title')
+        ->distinct()
+        ->orderBy('title')
+        ->get()
+        ->map(fn($r) => (object)[
+            'id'    => $r->title,   // use title as the filter value
+            'title' => $r->title,
+        ]);
  
         // Kunin lahat ng unique offices ng mga employees
         $offices = employees::select('OFFICE')
@@ -63,11 +70,11 @@ class RequirementsTrackerController extends Controller
  
         // Filter: requirement title (requirement_id)
         if ($request->filled('requirement_id')) {
-            $requirementId = $request->requirement_id;
-            $query->whereHas('batch', function ($q) use ($requirementId) {
-                $q->whereHas('program', function ($q2) use ($requirementId) {
-                    $q2->whereHas('requirements', function ($q3) use ($requirementId) {
-                        $q3->where('id', $requirementId);
+            $requirementTitle = $request->requirement_id; // now holds the title string
+            $query->whereHas('batch', function ($q) use ($requirementTitle) {
+                $q->whereHas('program', function ($q2) use ($requirementTitle) {
+                    $q2->whereHas('requirements', function ($q3) use ($requirementTitle) {
+                        $q3->where('title', $requirementTitle);
                     });
                 });
             });
@@ -116,7 +123,7 @@ class RequirementsTrackerController extends Controller
  
             // Kung may specific requirement filter, gamitin lang ito
             if ($request->filled('requirement_id')) {
-                $programRequirements = $programRequirements->where('id', $request->requirement_id);
+                $programRequirements = $programRequirements->where('title', $request->requirement_id);
             }
  
             foreach ($programRequirements as $requirement) {
