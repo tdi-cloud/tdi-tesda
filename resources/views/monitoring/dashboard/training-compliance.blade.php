@@ -1,6 +1,6 @@
 
 
-<div class="flex justify-center pb-2 items-center   relative border border-slate-300 dark:shadow-2xl shadow-lg bg-white dark:bg-slate-700 dark:border-slate-500 rounded-2xl">
+<div class="flex justify-center pb-2 items-center   relative border border-slate-300 dark:shadow-2xl shadow-lg bg-white dark:bg-slate-700 dark:border-slate-600 rounded-2xl">
     
     
                 <div class="LEFTCOUNTS ">

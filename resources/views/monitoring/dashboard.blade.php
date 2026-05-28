@@ -9,25 +9,25 @@
     </div>
 
 
-    <section class=" pb-5 bg-white dark:bg-slate-700 to-sky-800 dark:border-slate-600 border border-slate-300 rounded-2xl">
+    <section class=" pb-5 bg-white dark:bg-slate-700 to-sky-800 dark:border-slate-700 border border-slate-300 rounded-2xl">
         @include('monitoring.dashboard.top-filter')
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4  px-5">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4  px-5">
 
             <div class="TRAININGS w-full ">
                 @include('monitoring.dashboard.training-compliance')
             </div>
 
-            <div class="TRAININGS w-full h-full bg-white dark:bg-slate-700 dark:border-slate-500 border border-slate-300 shadow-lg rounded-2xl flex flex-col">
+            <div class="TRAININGS w-full h-full bg-white dark:bg-slate-700 dark:border-slate-600 border border-slate-300 shadow-lg rounded-2xl flex flex-col">
                 @include('monitoring.dashboard.all8hrs-training')
                 @include('monitoring.dashboard.all40hrs-training')
             </div>
 
-            <div class="TRAININGS border dark:bg-slate-700 h-auto dark:border-slate-500 border-slate-300 rounded-2xl shadow-2xl bg-white">
+            <div class="TRAININGS border dark:bg-slate-700 h-auto dark:border-slate-600 border-slate-300 rounded-2xl shadow-2xl bg-white">
                 @include('monitoring.dashboard.8hrs-regions')
             </div>
 
-            <div class="TRAININGS border dark:bg-slate-700 dark:border-slate-500 h-auto border-slate-300 rounded-2xl shadow-2xl bg-white">
+            <div class="TRAININGS border dark:bg-slate-700 dark:border-slate-600 h-auto border-slate-300 rounded-2xl shadow-2xl bg-white">
                 @include('monitoring.dashboard.40hrs-regions')
             </div>
         </div>
@@ -40,11 +40,21 @@
         {{-- 2ND SECTION  --}}
 
 
-        <section class=" bg-white dark:bg-slate-700 to-sky-800 dark:border-slate-600 border border-slate-300 rounded-2xl">
+        <section class=" bg-white dark:bg-slate-700 to-sky-800 dark:border-slate-600 border border-slate-300 rounded-2xl p-5 space-y-5">
         
-            <div class="hidden text-md poppins-bold uppercase p-5">
-                <i class="fa-regular fa-file-lines"></i> EMPLOYEES Training Compliance Rate
+            <div class=" text-md poppins-bold uppercase text-green-600">
+                Requirements Submissions Rate
             </div>
+
+            <div class=" grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+                @include('monitoring.dashboard.treap')
+
+
+            </div>
+
+
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4  px-5">
 

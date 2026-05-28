@@ -114,6 +114,7 @@ Route::get('/training-stats/8hrs', [DashboardController::class, 'getTrainingStat
 Route::get('/training-stats/40hrs', [DashboardController::class, 'getTrainingStats40hrs']);
 Route::get('/training-stats/8hrs/bars', [DashboardController::class, 'getTrainingStats8hrsBars']);
 Route::get('/training-stats/40hrs/bars', [DashboardController::class, 'getTrainingStats40hrsBars']);
+Route::get('/treap-dashboard', [DashboardController::class, 'treapDashboard']);
 
 // SUBMISSIONS 
 Route::post('/submissions/store', [SubmissionsController::class, 'store']);
@@ -219,10 +220,6 @@ Route::get(
 );
 
 });
-
-
-
-
 
 // REGISTRATION SECTION 
 Route::get('/register', fn() => view('auth.register'))->name('register');

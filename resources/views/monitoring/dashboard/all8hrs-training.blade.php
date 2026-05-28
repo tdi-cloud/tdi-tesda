@@ -1,4 +1,4 @@
-<div class="border-b border-slate-300 dark:border-slate-500 flex-1 p-4 flex justify-between relative">
+<div class="border-b border-slate-300 dark:border-slate-600 flex-1 p-4 flex justify-between relative">
 
     {{-- LEFT --}}
     <div class="flex flex-col justify-between h-full flex-1">
@@ -120,7 +120,7 @@ function loadTrainingStats8hrs() {
             office_filter: $('#office_filter').val()
         },
         success: function (res) {
-            console.log(res)
+            // console.log(res)
             // LEFT NUMBERS
             animateNumber('#WT_eight', 0, res.trained, 500);
             animateNumber('#NT_eight', 0, res.not_trained, 500);

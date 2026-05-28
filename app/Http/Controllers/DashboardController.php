@@ -574,11 +574,11 @@ public function treapDashboard(Request $request)
             'xaxis' => $regions,
             'series' => [
                 [
-                    'name' => 'With Training',
+                    'name' => 'With Submission',
                     'data' => $with
                 ],
                 [
-                    'name' => 'No Training',
+                    'name' => 'No Submission',
                     'data' => $without
                 ]
             ]

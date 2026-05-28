@@ -1,25 +1,26 @@
-<div class="poppins-medium uppercase text-sky-900 dark:text-white text-sm col-span-2 py-2 px-5 flex items-center justify-between">
+<div class="poppins-medium uppercase text-sky-900 dark:text-white text-sm col-span-2 py-2 px-5 flex items-center flex-wrap justify-between">
 
             <div class="text-md poppins-bold">
                 <i class="fa-solid fa-graduation-cap"></i> EMPLOYEES Training Compliance Rate
             <span id="wait_trainings" class=" text-[10px] poppins-regular">Please wait...</span>
+
             </div>
                 
             
 
 
             {{-- FILTER  --}}
-            <div class=" flex items-center space-x-4">
+            <div class=" flex flex-col lg:flex-row items-center space-x-4 ">
 
                 <select id="office_filter"
-                    class="select dark:bg-slate-600 min-w-50 dark:text-white text-sky-900 bg-white text-slate-900 text-black poppins-medium text-sm rounded-lg outline-none focus:outline-none cursor-pointer border-none">
+                    class="select dark:bg-slate-600 border-1 border-slate-300 min-w-50 dark:text-white text-sky-900 bg-white text-slate-900 text-black poppins-medium text-sm rounded-lg outline-none focus:outline-none cursor-pointer ">
 
                     <option value="ALL" selected>Nationwide Target</option>
                     <option value="OPCR" >OPCR Target</option>
 
                 </select>
                     
-                    <select id="region_select"  class="select min-w-40 dark:bg-slate-600 dark:text-white text-sky-900 bg-white text-slate-900  text-black  poppins-medium  text-sm rounded-lg outline-none focus:outline-none cursor-pointer border-none"> 
+                    <select id="region_select"  class="select border-1 border-slate-300 min-w-40 dark:bg-slate-600 dark:text-white text-sky-900 bg-white text-slate-900  text-black  poppins-medium  text-sm rounded-lg outline-none focus:outline-none cursor-pointer "> 
                         <option value="ALL">All Regions</option> 
                         <option value="CO">Central Office</option> 
                         <option value="NCR">NCR</option> 

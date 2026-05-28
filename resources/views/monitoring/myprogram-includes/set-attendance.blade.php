@@ -325,20 +325,30 @@ setAllBtn.addEventListener('click', (e) => {
 function resetModal() {
   statusSelect.value = '';
   hoursInput.value = '';
+
+  // ✅ Clear file state completely
   selectedAbsentFile = null;
   fileInput.value = '';
+  fileName.textContent = '';
+  fileSize.textContent = '';
 
   hoursSection.classList.add('hidden');
   fileSection.classList.add('hidden');
   pendingSection.classList.add('hidden');
 
+  // ✅ Reset file drop zone display
   filePrompt.classList.remove('hidden');
   fileInfo.classList.add('hidden');
   fileInfo.classList.remove('flex');
 
   saveBtn.disabled = true;
-  saveBtn.innerHTML = 'Save';
+  saveBtn.innerHTML = '<i data-lucide="save" style="width:16px;height:16px;"></i> Save';
+  lucide.createIcons();
 }
+
+modal.addEventListener('close', () => {
+  resetModal();
+});
 
 // ======================
 // TOAST
