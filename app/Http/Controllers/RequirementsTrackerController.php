@@ -82,14 +82,18 @@ class RequirementsTrackerController extends Controller
  
         // Filter: submission status (submitted / not_submitted)
         if ($request->filled('submission_status') && $request->filled('requirement_id')) {
-            $requirementId = $request->requirement_id;
+            $requirementTitle = $request->requirement_id; // it's actually a title string
+
+            // Resolve the title to actual requirement IDs first
+            $requirementIds = Requirement::where('title', $requirementTitle)->pluck('id');
+
             if ($request->submission_status === 'submitted') {
-                $query->whereHas('submissions', function ($q) use ($requirementId) {
-                    $q->where('requirement_id', $requirementId);
+                $query->whereHas('submissions', function ($q) use ($requirementIds) {
+                    $q->whereIn('requirement_id', $requirementIds);
                 });
             } elseif ($request->submission_status === 'not_submitted') {
-                $query->whereDoesntHave('submissions', function ($q) use ($requirementId) {
-                    $q->where('requirement_id', $requirementId);
+                $query->whereDoesntHave('submissions', function ($q) use ($requirementIds) {
+                    $q->whereIn('requirement_id', $requirementIds);
                 });
             }
         }

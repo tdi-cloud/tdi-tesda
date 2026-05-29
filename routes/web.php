@@ -229,24 +229,6 @@ Route::prefix('requirements-tracker')->name('requirements-tracker.')->group(func
 });
 
 
-// FSTP PROGRAMS
-// Route::prefix('foreign-programs')->name('foreign-programs.')->group(function () {
-//     // Programs CRUD
-//     Route::get('/',                        [ForeignProgramController::class, 'index'])->name('index');
-//     Route::post('/',                       [ForeignProgramController::class, 'store'])->name('store');
-//     Route::get('/{foreignProgram}',        [ForeignProgramController::class, 'show'])->name('show');
-//     Route::put('/{foreignProgram}',        [ForeignProgramController::class, 'update'])->name('update');
-//     Route::delete('/{foreignProgram}',     [ForeignProgramController::class, 'destroy'])->name('destroy');
- 
-//     // Participants per program
-//     Route::prefix('/{foreignProgram}/participants')->name('participants.')->group(function () {
-//         Route::get('/',                          [ForeignParticipantController::class, 'index'])->name('index');
-//         Route::post('/',                         [ForeignParticipantController::class, 'store'])->name('store');
-//         Route::get('/{participant}',             [ForeignParticipantController::class, 'show'])->name('show');
-//         Route::put('/{participant}',             [ForeignParticipantController::class, 'update'])->name('update');
-//         Route::delete('/{participant}',          [ForeignParticipantController::class, 'destroy'])->name('destroy');
-//     });
-// });
 
 Route::prefix('foreign-programs')->name('foreign-programs.')->group(function () {
 

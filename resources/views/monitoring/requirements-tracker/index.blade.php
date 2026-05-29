@@ -102,7 +102,7 @@
                     <select id="filter-requirement" class="select select-bordered select-sm w-full text-sm">
                         <option value="">-- All Requirements --</option>
                         @foreach($requirementTitles as $req)
-                            <option value="{{ $req->title }}">{{ $req->title }}</option>
+                            <option value="{{ $req->id }}">{{ $req->title }}</option>
                         @endforeach
                     </select>
                 </div>
