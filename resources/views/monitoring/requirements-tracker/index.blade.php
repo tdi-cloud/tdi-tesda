@@ -8,7 +8,7 @@
     {{-- PAGE HEADER --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-            <h1 class="text-2xl font-bold text-base-content">Requirements Tracker</h1>
+            <h1 class="text-2xl font-bold text-base-content">POST Training Requirements Tracker</h1>
             <p class="text-sm text-base-content/60 mt-0.5">List of participants and their requirements submission status</p>
         </div>
         <div class="flex gap-2">
@@ -102,7 +102,7 @@
                     <select id="filter-requirement" class="select select-bordered select-sm w-full text-sm">
                         <option value="">-- All Requirements --</option>
                         @foreach($requirementTitles as $req)
-                            <option value="{{ $req->id }}">{{ $req->title }}</option>
+                            <option value="{{ $req->title }}">{{ $req->title }}</option>
                         @endforeach
                     </select>
                 </div>
