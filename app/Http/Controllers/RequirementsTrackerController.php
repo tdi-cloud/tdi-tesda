@@ -48,7 +48,7 @@ class RequirementsTrackerController extends Controller
                 'employee',
                 'submissions.requirement',
             ])
-            ->where('attendance', '!=', 'absent') // huwag isama ang absent
+            ->where('attendance', '!=', 'Absent') // huwag isama ang absent
             ->whereHas('employee'); // kailangan may employee record
  
         // Filter: empcode / pangalan ng empleyado

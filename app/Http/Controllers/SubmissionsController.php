@@ -335,6 +335,8 @@ public function missingSubmissions(Request $request, $programCode)
 
                     'batch' => $participant->batch->batch,
 
+                    'office' => $participant->employee['OFFICE/DIVISION'],
+
                     'requirement' => $requirement->title,
 
                     'due_date' => $dueDate?->format('F d, Y'),

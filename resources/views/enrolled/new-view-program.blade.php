@@ -199,7 +199,7 @@
   @endphp
 
   <section>
-    <h2 class="serif text-xl font-bold text-slate-800 mb-5">My Progress</h2>
+    <h2 class="serif text-xl font-bold text-slate-800 mb-5">Your Progress</h2>
     <div class="grid sm:grid-cols-3 gap-4">
 
       {{-- Hours earned --}}

@@ -1,6 +1,5 @@
 <style>
-
-    [data-theme="light"] {
+  [data-theme="light"] {
     --surface:       #f8f7f4;
     --surface-card:  #ffffff;
     --border-subtle: #e8e5e0;
@@ -23,7 +22,7 @@
     --stripe:        #1a1815;
   }
 
-    .btn-missing {
+  .btn-missing {
     background: var(--accent);
     color: #fff;
     border: none;
@@ -39,7 +38,7 @@
     box-shadow: 0 2px 8px var(--accent-ring), 0 1px 2px rgba(0,0,0,.08);
     transition: opacity .15s, transform .1s, box-shadow .15s;
   }
-  .btn-missing:hover { opacity:.88; transform:translateY(-1px); box-shadow: 0 4px 14px var(--accent-ring); }
+  .btn-missing:hover  { opacity:.88; transform:translateY(-1px); box-shadow: 0 4px 14px var(--accent-ring); }
   .btn-missing:active { transform:translateY(0); opacity:1; }
 
   dialog.modal-missing {
@@ -50,12 +49,18 @@
     max-width: 100vw;
     width: 100%;
     max-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    inset: 0;
+    height: 100vh;
   }
+  dialog.modal-missing:not([open]) { display: none; }
   dialog.modal-missing::backdrop {
     background: rgba(10,8,6,.55);
     backdrop-filter: blur(3px);
   }
-
 
   /* ── MODAL CARD ── */
   .modal-card {
@@ -63,7 +68,7 @@
     border: 1px solid var(--border-subtle);
     border-radius: 1rem;
     box-shadow: 0 24px 64px rgba(0,0,0,.16), 0 4px 16px rgba(0,0,0,.08);
-    width: min(900px, 95vw);
+    width: min(960px, 95vw);
     margin: auto;
     overflow: hidden;
     animation: slideUp .22s cubic-bezier(.25,.46,.45,.94);
@@ -113,7 +118,7 @@
     flex-shrink: 0;
   }
   .btn-close-modal:hover { background: var(--border-subtle); color: var(--text-primary); }
- 
+
   /* ── FILTER ROW ── */
   .filter-row {
     padding: 1rem 1.5rem;
@@ -159,10 +164,10 @@
     cursor: pointer;
   }
   .filter-select-wrap { flex: 1 1 160px; }
- 
+
   /* ── BODY ── */
   .modal-body { padding: 0; }
- 
+
   /* ── STATS ROW ── */
   .stats-row {
     padding: .875rem 1.5rem;
@@ -172,16 +177,21 @@
     background: var(--stripe);
   }
   .stat-item { display: flex; align-items: center; gap: .4rem; font-size: .75rem; }
-  .stat-dot { width: .5rem; height: .5rem; border-radius: 50%; }
+  .stat-dot  { width: .5rem; height: .5rem; border-radius: 50%; }
   .stat-label { color: var(--text-muted); }
-  .stat-count { font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; font-family: 'DM Mono', monospace; }
- 
+  .stat-count {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+    font-family: 'DM Mono', monospace;
+  }
+
   /* ── TABLE ── */
   .table-wrap { overflow-x: auto; max-height: 420px; overflow-y: auto; }
-  .table-wrap::-webkit-scrollbar { width: 4px; height: 4px; }
+  .table-wrap::-webkit-scrollbar       { width: 4px; height: 4px; }
   .table-wrap::-webkit-scrollbar-track { background: transparent; }
   .table-wrap::-webkit-scrollbar-thumb { background: var(--border-subtle); border-radius: 4px; }
- 
+
   table.missing-table { width: 100%; border-collapse: collapse; }
   table.missing-table thead th {
     padding: .625rem 1rem;
@@ -201,36 +211,14 @@
     transition: background .12s;
   }
   table.missing-table tbody tr:last-child { border-bottom: none; }
-  table.missing-table tbody tr:hover { background: var(--stripe); }
+  table.missing-table tbody tr:hover     { background: var(--stripe); }
   table.missing-table tbody td {
     padding: .75rem 1rem;
     font-size: .8125rem;
     color: var(--text-primary);
     vertical-align: middle;
   }
- 
-  /* ── EMPLOYEE CELL ── */
-  .emp-name { font-weight: 500; }
-  .emp-code { font-family: 'DM Mono', monospace; font-size: .6875rem; color: var(--text-muted); margin-top: .125rem; }
- 
-  /* ── BATCH CHIP ── */
-  .batch-chip {
-    display: inline-block;
-    padding: .2rem .55rem;
-    border-radius: .3rem;
-    background: var(--border-subtle);
-    color: var(--text-muted);
-    font-size: .6875rem;
-    font-weight: 500;
-    letter-spacing: .02em;
-  }
- 
-  /* ── REQUIREMENT ── */
-  .req-text { font-size: .8125rem; color: var(--text-primary); }
- 
-  /* ── DUE DATE ── */
-  .due-date { font-family: 'DM Mono', monospace; font-size: .75rem; color: var(--text-muted); }
- 
+
   /* ── BADGES ── */
   .badge-overdue {
     display: inline-flex; align-items: center; gap: .3rem;
@@ -241,7 +229,7 @@
     font-size: .6875rem; font-weight: 600; letter-spacing: .02em;
   }
   [data-theme="dark"] .badge-overdue { background: #2d1414; color: #f87171; }
- 
+
   .badge-pending {
     display: inline-flex; align-items: center; gap: .3rem;
     padding: .25rem .625rem;
@@ -251,13 +239,8 @@
     font-size: .6875rem; font-weight: 600; letter-spacing: .02em;
   }
   [data-theme="dark"] .badge-pending { background: #27200a; color: #fbbf24; }
- 
-  .badge-dot { width: .375rem; height: .375rem; border-radius: 50%; flex-shrink: 0; }
-  .badge-overdue .badge-dot { background: #ef4444; }
-  .badge-pending .badge-dot  { background: #f59e0b; }
- 
-  /* ── EMPTY / LOADING STATE ── */
-  .state-row td { padding: 3rem 1rem !important; text-align: center; color: var(--text-muted); font-size: .875rem; }
+
+  /* ── LOADING SHIMMER ── */
   .loading-shimmer {
     width: 140px; height: .75rem; border-radius: .25rem;
     background: linear-gradient(90deg, var(--border-subtle) 25%, var(--stripe) 50%, var(--border-subtle) 75%);
@@ -266,7 +249,7 @@
     margin: 0 auto;
   }
   @keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
- 
+
   /* ── FOOTER ── */
   .modal-footer {
     padding: .875rem 1.5rem;
@@ -277,77 +260,32 @@
     background: var(--stripe);
   }
   .footer-hint { font-size: .6875rem; color: var(--text-muted); }
-  .btn-close-footer {
-    padding: .45rem 1rem;
-    border-radius: .4rem;
-    border: 1px solid var(--border-subtle);
-    background: transparent;
-    color: var(--text-primary);
-    font-size: .8125rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background .15s;
-    font-family: inherit;
-  }
-  .btn-close-footer:hover { background: var(--border-subtle); }
- 
-  /* ── THEME TOGGLE (demo only) ── */
-  .theme-toggle {
-    position: fixed; top: 1.25rem; right: 1.25rem; z-index: 9999;
-    display: flex; align-items: center; gap: .5rem;
-    background: var(--surface-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 2rem;
-    padding: .3rem .75rem;
-    cursor: pointer;
-    font-size: .75rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0,0,0,.07);
-    transition: background .2s, border-color .2s;
-    font-family: inherit;
-  }
-  .theme-toggle:hover { color: var(--text-primary); }
- 
-  /* ── DEMO CENTERING ── */
-  .demo-stage {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 1rem;
-  }
-  .demo-label { font-size: .75rem; color: var(--text-muted); }
- 
-  /* ── MODAL WRAPPER CENTERING ── */
-  dialog.modal-missing {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    inset: 0;
-    height: 100vh;
-  }
-  dialog.modal-missing:not([open]) { display: none; }
 </style>
 
-<button
-    class="btn-missing"
-    onclick="showMissingModal()">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-    </svg>
-    View Missing Submissions
-  </button>
+
+{{-- ── TRIGGER BUTTON ── --}}
+<button class="btn-missing" onclick="showMissingModal()">
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/>
+    <line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+  View Missing Submissions
+</button>
 
 
+{{-- ── MODAL ── --}}
 <dialog class="modal-missing" id="missingSubmissionModal">
   <div class="modal-card">
- 
-    <!-- Header -->
+
+    {{-- Header --}}
     <div class="modal-header">
       <div class="modal-header-left">
         <div class="header-icon">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
           </svg>
         </div>
         <div>
@@ -357,78 +295,72 @@
       </div>
       <button class="btn-close-modal" onclick="document.getElementById('missingSubmissionModal').close()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
       </button>
     </div>
- 
-    <!-- Filters -->
+
+    {{-- Filters --}}
     <div class="filter-row">
       <div class="search-wrap">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
         <input
           type="text"
           id="searchInput"
           class="filter-input"
-          placeholder="Search employee…"
-          oninput="demoFilter()">
+          placeholder="Search employee…">
       </div>
- 
+
       <div class="filter-select-wrap">
-        <select id="batchFilter" class="filter-select" onchange="demoFilter()">
+        <select id="batchFilter" class="filter-select">
           <option value="all">All Batches</option>
           @foreach($batches as $batch)
-
-                <option value="{{ $batch->id }}">
-                    {{ $batch->batch }}
-                </option>
-
-            @endforeach
+            <option value="{{ $batch->id }}">{{ $batch->batch }}</option>
+          @endforeach
         </select>
       </div>
- 
+
       <div class="filter-select-wrap">
-        <select id="requirementFilter" class="filter-select" onchange="demoFilter()">
+        <select id="requirementFilter" class="filter-select">
           <option value="all">All Requirements</option>
           @foreach($requirements as $requirement)
-
-            <option value="{{ $requirement->id }}">
-                {{ $requirement->title }}
-            </option>
-
-        @endforeach
+            <option value="{{ $requirement->id }}">{{ $requirement->title }}</option>
+          @endforeach
         </select>
       </div>
     </div>
- 
-    <!-- Stats -->
+
+    {{-- Stats --}}
     <div class="stats-row hidden" id="statsRow">
       <div class="stat-item">
         <span class="stat-dot" style="background:#ef4444"></span>
         <span class="stat-label">Overdue</span>
-        <span class="stat-count" id="countOverdue">3</span>
+        <span class="stat-count" id="countOverdue">0</span>
       </div>
       <div class="stat-item">
         <span class="stat-dot" style="background:#f59e0b"></span>
         <span class="stat-label">Pending</span>
-        <span class="stat-count" id="countPending">4</span>
+        <span class="stat-count" id="countPending">0</span>
       </div>
       <div class="stat-item">
         <span class="stat-dot" style="background:var(--text-muted)"></span>
         <span class="stat-label">Total</span>
-        <span class="stat-count" id="countTotal">7</span>
+        <span class="stat-count" id="countTotal">0</span>
       </div>
     </div>
- 
-    <!-- Body / Table -->
+
+    {{-- Table --}}
     <div class="modal-body">
       <div class="table-wrap">
         <table class="missing-table">
           <thead>
             <tr>
               <th>Employee</th>
+              <th>Office</th>
               <th>Batch</th>
               <th>Requirement</th>
               <th>Due Date</th>
@@ -436,148 +368,161 @@
             </tr>
           </thead>
           <tbody id="missingSubmissionTable">
-            <!-- rows injected by JS -->
+            {{-- rows injected by JS --}}
           </tbody>
         </table>
       </div>
     </div>
- 
-    <!-- Footer -->
+
+    {{-- Footer --}}
     <div class="modal-footer">
       <span class="footer-hint">Last refreshed just now</span>
-      {{-- <button class="btn-close-footer" onclick="document.getElementById('missingSubmissionModal').close()">Close</button> --}}
+      <button class="btn-missing" onclick="downloadMissingCsv()" style="font-size:.75rem; padding:.45rem 1rem;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download CSV
+      </button>
     </div>
- 
+
   </div>
 </dialog>
 
 
 <script>
 
-let searchTimeout;
+  let searchTimeout;
+  let lastMissingData = [];
 
+  function showMissingModal() {
+      loadMissingSubmissions();
+      document.getElementById('missingSubmissionModal').showModal();
+  }
 
+  function loadMissingSubmissions() {
+      const search         = $('#searchInput').val();
+      const batch_id       = $('#batchFilter').val();
+      const requirement_id = $('#requirementFilter').val();
 
-function showMissingModal(){
-    loadMissingSubmissions();
-    missingSubmissionModal.showModal();
-}
+      $.ajax({
+          url:  '/programs/{{ $myprogram->program_code }}/missing-submissions',
+          type: 'GET',
+          data: { search, batch_id, requirement_id },
 
-function loadMissingSubmissions()
-{
-    let search = $('#searchInput').val();
-    let batch_id = $('#batchFilter').val();
-    let requirement_id = $('#requirementFilter').val();
+          beforeSend: function () {
+              lastMissingData = [];
+              $('#missingSubmissionTable').html(`
+                  <tr>
+                      <td colspan="6" class="text-center">
+                          <div class="loading-shimmer"></div>
+                      </td>
+                  </tr>
+              `);
+          },
 
-    $.ajax({
+          success: function (response) {
+              lastMissingData = response;
 
-        url: '/programs/{{ $myprogram->program_code }}/missing-submissions',
+              let rows = '';
 
-        type: 'GET',
+              if (response.length === 0) {
+                  rows = `
+                      <tr>
+                          <td colspan="6" class="text-center" style="padding:3rem 1rem; color:var(--text-muted);">
+                              No missing submissions found.
+                          </td>
+                      </tr>
+                  `;
+              } else {
+                  response.forEach(item => {
+                      rows += `
+                          <tr>
+                              <td>
+                                  <div style="font-weight:500;">${item.employee}</div>
+                                  <div style="font-size:.6875rem; color:var(--text-muted); font-family:'DM Mono',monospace;">${item.empcode}</div>
+                              </td>
+                              <td>${item.office ?? '-'}</td>
+                              <td>${item.batch}</td>
+                              <td>${item.requirement}</td>
+                              <td style="font-family:'DM Mono',monospace; font-size:.75rem;">${item.due_date ?? '-'}</td>
+                              <td>
+                                  ${item.is_overdue
+                                      ? `<span class="badge-overdue">
+                                            <span style="width:.375rem;height:.375rem;border-radius:50%;background:#ef4444;flex-shrink:0;display:inline-block;"></span>
+                                            Overdue
+                                         </span>`
+                                      : `<span class="badge-pending">
+                                            <span style="width:.375rem;height:.375rem;border-radius:50%;background:#f59e0b;flex-shrink:0;display:inline-block;"></span>
+                                            Pending
+                                         </span>`
+                                  }
+                              </td>
+                          </tr>
+                      `;
+                  });
+              }
 
-        data: {
-            search: search,
-            batch_id: batch_id,
-            requirement_id: requirement_id
-        },
+              $('#missingSubmissionTable').html(rows);
+          },
 
-        beforeSend: function () {
+          error: function () {
+              $('#missingSubmissionTable').html(`
+                  <tr>
+                      <td colspan="6" class="text-center" style="padding:3rem 1rem; color:var(--text-muted);">
+                          Failed to load data. Please try again.
+                      </td>
+                  </tr>
+              `);
+          }
+      });
+  }
 
-            $('#missingSubmissionTable').html(`
-                <tr>
-                    <td colspan="5" class="text-center">
-                        Loading...
-                    </td>
-                </tr>
-            `);
+  function downloadMissingCsv() {
+      if (!lastMissingData.length) {
+          alert('No data to export.');
+          return;
+      }
 
-        },
+      const headers = ['Employee', 'Employee Code', 'Office', 'Batch', 'Requirement', 'Due Date', 'Status'];
 
-        success: function (response) {
+      const csvRows = lastMissingData.map(item => [
+          escapeCsvField(item.employee),
+          escapeCsvField(item.empcode),
+          escapeCsvField(item.office),
+          escapeCsvField(item.batch),
+          escapeCsvField(item.requirement),
+          escapeCsvField(item.due_date ?? '-'),
+          item.is_overdue ? 'Overdue' : 'Pending'
+      ].join(','));
 
-            let rows = '';
+      const csvContent = [headers.join(','), ...csvRows].join('\n');
 
-            if (response.length === 0) {
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href     = url;
+      link.download = `missing_submissions_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+  }
 
-                rows = `
-                    <tr>
-                        <td colspan="5" class="text-center">
-                            No missing submissions found.
-                        </td>
-                    </tr>
-                `;
+  function escapeCsvField(value) {
+      if (value == null) return '';
+      const str = String(value);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return '"' + str.replace(/"/g, '""') + '"';
+      }
+      return str;
+  }
 
-            } else {
-
-                response.forEach(item => {
-
-                    rows += `
-                        <tr>
-
-                            <td>
-                                ${item.employee}
-                                <br>
-                                <small>${item.empcode}</small>
-                            </td>
-
-                            <td>${item.batch}</td>
-
-                            <td>${item.requirement}</td>
-
-                            <td>${item.due_date ?? '-'}</td>
-
-                            <td>
-
-                                ${
-                                    item.is_overdue
-                                    ?
-                                    `<span class="badge bg-danger">
-                                        Overdue
-                                    </span>`
-                                    :
-                                    `<span class="badge bg-warning">
-                                        Pending
-                                    </span>`
-                                }
-
-                            </td>
-
-                        </tr>
-                    `;
-
-                });
-
-            }
-
-            $('#missingSubmissionTable').html(rows);
-
-        }
-
-    });
-}
-
-$('#requirementFilter').on('change', function () {
-
-    loadMissingSubmissions();
-
-});
-
-$('#searchInput').on('keyup', function () {
-
-    clearTimeout(searchTimeout);
-
-    searchTimeout = setTimeout(function () {
-
-        loadMissingSubmissions();
-
-    }, 500);
-
-});
-
-$('#batchFilter').on('change', function () {
-
-    loadMissingSubmissions();
-
-});
+  // Event listeners
+  $('#requirementFilter').on('change', loadMissingSubmissions);
+  $('#batchFilter').on('change', loadMissingSubmissions);
+  $('#searchInput').on('keyup', function () {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(loadMissingSubmissions, 500);
+  });
 
 </script>
