@@ -687,16 +687,23 @@ function deleteParticipant() {
               ${paged.items.map((p, i) => { 
                 
                 const canSubmit = p.attendance?.toLowerCase() !== 'absent';
+
+                const firstName  = p.employee?.FIRSTNAME        || '';
+                const mi         = p.employee?.MI               || '';
+                const lastName   = p.employee?.LASTNAME         || '';
+                const division   = p.employee?.['OFFICE/DIVISION'] || '—';
+                const sg         = p.employee?.SG               || '—';
+                const encodedName = encodeURIComponent(firstName || 'User');
                 
                 return `<div class="grid grid-cols-7 hover:bg-slate-100 dark:hover:bg-slate-600 items-center  border-b border-slate-300 dark:border-slate-600">
 
 
                     <div class="col-span-2 poppins-regular p-2 pl-5 flex items-center gap-2 " >
                         <img 
-                            src="${`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.employee.FIRSTNAME)}&backgroundColor=53CBF3`}" 
-                            alt="${p.employee.FIRSTNAME}"
-                            class="object-cover min-w-8 min-h-8 max-w-8 max-h-8 rounded-full overflow-hidden"
-                            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.employee.FIRSTNAME)}&background=53CBF3&color=fff&size=64';">
+                        src="https://api.dicebear.com/7.x/initials/svg?seed=${encodedName}&backgroundColor=53CBF3" 
+                        alt="${firstName}"
+                        class="object-cover min-w-8 min-h-8 max-w-8 max-h-8 rounded-full overflow-hidden"
+                        onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodedName}&background=53CBF3&color=fff&size=64';">
 
                         <div>
                           <!-- Employee Fullname -->
@@ -706,13 +713,13 @@ function deleteParticipant() {
                     </div>
 
                     <div class=" poppins-regular p-2">
-                        <h1 class="poppins-regular text-sm text-slate-400">${p.employee['OFFICE/DIVISION']}</h1>
+                        <h1 class="poppins-regular text-sm text-slate-400">${division}</h1>
                     </div>
 
 
 
                     <div class=" poppins-regular p-2 text-center ">
-                        <h1 class="poppins-regular  text-sm">${p.employee.SG}</h1>
+                        <h1 class="poppins-regular text-sm">${sg}</h1>
                     </div>
 
                     <div class=" poppins-regular p-2 text-center flex gap-2 justify-left items-center">
