@@ -488,15 +488,19 @@ function deleteParticipant() {
      ════════════════════════════════════════════════════════════ */
   function filterParticipants(participants) {
     const q = state.searchQuery.trim().toLowerCase();
-    if (!q) return participants;
- 
-    return participants.filter(p =>
-      (p.employee.FIRSTNAME           || '').toLowerCase().includes(q) ||
-      (p.employee.LASTNAME            || '').toLowerCase().includes(q) ||
-      (p.employee['OFFICE/DIVISION']  || '').toLowerCase().includes(q) ||
-      (p.empcode                      || '').toLowerCase().includes(q) 
+
+    // Always filter out participants with no employee record
+    let result = participants.filter(p => p.employee != null);
+
+    if (!q) return result;
+
+    return result.filter(p =>
+        (p.employee.FIRSTNAME          || '').toLowerCase().includes(q) ||
+        (p.employee.LASTNAME           || '').toLowerCase().includes(q) ||
+        (p.employee['OFFICE/DIVISION'] || '').toLowerCase().includes(q) ||
+        (p.empcode                     || '').toLowerCase().includes(q)
     );
-  }
+}
  
   /* ════════════════════════════════════════════════════════════
      PAGINATE — Slice filtered participants for current page
@@ -723,9 +727,11 @@ function deleteParticipant() {
                     </div>
 
                     <div class=" poppins-regular p-2 text-center flex gap-2 justify-left items-center">
-                        <button onclick='setAtt(${JSON.stringify(p)})' class="btn btn-soft btn-sm btn-circle btn-primary dark:bg-indigo-500 text-white">
-                          <i data-lucide="pencil" class="w-4 dark:text-white  text-sky-900 hover:text-white"></i>
-                          </button>
+                        <button onclick='${p.employee ? `setAtt(${JSON.stringify(p)})` : ""}' 
+                            class="btn btn-soft btn-sm btn-circle btn-primary dark:bg-indigo-500 text-white"
+                            ${!p.employee ? 'disabled' : ''}>
+                            <i data-lucide="pencil" class="w-4 dark:text-white text-sky-900 hover:text-white"></i>
+                        </button>
                         <h1 class="poppins-bold  text-sm ${getAttendanceBadge(p.attendance)}">${p.attendance} • ${p.hours + 0}/${batch.hours}h</h1>
 
                     </div>
@@ -833,38 +839,31 @@ function deleteParticipant() {
 
 
   function setAtt(p){
-      $('#participant_id').val(p.id);
-      $('#batch_id').val(p.batch_id);
-      $('#part_name').text(`${p.employee.FIRSTNAME} ${p.employee.MI} ${p.employee.LASTNAME}`);
-      $('#part_empcode').text(p.employee.EMPCODE);
-      console.log()
-      // set status
-      statusSelect.value = p.attendance || '';
+    $('#participant_id').val(p.id);
+    $('#batch_id').val(p.batch_id);
 
-      // trigger UI (IMPORTANT)
-      statusSelect.dispatchEvent(new Event('change'));
+    const firstName = p.employee?.FIRSTNAME || '';
+    const mi        = p.employee?.MI        || '';
+    const lastName  = p.employee?.LASTNAME  || '';
+    const empcode   = p.employee?.EMPCODE   || '';
 
-      // set hours (if exists)
-      hoursInput.value = p.hours || '';
+    $('#part_name').text(`${firstName} ${mi} ${lastName}`);
+    $('#part_empcode').text(empcode);
 
-      // handle file (requirements)
-      if (p.justification && p.justification.file_path) {
+    statusSelect.value = p.attendance || '';
+    statusSelect.dispatchEvent(new Event('change'));
+    hoursInput.value = p.hours || '';
+
+    if (p.justification && p.justification.file_path) {
         showExistingFile(p.justification.file_path);
-
-
-        // trick so validation won't block save
         selectedAbsentFile = 'existing';
-      } else {
-        // resetFileUI();
+    } else {
         selectedAbsentFile = null;
-      }
+    }
 
-      // re-check validation
-      validateForm();
-
-      // open modal
-      attendanceModal.showModal();
-  }
+    validateForm();
+    attendanceModal.showModal();
+}
 
   function buildPageButtons(totalPages, currentPage, batchId) {
     if (totalPages <= 1) return '';
