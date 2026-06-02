@@ -707,7 +707,7 @@ function deleteParticipant() {
 
                         <div>
                           <!-- Employee Fullname -->
-                        <h1 class="leading-4 poppins-semibold text-sm whitespace-nowrap ">${p.employee.FIRSTNAME} ${p.employee.MI} ${p.employee.LASTNAME}</h1>
+                        <h1 class="leading-4 poppins-semibold text-sm whitespace-nowrap ">${firstName} ${mi} ${lastName}</h1>
                         <p class="leading-5 poppins-regular text-xs text-slate-500 dark:text-slate-200">${highlight(p.empcode || '—')}</p>
                         </div>
                     </div>
