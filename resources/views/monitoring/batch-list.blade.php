@@ -692,7 +692,11 @@ function deleteParticipant() {
 
 
                     <div class="col-span-2 poppins-regular p-2 pl-5 flex items-center gap-2 " >
-                        <img src="${`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.employee.FIRSTNAME)}&backgroundColor=53CBF3`}" alt="" class="object-cover min-w-8 min-h-8 max-w-8 max-h-8 rounded-full overflow-hidden">
+                        <img 
+                            src="${`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(p.employee.FIRSTNAME)}&backgroundColor=53CBF3`}" 
+                            alt="${p.employee.FIRSTNAME}"
+                            class="object-cover min-w-8 min-h-8 max-w-8 max-h-8 rounded-full overflow-hidden"
+                            onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(p.employee.FIRSTNAME)}&background=53CBF3&color=fff&size=64';">
 
                         <div>
                           <!-- Employee Fullname -->
