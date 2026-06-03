@@ -7,17 +7,21 @@
                     
 
                     <div>
-                        <div class="cursor-pointer hover:opacity-80 transition" onclick="openTrainingModal('with')">
+                        <div class="relative cursor-pointer hover:opacity-80 transition" onclick="openTrainingModal('with')">
                         
                             <h1 class="text-emerald-600 dark:text-green-300 mono text-3xl text-center" id="with_training">
                                 <span class="trainings_loading loading loading-ring loading-md"></span>
                             </h1>
                             <h1 class="text-emerald-500 dark:text-green-300 poppins-bold text-sm flex gap-1 items-center" >
                                 <i data-lucide="check-circle" style="width:16px;height:16px;"></i>
-                                 With Training</h1>
+                                 With Training </h1>
+                                 <div class="absolute -top-3 right-0 badge badge-success badge-soft badge-xs">view</div>
+                                 
                         </div>
+
+
                         <br>
-                        <div class="cursor-pointer hover:opacity-80 transition" onclick="openTrainingModal('no')">
+                        <div class="relative cursor-pointer hover:opacity-80 transition" onclick="openTrainingModal('no')">
                             <h1 class="text-[#03AED2] dark:text-cyan-500 mono text-3xl text-center" id="no_training" >
                                 <span class="trainings_loading loading loading-ring loading-md"></span>
                             </h1>
@@ -25,6 +29,8 @@
                                 <i data-lucide="alert-circle" style="width:16px;height:16px;color:#0070d8;"></i> 
                                 No Training
                             </h1>
+                            <div class="absolute -top-3 right-0 badge badge-info badge-soft badge-xs">view</div>
+
                         </div>
 
                     </div>
