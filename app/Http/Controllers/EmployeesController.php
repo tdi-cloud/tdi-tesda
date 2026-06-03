@@ -184,4 +184,70 @@ class EmployeesController extends Controller
         ]);
 
     }
+
+
+    public function getEmployeeTrainingList(Request $request)
+    {
+        $region       = $request->region;
+        $types        = $request->types;
+        $officeFilter = $request->office_filter;
+        $type         = $request->type; // 'with' or 'no'
+
+        $employees = \App\Models\employees::query();
+
+        // Region filter
+        if ($region !== 'ALL') {
+            $employees->where('REGION', $region);
+        }
+
+        // Plantilla status filter
+        if (!empty($types)) {
+            $employees->whereIn('PLANTILLA STATUS', $types);
+        }
+
+        // OPCR filter
+        if ($officeFilter === 'OPCR') {
+            $employees->where(function ($query) {
+                $query->where('OFFICE/DIVISION', 'LIKE', 'CO-%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%ROD%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%ORD%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%PO-%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%DO%')
+                    ->orWhere('OFFICE/DIVISION', 'LIKE', '%FASD%');
+            });
+        }
+
+        // With / No training filter
+        if ($type === 'with') {
+            $employees->whereExists(function ($query) {
+                $query->selectRaw('1')
+                    ->from('participants')
+                    ->whereColumn('participants.empcode', 'employees.EMPCODE')
+                    ->where('participants.attendance', '!=', 'Absent');
+            });
+        } else {
+            $employees->whereNotExists(function ($query) {
+                $query->selectRaw('1')
+                    ->from('participants')
+                    ->whereColumn('participants.empcode', 'employees.EMPCODE')
+                    ->where('participants.attendance', '!=', 'Absent');
+            });
+        }
+
+        $list = $employees
+            ->orderBy('LASTNAME')
+            ->orderBy('FIRSTNAME')
+            ->get([
+                'EMPCODE',
+                'LASTNAME',
+                'FIRSTNAME',
+                'MI',
+                'POSITION',
+                'OFFICE/DIVISION',
+                'PLANTILLA STATUS',
+                'REGION',
+            ]);
+
+        return response()->json(['employees' => $list]);
+    }
 }

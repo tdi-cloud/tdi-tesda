@@ -100,6 +100,7 @@ Route::get('/employee-trainings', [EmployeesController::class, 'getEmployeeTrain
 Route::get('/employees-progress', fn () => view('monitoring.employees'));
 Route::get('/employees/search', [EmployeesController::class, 'searchSelect']);
 Route::get('/employee/{empcode}/view', [EmployeesController::class, 'view']);
+Route::get('/employee-trainings/list', [EmployeesController::class, 'getEmployeeTrainingList']);
 
 // TESDA ORDER
 Route::post('/TESDAOrder/store', [TESDAOrderController::class, 'store']);

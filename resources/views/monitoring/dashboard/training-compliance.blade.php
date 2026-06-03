@@ -7,7 +7,7 @@
                     
 
                     <div>
-                        <div>
+                        <div class="cursor-pointer hover:opacity-80 transition" onclick="openTrainingModal('with')">
                         
                             <h1 class="text-emerald-600 dark:text-green-300 mono text-3xl text-center" id="with_training">
                                 <span class="trainings_loading loading loading-ring loading-md"></span>
@@ -17,7 +17,7 @@
                                  With Training</h1>
                         </div>
                         <br>
-                        <div>
+                        <div class="cursor-pointer hover:opacity-80 transition" onclick="openTrainingModal('no')">
                             <h1 class="text-[#03AED2] dark:text-cyan-500 mono text-3xl text-center" id="no_training" >
                                 <span class="trainings_loading loading loading-ring loading-md"></span>
                             </h1>
@@ -32,6 +32,8 @@
                     
                          
                 </div>
+
+                @include('monitoring.dashboard.show-list-employees')
 
                 <style>
                 #chart svg:focus,
