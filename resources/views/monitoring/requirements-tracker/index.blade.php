@@ -547,7 +547,6 @@ function showDetail(index) {
         // ── Program: clickable link to program page ──
         ['Program', `
             <a href="/programs/${escHtml(row.program_id)}"
-               target="_blank"
                rel="noopener noreferrer"
                class="text-blue-500 underline underline-offset-2 hover:text-blue-600 transition-colors">
                 ${escHtml(row.program_code)} – ${escHtml(row.program_title)}

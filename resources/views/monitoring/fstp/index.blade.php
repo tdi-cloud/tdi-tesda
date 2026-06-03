@@ -369,7 +369,9 @@ function renderTable(programs) {
         return `
         <tr class="hover:bg-gray-50 dark:hover:bg-gray-750 transition">
             <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100 max-w-[220px]">
+                <a href="${PARTICIPANTS_BASE}/${p.id}/participants">
                 <div class="truncate" title="${escHtml(p.program_title)}">${escHtml(p.program_title)}</div>
+                </a>
                 <div class="text-xs text-gray-400 truncate" title="${escHtml(p.organizing_sponsor)}">${escHtml(p.organizing_sponsor)}</div>
             </td>
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300 whitespace-nowrap text-xs">${period}</td>

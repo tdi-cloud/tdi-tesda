@@ -744,7 +744,7 @@ function deleteParticipant() {
                         ${canSubmit ? `
                             <button onclick="openSubmissionModal(${p.id}, ${batch.id})"
                                 class="btn btn-sm btn-circle btn-success btn-soft ">
-                                <i data-lucide="file-plus" class="w-5 text-green-500"></i>
+                                <i data-lucide="file-plus" class="w-5 text-green-500 hover:text-white"></i>
                             </button>
                         ` : `
                             <span class="text-xs text-red-400"></span>
