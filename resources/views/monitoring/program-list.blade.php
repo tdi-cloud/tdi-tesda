@@ -72,7 +72,7 @@
 
         if (programs.length === 0) {
             container.innerHTML = `
-                <div class="h-full w-full col-span-3 flex items-center justify-center p-6 border">
+                <div class="h-full w-full col-span-3 flex items-center justify-center p-6 ">
                     <div class="text-center max-w-sm">
                         <div class="float-anim fade-in mb-6 mx-auto w-28 h-28 rounded-full bg-indigo-50 flex items-center justify-center border-2 border-dashed border-indigo-200">
                             <i data-lucide="inbox" style="width:48px;height:48px;color:#6366f1;"></i>
