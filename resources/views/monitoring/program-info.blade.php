@@ -117,7 +117,7 @@
         </h1>
 
         @if($myprogram->competencies->isEmpty())
-            <p class="poppins-medium text-[13px] text-red-500 flex items-center gap-1 mt-1">
+            <p class="poppins-medium text-[13px] text-red-500 flex items-center gap-1 mt-1 leading-4">
                 <i class="fa-solid fa-triangle-exclamation"></i>
                 No competencies added yet — please add at least one competency to this program.
             </p>

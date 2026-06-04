@@ -63,6 +63,7 @@
     let currentSearch = '';
     let currentStatus = '';
     let currentPerPage = 9;
+    let currentInitiated = '';
 
     // ─── Render Cards ────────────────────────────────────────────────
     function renderPrograms(programs) {
@@ -180,16 +181,16 @@
     // ─── Go to Page ──────────────────────────────────────────────────
     function goToPage(page) {
         currentPage = page;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
     }
 
     // ─── Fetch Programs ──────────────────────────────────────────────
-    async function getPrograms(search = '', status = '', page = 1, perPage = 9) {
+    async function getPrograms(search = '', status = '', page = 1, perPage = 9, initiated = '') {
         const container = document.getElementById('program_grid');
         container.innerHTML = `<span class="loading loading-dots loading-sm"></span>`;
 
         const response = await fetch(
-            `/get-programs?search=${encodeURIComponent(search)}&status=${status}&page=${page}&per_page=${perPage}`,
+            `/get-programs?search=${encodeURIComponent(search)}&status=${status}&page=${page}&per_page=${perPage}&initiated=${initiated}`,
             { headers: { 'Accept': 'application/json' } }
         );
 
@@ -214,19 +215,25 @@
     document.getElementById('statusFilter').addEventListener('change', function () {
         currentStatus = this.value;
         currentPage   = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
     });
 
     document.getElementById('searchInput').addEventListener('keyup', function () {
         currentSearch = this.value;
         currentPage   = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
     });
 
     document.getElementById('perPageSelect').addEventListener('change', function () {
         currentPerPage = parseInt(this.value);
         currentPage    = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
+    });
+
+    document.getElementById('initiatedFilter').addEventListener('change', function () {
+        currentInitiated = this.value;
+        currentPage = 1;
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
     });
 
     $(document).on('click', '.delete-program-btn', function () {
@@ -239,12 +246,12 @@
             data: { _token: $('meta[name="csrf-token"]').attr('content') },
             success: function (res) {
                 alert(res.message);
-                getPrograms(currentSearch, currentStatus, currentPage, currentPerPage);
+                getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
             },
             error: function () { alert('Error deleting record.'); }
         });
     });
 
     // ─── Initial Load ─────────────────────────────────────────────────
-    getPrograms('', '', 1, 9);
+    getPrograms('', '', 1, 9, '');
 </script>

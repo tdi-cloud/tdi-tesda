@@ -124,6 +124,7 @@ const COMPETENCIES = [
 ];
 
 const existingCompetencies = @json($competencies->pluck('competency')->toArray());
+let dirty = false;
 let filtered = [...COMPETENCIES];
 
 function renderOptions() {
@@ -203,6 +204,10 @@ function closeCompetencyModal() {
     document.getElementById('competency-modal').classList.add('hidden');
     document.getElementById('competency-modal').classList.remove('flex');
     document.getElementById('comp-search').value = '';
+    if (dirty) {
+        dirty = false;
+        window.location.reload();
+    }
 }
 
 document.getElementById('competency-modal').addEventListener('click', function(e) {
@@ -225,6 +230,7 @@ function addCompetency() {
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         data: JSON.stringify({ competencies: selected }),
         success: function(response) {
+            dirty = true;
             document.getElementById('empty-msg')?.remove();
 
             response.forEach(comp => {
@@ -258,6 +264,7 @@ function deleteCompetency(id) {
         type: 'DELETE',
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
         success: function() {
+            dirty = true;
             const row = document.getElementById('comp-row-' + id);
             const compName = row?.querySelector('p')?.textContent?.trim();
             const idx = existingCompetencies.indexOf(compName);

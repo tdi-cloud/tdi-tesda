@@ -76,12 +76,21 @@
             </label>
             </fieldset>
 
-            
+            <fieldset class="fieldset w-50 p-0">
+            <legend class="fieldset-legend">Office Initiated:</legend>
+            <select id="initiatedFilter" class="select rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
+                <option value="">All</option>
+                <option value="TDI">TDI</option>
+                <option value="NTTA">NTTA</option>
+                <option value="Other-EO">Other Executive Office</option>
+                <option value="Other-Provider">Other Training Provider</option>
+            </select>
+            </fieldset>
 
             
 
             <fieldset class="fieldset w-50 p-0">
-            <legend class="fieldset-legend">Batch Status</legend>
+            <legend class="fieldset-legend">Batch Status:</legend>
             <select id="statusFilter" class="select rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
                 <option value="">All</option>
                 <option value="Active">Active</option>
@@ -93,7 +102,7 @@
 
             <!-- Per-page selector -->
             <fieldset class="fieldset p-0">
-            <legend class="fieldset-legend">Show</legend>
+            <legend class="fieldset-legend">Show:</legend>
             <div class="flex items-center gap-2 text-sm text-slate-500 poppins-regular w-40">
                 <select id="perPageSelect" class="select flex-1 rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
                     <option value="6">6</option>
