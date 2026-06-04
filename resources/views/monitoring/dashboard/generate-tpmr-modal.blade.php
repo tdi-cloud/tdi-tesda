@@ -236,9 +236,9 @@
 
                   reader.onload = function () {
 
-                      console.log("🔥 RAW SERVER RESPONSE START 🔥");
-                      console.log(reader.result);
-                      console.log("🔥 RAW SERVER RESPONSE END 🔥");
+                      // console.log("🔥 RAW SERVER RESPONSE START 🔥");
+                      // console.log(reader.result);
+                      // console.log("🔥 RAW SERVER RESPONSE END 🔥");
 
                       try {
                           const json = JSON.parse(reader.result);

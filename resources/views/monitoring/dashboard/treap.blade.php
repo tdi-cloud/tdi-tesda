@@ -53,7 +53,7 @@
     })
     .then(res => res.json())
     .then(data => {
-        console.log(data);
+        // console.log(data);
         TreapRadialChart.updateSeries([Number(data.totals.percentage)]);
         animateNumber('#treapPerc', 0, data.radial_chart.series, 500);
         animateNumber('#SubmittedNumber', 0, data.totals.with, 500);

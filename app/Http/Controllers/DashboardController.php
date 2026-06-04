@@ -319,16 +319,26 @@ public function getTrainingStats40hrs(Request $request)
     |---------------------------------------
     */
     $totalEmployees = DB::table('employees')
-        ->when($region && $region !== 'ALL', function ($q) use ($region) {
-            $q->where('REGION', $region);
-        })
-        ->when($statuses && count($statuses), function ($q) use ($statuses) {
-            $q->whereIn('PLANTILLA STATUS', $statuses);
-        })
-        ->when($sgOperator && $sgValue !== null && $sgValue !== '', function ($q) use ($sgOperator, $sgValue) {
-            $q->where('SG', $sgOperator, (int) $sgValue);
-        })
-        ->count();
+    ->when($region && $region !== 'ALL', function ($q) use ($region) {
+        $q->where('REGION', $region);
+    })
+    ->when($statuses && count($statuses), function ($q) use ($statuses) {
+        $q->whereIn('PLANTILLA STATUS', $statuses);
+    })
+    ->when($sgOperator && $sgValue !== null && $sgValue !== '', function ($q) use ($sgOperator, $sgValue) {
+        $q->where('SG', $sgOperator, (int) $sgValue);
+    })
+    ->when($officeFilter === 'OPCR', function ($q) {
+        $q->where(function ($query) {
+            $query->where('OFFICE/DIVISION', 'LIKE', 'CO-%')
+                ->orWhere('OFFICE/DIVISION', 'LIKE', '%ROD%')
+                ->orWhere('OFFICE/DIVISION', 'LIKE', '%ORD%')
+                ->orWhere('OFFICE/DIVISION', 'LIKE', '%PO-%')
+                ->orWhere('OFFICE/DIVISION', 'LIKE', '%DO%')
+                ->orWhere('OFFICE/DIVISION', 'LIKE', '%FASD%');
+        });
+    })
+    ->count();
 
     /*
     |---------------------------------------

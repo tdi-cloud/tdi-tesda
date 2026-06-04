@@ -131,9 +131,10 @@ function loadTrainingStats40hrs() {
             plant_status: statuses,
             sg_condition: $('#sg_condition').val(),   
             sg_value: $('#sg_value').val(),   
+            office_filter: $('#office_filter').val(),   
         },
         success: function (res) {
-            // console.log(res)
+            console.log(res)
 
             // LEFT NUMBERS
             animateNumber('#WT_forty', 0, res.trained, 500);

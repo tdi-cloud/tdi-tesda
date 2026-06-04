@@ -134,28 +134,19 @@
         data.forEach((program, index) => {
 
             let cover = program.cover_pages?.[0]?.image ?? 'default.png';
+            const batch = getUserBatch(program); 
 
             let div = document.createElement('div');
-
-
-            div.className = `
-                border border-slate-300 rounded-2xl
-                dark:border-slate-600 bg-white dark:bg-slate-700
-                overflow-hidden mb-3 hover:scale-[1.05] duration-300
-                popup-item hover:shadow-lg
-            `;
-
+            div.className = `border border-slate-300 rounded-2xl dark:border-slate-600 bg-white dark:bg-slate-700 overflow-hidden mb-3 hover:scale-[1.05] duration-300 popup-item hover:shadow-lg`;
             div.style.animationDelay = (index * 60) + "ms";
 
             div.innerHTML = `<div class="cursor-pointer">
-                    <img src="/storage/${program.cover_pages?.[0]?.image ?? 'default.png'}" class="max-h-40 w-full object-cover" >
-
-                    <div class="p-4">
-
-                    <span >
-                        <div class="badge badge-primary badge-soft poppins-bold badge-sm">${program.batches?.[0]?.batch ?? 'No Batch'}</div>
-                        <div class="badge badge-sm badge-soft poppins-semibold  ${getStatusBadgeClass(program.batches?.[0]?.status)}">
-                            ${program.batches?.[0]?.status ?? 'No status'}
+                <img src="/storage/${program.cover_pages?.[0]?.image ?? 'default.png'}" class="max-h-40 w-full object-cover">
+                <div class="p-4">
+                    <span>
+                        <div class="badge badge-primary badge-soft poppins-bold badge-sm">${batch?.batch ?? 'No Batch'}</div>
+                        <div class="badge badge-sm badge-soft poppins-semibold ${getStatusBadgeClass(batch?.status)}">
+                            ${batch?.status ?? 'No status'}
                         </div>
                     </span>
                     <div class="poppins-semibold leading-5 text-sky-900 dark:text-yellow-500 text-sm mt-2">
@@ -164,21 +155,16 @@
                     <div class="text-sm text-slate-400 poppins-regular line-clamp-2">
                         ${program.description}
                     </div>
-
                     <div class="mt-2">
                         <p class="poppins-regular text-xs">
-                        <i class="fa-regular fa-calendar"></i>
-                        <span>${formatReadable(program.batches?.[0]?.date_start)}</span>    
-                    </p>
+                            <i class="fa-regular fa-calendar"></i>
+                            <span>${formatReadable(batch?.date_start)}</span>
+                        </p>
                     </div>
-
-                    </div>
-                    
                 </div>
-            `;
+            </div>`;
 
-            div.addEventListener('click', () => openProgramNew(program.batches?.[0]?.participants?.[0]?.id));
-
+            div.addEventListener('click', () => openProgramNew(batch?.participants?.[0]?.id));
             container.appendChild(div);
         });
     }
@@ -339,6 +325,11 @@
         }
     })
     .catch(error => console.error(error));
+
+    function getUserBatch(program) {
+        if (!program.batches) return null;
+        return program.batches.find(batch => batch.participants && batch.participants.length > 0) ?? null;
+    }
 
     lucide.createIcons();
 
