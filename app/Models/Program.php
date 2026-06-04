@@ -40,4 +40,9 @@ class Program extends Model
     {
         return $this->batches()->exists();
     }
+
+    public function competencies()
+    {
+        return $this->hasMany(ProgramCompetency::class, 'program_id');
+    }
 }

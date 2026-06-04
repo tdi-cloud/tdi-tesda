@@ -103,10 +103,58 @@
             <p class="poppins-medium text-[14px]"><i class="fa-solid fa-money-bills text-green-500"></i> {{ $myprogram->cost }}</p>
         </div>
 
-        <div class="progitem border-l-4 p-2 border  rounded-lg border-slate-300 dark:border-slate-700 col-span-2 bg-white dark:bg-slate-800">
-            <h1 class="text-[13px] poppins-semibold text-slate-500 ">Competency</h1>
-            <p class="poppins-medium text-[14px] leading-4 truncate hover:whitespace-normal hover:overflow-visible"><i class="fa-regular fa-lightbulb text-yellow-500"></i> {{ $myprogram->competency }}</p>
+        <div onclick="openCompetencyModal()"  class="progitem border-l-4 p-2 border rounded-lg col-span-2
+        {{ $myprogram->competencies->isEmpty() 
+            ? 'border-red-400 bg-red-50 dark:bg-red-950 dark:border-red-600' 
+            : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800' }}">
+
+        <h1 class="text-[13px] poppins-semibold 
+            {{ $myprogram->competencies->isEmpty() ? 'text-red-500' : 'text-slate-500' }}">
+            Competency
+            @if($myprogram->competencies->isEmpty())
+                <span class="ml-1 text-red-500 animate-pulse">⚠ Required</span>
+            @endif
+        </h1>
+
+        @if($myprogram->competencies->isEmpty())
+            <p class="poppins-medium text-[13px] text-red-500 flex items-center gap-1 mt-1">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                No competencies added yet — please add at least one competency to this program.
+            </p>
+        @else
+        {{-- Marquee / ticker wrapper --}}
+        <div class="overflow-hidden relative mt-1" style="mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);">
+                    <div class="flex gap-3 competency-ticker" style="width: max-content;">
+                        {{-- Duplicate the list for seamless loop --}}
+                        @foreach([...$myprogram->competencies, ...$myprogram->competencies] as $comp)
+                            <span class="inline-flex items-center gap-1 poppins-medium text-[13px] whitespace-nowrap
+                                px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 border border-yellow-300 dark:border-yellow-700">
+                                <i class="fa-regular fa-lightbulb text-yellow-500 text-[11px]"></i>
+                                {{ $comp->competency }}
+                                @if($comp->domain)
+                                    <span class="text-[11px] text-yellow-500">({{ $comp->domain }})</span>
+                                @endif
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+
+                <style>
+                    .competency-ticker {
+                        animation: ticker-scroll 18s linear infinite;
+                    }
+                    .competency-ticker:hover {
+                        animation-play-state: paused;
+                    }
+                    @keyframes ticker-scroll {
+                        0%   { transform: translateX(0); }
+                        100% { transform: translateX(-50%); }
+                    }
+                </style>
+            @endif
         </div>
+
+        @include('monitoring.myprogram-includes.create-competency')
 
     </div>
 

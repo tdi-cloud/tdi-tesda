@@ -46,7 +46,7 @@
         <div>
         <p class="poppins-semibold text-sky-800 text-xs dark:text-white">Employees</p>
         <h1 class="poppins-bold text-lg bg-sky-100 text-sky-900 px-2 rounded-lg inline"><i class="fa-solid fa-clock"></i> 40 Hours</h1>
-        <p  class="poppins-semibold text-sky-800 text-xs dark:text-white">Program Duration <br> with Supervisory Program</p>
+        <p  class="poppins-semibold text-sky-800 text-xs dark:text-white">Program Duration <br> with Supervisory/Managerial Program</p>
         </div>
 
         

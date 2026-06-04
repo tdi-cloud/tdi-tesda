@@ -13,6 +13,7 @@ use App\Http\Controllers\ForeignParticipantController;
 use App\Http\Controllers\ForeignProgramController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\ParticipantsController;
+use App\Http\Controllers\ProgramCompetencyController;
 use App\Http\Controllers\ProgramsController;
 use App\Http\Controllers\ProgramSupportingDocumentController;
 use App\Http\Controllers\Regionalreportcontroller;
@@ -253,8 +254,10 @@ Route::prefix('foreign-programs')->name('foreign-programs.')->group(function () 
 });
 
 
-
-
+// PROGRAM COMPETENCY 
+Route::post('/program/{id}/competency', [ProgramCompetencyController::class, 'store']);
+Route::post('/program/{id}/competency/batch', [ProgramCompetencyController::class, 'storeBatch']);
+Route::delete('/program/competency/{id}', [ProgramCompetencyController::class, 'destroy']);
 
 
 

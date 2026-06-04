@@ -20,7 +20,6 @@ class ProgramsController extends Controller
     {
         $request->validate([
             'title'       => 'required|string|max:255',
-            'competency' => 'required|string',
             'modality' => 'required|string',
             'pax' => 'required|integer|min:1',
             'category' => 'required|string',
@@ -32,7 +31,9 @@ class ProgramsController extends Controller
       
         ]);
 
-        $submission = Program::create($request->all());
+        $submission = Program::create(array_merge($request->all(), [
+            'competency' => '--',
+        ]));
 
         $programCode = 'TDI-' . date('Y') . '-' . str_pad($submission->id, 4, '0', STR_PAD_LEFT);
 
@@ -128,15 +129,16 @@ class ProgramsController extends Controller
     
 
     public function showCertficates($id){
-        $myprogram = Program::find($id);
+        $myprogram = Program::with('competencies')->find($id);
         $cover = CoverPage::where('program_id', $id)->first();
         return view('monitoring.certificate', compact('myprogram','cover'));
     }
 
     public function showDetails($id){
-        $myprogram = Program::find($id);
+        $myprogram = Program::with('competencies')->find($id);
         $cover = CoverPage::where('program_id', $id)->first();
-        return view('monitoring.prog-info', compact('myprogram','cover'));
+        $competencies = $myprogram->competencies;
+        return view('monitoring.prog-info', compact('myprogram', 'cover', 'competencies'));
     }
 
     public function edit($id)
