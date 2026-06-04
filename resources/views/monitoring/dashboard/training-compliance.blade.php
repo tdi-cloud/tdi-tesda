@@ -26,7 +26,7 @@
                                 <span class="trainings_loading loading loading-ring loading-md"></span>
                             </h1>
                             <h1 class="text-[#03AED2] dark:text-cyan-500 poppins-bold text-sm flex gap-1 items-center" >
-                                <i data-lucide="alert-circle" style="width:16px;height:16px;color:#0070d8;"></i> 
+                                <i data-lucide="circle-x" style="width:16px;height:16px;color:#0070d8;"></i> 
                                 No Training
                             </h1>
                             <div class="absolute -top-3 right-0 badge badge-info badge-soft badge-xs">view</div>

@@ -76,13 +76,13 @@
             </div>
 
             <div class="navbar-center gap-4">
-                <a href="/enrolled" class="text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default">
+                <a href="/enrolled" class="cursor-pointer text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default">
                     <i class="fa-solid fa-book-open"></i> Enrolled
                 </a>
 
                 @auth
                     @if(auth()->user()->access === 'admin')
-                        <a href="/dashboard" class="text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default">
+                        <a href="/dashboard" class="cursor-pointer text-slate-900 dark:text-white poppins-regular text-[12px] cursor-default">
                             <i class="fa-solid fa-chart-column"></i> Monitoring
                         </a>
                     @endif

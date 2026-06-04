@@ -34,6 +34,7 @@
 <div class=" w-full p-5 overflow-auto h-full">
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start" id="program_grid">
+
         <span class="loading loading-dots loading-sm"></span>
 
         {{-- SINGLE PROGRAM --}}
@@ -71,7 +72,7 @@
 
         if (programs.length === 0) {
             container.innerHTML = `
-                <div class="h-full w-full col-span-4 flex items-center justify-center p-6">
+                <div class="h-full w-full col-span-3 flex items-center justify-center p-6 border">
                     <div class="text-center max-w-sm">
                         <div class="float-anim fade-in mb-6 mx-auto w-28 h-28 rounded-full bg-indigo-50 flex items-center justify-center border-2 border-dashed border-indigo-200">
                             <i data-lucide="inbox" style="width:48px;height:48px;color:#6366f1;"></i>
@@ -187,7 +188,27 @@
     // ─── Fetch Programs ──────────────────────────────────────────────
     async function getPrograms(search = '', status = '', page = 1, perPage = 9, initiated = '') {
         const container = document.getElementById('program_grid');
-        container.innerHTML = `<span class="loading loading-dots loading-sm"></span>`;
+        container.innerHTML = `
+        <div class="col-span-3 w-full">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                ${Array(3).fill(0).map(() => `
+                    <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden shadow-sm">
+                        <div class="p-4 space-y-3">
+                            <div class="flex gap-2 items-start">
+                                <div class="skeleton h-4 flex-1 rounded-lg"></div>
+                                <div class="skeleton h-6 w-6 rounded-full shrink-0"></div>
+                            </div>
+                            <div class="skeleton h-3 w-3/4 rounded-lg"></div>
+                            <div class="skeleton h-3 w-1/2 rounded-lg"></div>
+                        </div>
+                        <div class="px-4 pb-4 space-y-2">
+                            <div class="skeleton h-12 w-full rounded-xl"></div>
+                            <div class="skeleton h-12 w-full rounded-xl"></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
 
         const response = await fetch(
             `/get-programs?search=${encodeURIComponent(search)}&status=${status}&page=${page}&per_page=${perPage}&initiated=${initiated}`,

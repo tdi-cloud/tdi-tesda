@@ -14,7 +14,7 @@
 
         <div class="flex justify-end">
             <h1 class="text-[#03AED2] dark:text-cyan-500 mono leading-6 text-2xl flex gap-1 items-center">
-                <i data-lucide="alert-circle" style="width:16px;height:16px;color:"></i>
+                <i data-lucide="circle-x" style="width:16px;height:16px;color:"></i>
                 <span id="NT_eight" class="tooltip tooltip-bottom" data-tip="No Training"></span>
             </h1>
         </div>
