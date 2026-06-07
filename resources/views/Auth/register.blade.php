@@ -155,7 +155,7 @@
                 <span id="modal_name"></span>
             </div>
             <div class="flex justify-between">
-                <span class="font-semibold">Position:</span>
+                <span class="font-semibold">Office:</span>
                 <span id="modal_office"></span>
             </div>
         </div>
