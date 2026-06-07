@@ -147,7 +147,7 @@
         {{-- Employee Info --}}
         <div class="space-y-2">
             <div class="flex justify-between">
-                <span class="font-semibold">Employee Codessss:</span>
+                <span class="font-semibold">Employee Code:</span>
                 <span id="modal_empcode"></span>
             </div>
             <div class="flex justify-between">
