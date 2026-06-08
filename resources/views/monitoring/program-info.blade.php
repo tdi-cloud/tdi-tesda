@@ -103,7 +103,7 @@
             <p class="poppins-medium text-[14px]"><i class="fa-solid fa-money-bills text-green-500"></i> {{ $myprogram->cost }}</p>
         </div>
 
-        <div onclick="openCompetencyModal()"  class="progitem border-l-4 p-2 border rounded-lg col-span-2
+        <div onclick="openCompetencyModal()"  class="progitem cursor-pointer hover:scale-[1.02] diration-500 border-l-4 p-2 border rounded-lg col-span-2
         {{ $myprogram->competencies->isEmpty() 
             ? 'border-red-400 bg-red-50 dark:bg-red-950 dark:border-red-600' 
             : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800' }}">

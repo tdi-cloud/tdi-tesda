@@ -1,7 +1,7 @@
 {{-- Backdrop overlay --}}
 <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 z-30 hidden"></div>
 
-<section class="w-full flex flex-1 overflow-x-hidden">
+<section class="w-full flex flex-1 overflow-hidden h-[calc(100vh-4rem)]">
 
     {{-- LEFT SIDEBAR --}}
     <div
@@ -90,7 +90,7 @@
         </ul>
     </div>
 
-    <div class="flex-1 flex flex-col overflow-hidden max-h-[90vh]">
+    <div class="flex-1 flex flex-col overflow-y-auto min-h-0">
         {{ $slot }}
     </div>
 

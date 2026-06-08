@@ -52,19 +52,26 @@ class ProgramsController extends Controller
         $search    = $request->query('search');
         $status    = $request->query('status');
         $initiated = $request->query('initiated');
+        $month     = $request->query('month');   // ← added
         $perPage   = (int) $request->query('per_page', 9);
         $page      = (int) $request->query('page', 1);
 
-        $programs = Program::whereHas('batches', function ($query) use ($status) {
+        $programs = Program::whereHas('batches', function ($query) use ($status, $month) {
                     if ($status) {
                         $query->where('status', $status);
+                    }
+                    if ($month) {
+                        $query->whereMonth('date_start', $month);  // ← added
                     }
                 })
                 ->with([
                     'coverPages',
-                    'batches' => function ($query) use ($status) {
+                    'batches' => function ($query) use ($status, $month) {
                         if ($status) {
                             $query->where('status', $status);
+                        }
+                        if ($month) {
+                            $query->whereMonth('date_start', $month);  // ← added
                         }
                         $query->withCount('participants')
                             ->orderBy('date_start', 'asc');

@@ -7,6 +7,7 @@ use App\Models\employees;
 use App\Models\Participant;
 use App\Models\Requirement;
 use App\Models\Submission;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -268,53 +269,39 @@ public function missingSubmissions(Request $request, $programCode)
     $batchId = $request->batch_id;
     $requirementId = $request->requirement_id;
 
-    $requirements = Requirement::where(
-        'program_code',
-        $programCode
-    )
-
-    ->when($requirementId && $requirementId != 'all', function ($q) use ($requirementId) {
-
-        $q->where('id', $requirementId);
-
-    })
-
-    ->get();
+    $requirements = Requirement::where('program_code', $programCode)
+        ->when($requirementId && $requirementId != 'all', function ($q) use ($requirementId) {
+            $q->where('id', $requirementId);
+        })
+        ->get();
 
     if ($requirements->isEmpty()) {
         return response()->json([]);
     }
 
     $participants = Participant::with(['employee', 'batch'])
-
         ->whereHas('batch', function ($q) use ($programCode, $batchId) {
-
             $q->where('program_code', $programCode);
-
             if ($batchId && $batchId !== 'all') {
                 $q->where('id', $batchId);
             }
         })
-
         ->whereRaw('LOWER(attendance) != ?', ['absent'])
-
         ->when($search, function ($q) use ($search) {
-
             $q->whereHas('employee', function ($emp) use ($search) {
-
                 $emp->where('FIRSTNAME', 'like', "%{$search}%")
                     ->orWhere('LASTNAME', 'like', "%{$search}%")
                     ->orWhere('EMPCODE', 'like', "%{$search}%");
-
             });
-
         })
-
         ->get();
 
     $missing = [];
 
     foreach ($participants as $participant) {
+
+        // Look up the user email by empcode
+        $user = User::where('empcode', $participant->empcode)->first();
 
         foreach ($requirements as $requirement) {
 
@@ -324,24 +311,18 @@ public function missingSubmissions(Request $request, $programCode)
 
             if (!$exists) {
 
-                $dueDate = $requirement
-                    ->getDueDateForBatch($participant->batch);
+                $dueDate = $requirement->getDueDateForBatch($participant->batch);
 
                 $missing[] = [
-                    'employee' => $participant->employee->FIRSTNAME . ' ' .
-                                  $participant->employee->LASTNAME,
-
-                    'empcode' => $participant->empcode,
-
-                    'batch' => $participant->batch->batch,
-
-                    'office' => $participant->employee['OFFICE/DIVISION'],
-
+                    'employee'    => $participant->employee->FIRSTNAME . ' ' .
+                                     $participant->employee->LASTNAME,
+                    'empcode'     => $participant->empcode,
+                    'email'       => $user?->email ?? '',   // ← added
+                    'batch'       => $participant->batch->batch,
+                    'office'      => $participant->employee['OFFICE/DIVISION'],
                     'requirement' => $requirement->title,
-
-                    'due_date' => $dueDate?->format('F d, Y'),
-
-                    'is_overdue' => now()->gt($dueDate),
+                    'due_date'    => $dueDate?->format('F d, Y'),
+                    'is_overdue'  => now()->gt($dueDate),
                 ];
             }
         }

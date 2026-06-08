@@ -359,14 +359,15 @@
         <table class="missing-table">
           <thead>
             <tr>
-              <th>Employee</th>
-              <th>Office</th>
-              <th>Batch</th>
-              <th>Requirement</th>
-              <th>Due Date</th>
-              <th>Status</th>
+                <th>Employee</th>
+                <th>Email</th>      {{-- ← added --}}
+                <th>Office</th>
+                <th>Batch</th>
+                <th>Requirement</th>
+                <th>Due Date</th>
+                <th>Status</th>
             </tr>
-          </thead>
+        </thead>
           <tbody id="missingSubmissionTable">
             {{-- rows injected by JS --}}
           </tbody>
@@ -443,6 +444,7 @@
                                   <div style="font-weight:500;">${item.employee}</div>
                                   <div style="font-size:.6875rem; color:var(--text-muted); font-family:'DM Mono',monospace;">${item.empcode}</div>
                               </td>
+                              <td style="font-size:.75rem;">${item.email}</td>
                               <td>${item.office ?? '-'}</td>
                               <td>${item.batch}</td>
                               <td>${item.requirement}</td>
@@ -450,13 +452,13 @@
                               <td>
                                   ${item.is_overdue
                                       ? `<span class="badge-overdue">
-                                            <span style="width:.375rem;height:.375rem;border-radius:50%;background:#ef4444;flex-shrink:0;display:inline-block;"></span>
-                                            Overdue
-                                         </span>`
+                                              <span style="width:.375rem;height:.375rem;border-radius:50%;background:#ef4444;flex-shrink:0;display:inline-block;"></span>
+                                              Overdue
+                                        </span>`
                                       : `<span class="badge-pending">
-                                            <span style="width:.375rem;height:.375rem;border-radius:50%;background:#f59e0b;flex-shrink:0;display:inline-block;"></span>
-                                            Pending
-                                         </span>`
+                                              <span style="width:.375rem;height:.375rem;border-radius:50%;background:#f59e0b;flex-shrink:0;display:inline-block;"></span>
+                                              Pending
+                                        </span>`
                                   }
                               </td>
                           </tr>
@@ -480,33 +482,34 @@
   }
 
   function downloadMissingCsv() {
-      if (!lastMissingData.length) {
-          alert('No data to export.');
-          return;
-      }
+    if (!lastMissingData.length) {
+        alert('No data to export.');
+        return;
+    }
 
-      const headers = ['Employee', 'Employee Code', 'Office', 'Batch', 'Requirement', 'Due Date', 'Status'];
+    const headers = ['Employee', 'Employee Code', 'Email', 'Office', 'Batch', 'Requirement', 'Due Date', 'Status']; // ← added Email
 
-      const csvRows = lastMissingData.map(item => [
-          escapeCsvField(item.employee),
-          escapeCsvField(item.empcode),
-          escapeCsvField(item.office),
-          escapeCsvField(item.batch),
-          escapeCsvField(item.requirement),
-          escapeCsvField(item.due_date ?? '-'),
-          item.is_overdue ? 'Overdue' : 'Pending'
-      ].join(','));
+    const csvRows = lastMissingData.map(item => [
+        escapeCsvField(item.employee),
+        escapeCsvField(item.empcode),
+        escapeCsvField(item.email),      // ← added
+        escapeCsvField(item.office),
+        escapeCsvField(item.batch),
+        escapeCsvField(item.requirement),
+        escapeCsvField(item.due_date ?? '-'),
+        item.is_overdue ? 'Overdue' : 'Pending'
+    ].join(','));
 
-      const csvContent = [headers.join(','), ...csvRows].join('\n');
+    const csvContent = [headers.join(','), ...csvRows].join('\n');
 
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url  = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href     = url;
-      link.download = `missing_submissions_${new Date().toISOString().slice(0, 10)}.csv`;
-      link.click();
-      URL.revokeObjectURL(url);
-  }
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href     = url;
+    link.download = `missing_submissions_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+}
 
   function escapeCsvField(value) {
       if (value == null) return '';

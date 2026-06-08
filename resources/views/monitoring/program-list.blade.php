@@ -65,6 +65,7 @@
     let currentStatus = '';
     let currentPerPage = 9;
     let currentInitiated = '';
+    let currentMonth = '';
 
     // ─── Render Cards ────────────────────────────────────────────────
     function renderPrograms(programs) {
@@ -182,11 +183,12 @@
     // ─── Go to Page ──────────────────────────────────────────────────
     function goToPage(page) {
         currentPage = page;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated, currentMonth);
     }
 
+
     // ─── Fetch Programs ──────────────────────────────────────────────
-    async function getPrograms(search = '', status = '', page = 1, perPage = 9, initiated = '') {
+    async function getPrograms(search = '', status = '', page = 1, perPage = 9, initiated = '', month = '') {
         const container = document.getElementById('program_grid');
         container.innerHTML = `
         <div class="col-span-3 w-full">
@@ -211,7 +213,7 @@
         </div>`;
 
         const response = await fetch(
-            `/get-programs?search=${encodeURIComponent(search)}&status=${status}&page=${page}&per_page=${perPage}&initiated=${initiated}`,
+            `/get-programs?search=${encodeURIComponent(search)}&status=${status}&page=${page}&per_page=${perPage}&initiated=${initiated}&month=${month}`,
             { headers: { 'Accept': 'application/json' } }
         );
 
@@ -236,25 +238,31 @@
     document.getElementById('statusFilter').addEventListener('change', function () {
         currentStatus = this.value;
         currentPage   = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated, currentMonth);
+    });
+
+    document.getElementById('monthFilter').addEventListener('change', function () {
+        currentMonth = this.value;
+        currentPage  = 1;
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated, currentMonth);
     });
 
     document.getElementById('searchInput').addEventListener('keyup', function () {
         currentSearch = this.value;
         currentPage   = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated, currentMonth);
     });
 
     document.getElementById('perPageSelect').addEventListener('change', function () {
         currentPerPage = parseInt(this.value);
         currentPage    = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated, currentMonth);
     });
 
     document.getElementById('initiatedFilter').addEventListener('change', function () {
         currentInitiated = this.value;
         currentPage = 1;
-        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated);
+        getPrograms(currentSearch, currentStatus, currentPage, currentPerPage, currentInitiated, currentMonth);
     });
 
     $(document).on('click', '.delete-program-btn', function () {
@@ -274,5 +282,5 @@
     });
 
     // ─── Initial Load ─────────────────────────────────────────────────
-    getPrograms('', '', 1, 9, '');
+    getPrograms('', '', 1, 9, '', '');
 </script>

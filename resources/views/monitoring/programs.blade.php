@@ -100,6 +100,25 @@
             </select>
             </fieldset>
 
+            <fieldset class="fieldset w-50 p-0">
+            <legend class="fieldset-legend">Month:</legend>
+            <select id="monthFilter" class="select rounded-2xl outline-none bg-white dark:bg-slate-700 poppins-regular text-sm">
+                <option value="">All Months</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+            </fieldset>
+
             <!-- Per-page selector -->
             <fieldset class="fieldset p-0">
             <legend class="fieldset-legend">Show:</legend>
